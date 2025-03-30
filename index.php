@@ -38,7 +38,11 @@
             <h2>Teknologiat:</h2>
             <p>Tomcat, Apache 2, Python, Java EE, Spring Boot, Ubuntu Server, Red Hat Enterprise Linux, MySQL, PostgreSQL, PHP, Laravel, React, TypeScript, CSS, HTML, XML, AJAX, REST, RESTful, JSON, JSONP, JavaScript, Node.js, Firebase (NoSQL-tietokanta), Firebase (PHP-kehys JSON Web Tokenille), React Native, C#</p>
             <p>Ota meihin yhteyttä, niin keskustellaan tarkemmin tarpeistasi ja siitä, miten voimme auttaa sinua saavuttamaan tavoitteesi.</p>
-            <p><img src="assets/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace Partner Logo" /></p>
+            <div class="logo-container">
+                <img src="assets/red_hat-technology_partner.png" class="partner-logo" alt="Red Hat Technology Partner Logo" />
+                <img src="assets/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace Partner Logo" />
+                <img src="assets/jasenyritys_banneri_23_625x313px_fin_musta.jpg" class="partner-logo" alt="Yrittäjät Partner Logo" />
+            </div>
         </section>
 
         <section class="testimonials">

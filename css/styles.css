@@ -25,9 +25,9 @@ header {
 
 header img.logo {
     width: 300px;
-    margin-bottom: 20px;
-    box-shadow: none;
+    margin-bottom: 60px;
     margin-right: 20px; /* Space between logo and text */
+    box-shadow: none;
 }
 
 .header-text h1 {
@@ -109,10 +109,23 @@ img {
     padding: 20px; /* Add padding around the container */
 }
 
+/* Add a container for the logos */
+.logo-container {
+    display: grid; /* Use grid layout */
+    grid-template-columns: repeat(3, 1fr); /* Create 3 columns */
+    gap: 20px; /* Add spacing between logos */
+    justify-content: center; /* Center the grid horizontally */
+    align-items: center; /* Center items vertically */
+    max-width: 1200px; /* Limit the width of the container */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px; /* Add padding around the container */
+}
+
+/* Style for individual logos */
 img.partner-logo {
     display: block; /* Make the image a block element */
     margin: 0 auto; /* Center the image horizontally */
-    width: 400px; /* Set the width to 300px */
+    width: 300px; /* Adjust the width of the logos */
     box-shadow: none; /* Remove any box-shadow */
 }
 
