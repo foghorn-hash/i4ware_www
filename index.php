@@ -36,18 +36,26 @@
                 <li>Tehokkaat pilviratkaisut</li>
             </ul>
             <h2>Teknologiat:</h2>
+            <div class="image-container">
+                <img src="assets/dreamstime_xl_88380514.jpg" alt="Koodia" />
+                <img src="assets/deep-learning-ai-empowering-businesses-with-intel-2023-11-27-04-58-50-utc.jpg" alt="Tekoäly" />
+            </div>
             <p>Tomcat, Apache 2, Python, Java EE, Spring Boot, Ubuntu Server, Red Hat Enterprise Linux, MySQL, PostgreSQL, PHP, Laravel, React, TypeScript, CSS, HTML, XML, AJAX, REST, RESTful, JSON, JSONP, JavaScript, Node.js, Firebase (NoSQL-tietokanta), Firebase (PHP-kehys JSON Web Tokenille), React Native, C#</p>
             <p>Ota meihin yhteyttä, niin keskustellaan tarkemmin tarpeistasi ja siitä, miten voimme auttaa sinua saavuttamaan tavoitteesi.</p>
+            <h2>Kumppanuudet</h2>
+            <p>Olemme ylpeitä kumppanuuksistamme ja sertifikaateistamme, jotka tukevat asiakkaitamme parhaalla mahdollisella tavalla. Kumppanuutemme tarjoavat meille pääsyn uusimpiin teknologioihin ja resursseihin, jotta voimme tarjota asiakkaillemme parasta mahdollista palvelua.</p>
+            <p>Olemme kumppaneita seuraavien organisaatioiden kanssa:</p>
             <div class="logo-container">
-                <img src="assets/red_hat-technology_partner.png" class="partner-logo" alt="Red Hat Technology Partner Logo" />
-                <img src="assets/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace Partner Logo" />
-                <img src="assets/jasenyritys_banneri_23_625x313px_fin_musta.jpg" class="partner-logo" alt="Yrittäjät Partner Logo" />
+                <img src="assets/red_hat-technology_partner.png" class="partner-logo" alt="Red Hat -teknologiakumppanilogo" />
+                <img src="assets/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace -kumppanilogo" />
+                <img src="assets/jasenyritys_banneri_23_625x313px_fin_musta.jpg" class="partner-logo" alt="Yrittäjätkumppanilogo" />
             </div>
         </section>
 
         <section class="testimonials">
             <div class="image-container">
                 <img src="assets/dreamstime_xl_31414185.jpg" alt="Matematiikkaa" />
+                <img src="assets/group-of-young-people-working-together-creative-b-2023-11-27-05-09-35-utc.jpg" alt="Yhteystyö" />
             </div>  
             <h2>Asiakaspalautteet</h2>
             <p>"i4ware Software ratkaisi liiketoimintamme kriittiset IT-haasteet nopeasti ja ammattitaitoisesti."</p>
