@@ -22,12 +22,32 @@
         </div>
         <div class="nav-container">
             <nav class="navbar">
-                <ul>
-                    <li><a href="#services">Palvelut</a></li>
-                    <li><a href="#team">Henkilökunta</a></li>
-                    <li><a href="#testimonials">Asiakaspalautteet</a></li>
-                    <li><a href="#contact">Ota yhteyttä</a></li>
+                <!-- Non-overlay menu for large screens -->
+                <ul class="non-overlay-menu">
+                    <li><a href="index.php#services">Palvelut</a></li>
+                    <li><a href="index.php#technologies">Teknologiat</a></li>
+                    <li><a href="index.php#partners">Kumppanuutemme</a></li>
+                    <li><a href="index.php#team">Henkilökunta</a></li>
+                    <li><a href="index.php#testimonials">Asiakaspalautteet</a></li>
+                    <li><a href="index.php#contact">Ota yhteyttä</a></li>
                 </ul>
+
+                <!-- Hamburger button for small screens -->
+                <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+                    ☰
+                </button>
+
+                <!-- Overlay menu for small screens -->
+                <div class="overlay" id="overlayMenu">
+                    <ul>
+                        <li><a href="index.php#services">Palvelut</a></li>
+                        <li><a href="index.php#technologies">Teknologiat</a></li>
+                        <li><a href="index.php#partners">Kumppanuutemme</a></li>
+                        <li><a href="index.php#team">Henkilökunta</a></li>
+                        <li><a href="index.php#testimonials">Asiakaspalautteet</a></li>
+                        <li><a href="index.php#contact">Ota yhteyttä</a></li>
+                    </ul>
+                </div>
             </nav>
         </div>
     </header>
@@ -46,20 +66,36 @@
                 <li>Ohjelmistokehitys ja -ylläpito</li>
                 <li>Tehokkaat pilviratkaisut</li>
             </ul>
-            <h2>Teknologiat:</h2>
-            <div class="image-container">
-                <img src="assets/dreamstime_xl_88380514.jpg" alt="Koodia" />
-                <img src="assets/deep-learning-ai-empowering-businesses-with-intel-2023-11-27-04-58-50-utc.jpg" alt="Tekoäly" />
+            <div id="technologies">
+                <h2>Teknologiat:</h2>
+                <div class="image-container">
+                    <img src="assets/dreamstime_xl_88380514.jpg" alt="Koodia" />
+                    <img src="assets/deep-learning-ai-empowering-businesses-with-intel-2023-11-27-04-58-50-utc.jpg" alt="Tekoäly" />
+                </div>
+                <p>Tomcat, Apache 2, Python, Java EE, Spring Boot, Ubuntu Server, Red Hat Enterprise Linux, MySQL, PostgreSQL, PHP, Laravel, React, TypeScript, CSS, HTML, XML, AJAX, REST, RESTful, JSON, JSONP, JavaScript, Node.js, Firebase (NoSQL-tietokanta), Firebase (PHP-kehys JSON Web Tokenille), React Native, C#</p>
+                <p>Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>, niin keskustellaan tarkemmin tarpeistasi ja siitä, miten voimme auttaa sinua saavuttamaan tavoitteesi.</p>
             </div>
-            <p>Tomcat, Apache 2, Python, Java EE, Spring Boot, Ubuntu Server, Red Hat Enterprise Linux, MySQL, PostgreSQL, PHP, Laravel, React, TypeScript, CSS, HTML, XML, AJAX, REST, RESTful, JSON, JSONP, JavaScript, Node.js, Firebase (NoSQL-tietokanta), Firebase (PHP-kehys JSON Web Tokenille), React Native, C#</p>
-            <p>Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>, niin keskustellaan tarkemmin tarpeistasi ja siitä, miten voimme auttaa sinua saavuttamaan tavoitteesi.</p>
-            <h2>Kumppanuudet</h2>
-            <p>Olemme ylpeitä kumppanuuksistamme ja sertifikaateistamme, jotka tukevat asiakkaitamme parhaalla mahdollisella tavalla. Kumppanuutemme tarjoavat meille pääsyn uusimpiin teknologioihin ja resursseihin, jotta voimme tarjota asiakkaillemme parasta mahdollista palvelua.</p>
-            <p>Olemme kumppaneita seuraavien organisaatioiden kanssa:</p>
-            <div class="logo-container">
-                <img src="assets/red_hat-technology_partner.png" class="partner-logo" alt="Red Hat -teknologiakumppanilogo" />
-                <img src="assets/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace -kumppanilogo" />
-                <img src="assets/jasenyritys_banneri_23_625x313px_fin_musta.jpg" class="partner-logo" alt="Yrittäjätkumppanilogo" />
+            <div id="partners">
+                <h2>Kumppanuudet</h2>
+                <p>Olemme ylpeitä kumppanuuksistamme ja sertifikaateistamme, jotka tukevat asiakkaitamme parhaalla mahdollisella tavalla. Kumppanuutemme tarjoavat meille pääsyn uusimpiin teknologioihin ja resursseihin, jotta voimme tarjota asiakkaillemme parasta mahdollista palvelua.</p>
+                <p>Olemme kumppaneita seuraavien organisaatioiden kanssa:</p>
+                <div class="logo-container">
+                    <a href="https://www.redhat.com/" target="_blank">
+                        <img src="assets/red_hat-technology_partner.png" class="partner-logo" alt="Red Hat -teknologiakumppanilogo" />
+                    </a>
+                    <a href="https://marketplace.atlassian.com/" target="_blank">
+                        <img src="assets/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace -kumppanilogo" />
+                    </a>
+                    <a href="https://www.yrittajat.fi/" target="_blank">
+                        <img src="assets/jasenyritys_banneri_23_625x313px_fin_musta.jpg" class="partner-logo" alt="Yrittäjätkumppanilogo" />
+                    </a>
+                    <a href="https://www.yrittajat.fi/" target="_blank">
+                        <img src="assets/jasenyritys_banneri_24_625x312px_fin_musta.png" class="partner-logo" alt="Yrittäjätkumppanilogo" />
+                    </a>
+                    <a href="https://netvisor.fi/" target="_blank">
+                        <img src="assets/netvisor-logo-vud22-horizontal-cutoutwhite-900px.png" class="partner-logo" alt="Yrittäjätkumppanilogo" />
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -170,7 +206,7 @@
                 <h2>Esittelyvideot</h2>
                 <div class="video-container">
                     <iframe src="https://www.youtube.com/embed/ewjaUiTantg" allowfullscreen></iframe>
-                    <iframe width="560" height="315" src="https://www.youtube.com/embed/06LzzTwjs1A" allowfullscreen></iframe>
+                    <iframe src="https://www.youtube.com/embed/06LzzTwjs1A" allowfullscreen></iframe>
                 </div>
             </div>
         </section>
@@ -190,7 +226,7 @@
             <p>Olemme täällä auttamassa sinua. Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a></p>
             <p>ALV-rek. FI27395946</p>
 
-            <h1>Perustelut vajaakuntoisen koodarin tilaamiselle</h1>
+            <h2>Perustelut vajaakuntoisen koodarin tilaamiselle</h2>
 
             <h2>1. Verotukselliset edut</h2>
             <p>Vajaakuntoisena työntekijänä minulla on oikeus invaliidivähennykseen, mikä tarkoittaa, että eläkkeestäni ei mene lainkaan ennakonpidätystä. Tämä verohyöty tekee nettotuloistani merkittävästi korkeammat, vaikka bruttotulot olisivat verrattain alhaisemmat. Lisäksi työkorvauksista verotetaan vain osuus, joka ylittää kiinteän 980,30 €/kk + ALV 25,5 %, mikä pitää kokonaisveroasteen matalana.</p>
@@ -231,5 +267,39 @@
         </ul>
         <p>&copy; 2025 i4ware Software. Kaikki oikeudet pidätetään.</p>
     </footer>
+    <button id="scrollToTopBtn" title="Scroll to top">↑</button>
+    <script>
+        // Get the button
+        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+        // Show the button when the user scrolls down 100px
+        window.onscroll = function () {
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                scrollToTopBtn.style.display = "block";
+            } else {
+                scrollToTopBtn.style.display = "none";
+            }
+        };
+
+        // Scroll to the top when the button is clicked
+        scrollToTopBtn.onclick = function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        const hamburgerBtn = document.getElementById("hamburgerBtn");
+        const overlayMenu = document.getElementById("overlayMenu");
+
+        // Toggle the overlay menu on hamburger button click
+        hamburgerBtn.addEventListener("click", () => {
+            overlayMenu.classList.toggle("active");
+        });
+
+        // Close the menu when clicking outside or on a link
+        overlayMenu.addEventListener("click", (e) => {
+            if (e.target.tagName === "A" || e.target === overlayMenu) {
+                overlayMenu.classList.remove("active");
+            }
+        });
+    </script>
 </body>
 </html>

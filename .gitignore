@@ -1,0 +1,24 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/my-invoicing-app/node_modules
+/my-invoicing-app/.pnp
+/my-invoicing-app/.pnp.js
+
+# testing
+/my-invoicing-app/coverage
+
+# production
+/my-invoicing-app/build
+
+# misc
+.DS_Store
+/my-invoicing-app/.DS_Store
+/my-invoicing-app/.env.local
+/my-invoicing-app/.env.development.local
+/my-invoicing-app/.env.test.local
+/my-invoicing-app/.env.production.local
+
+/my-invoicing-app/npm-debug.log*
+/my-invoicing-app/yarn-debug.log*
+/my-invoicing-app/yarn-error.log*

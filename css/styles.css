@@ -6,12 +6,12 @@ body {
     color: #fff; /* White text */
     line-height: 1.6;
 }
-
 /* Center the header content */
 header {
     text-align: center;
     padding: 20px 0;
     background-color: #003344; /* Optional: Add a background color */
+    border-bottom: #0066cc 4px solid; /* Top border for footer */
 }
 
 .header-container {
@@ -21,6 +21,7 @@ header {
     max-width: 1200px; /* Limit the width of the container */
     margin: 0 auto; /* Center the container horizontally */
     padding: 0 20px; /* Add horizontal padding */
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
 }
 
 header img.logo {
@@ -28,20 +29,61 @@ header img.logo {
     margin-bottom: 60px;
     margin-right: 20px; /* Space between logo and text */
     box-shadow: none;
+    max-width: 100%; /* Ensure the logo scales on smaller screens */
+    height: auto; /* Maintain aspect ratio */
 }
 
 .header-text h1 {
     margin: 0;
     font-size: 1.8rem;
     color: #fff;
+    text-align: center; /* Center text on smaller screens */
 }
 
 .header-text p {
     margin: 5px 0 0;
     font-size: 1.2rem;
     color: #ddd;
+    text-align: center; /* Center text on smaller screens */
+    margin-bottom: 20px;
 }
 
+/* Responsive styles */
+@media (max-width: 768px) {
+    .header-container {
+        justify-content: center; /* Center items horizontally */
+        text-align: center; /* Center text */
+    }
+
+    header img.logo {
+        margin-bottom: 20px; /* Reduce margin for smaller screens */
+        margin-right: 0; /* Remove right margin */
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem; /* Reduce font size */
+    }
+
+    .header-text p {
+        font-size: 1rem; /* Reduce font size */
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 10px 0; /* Reduce padding for very small screens */
+    }
+
+    .header-text h1 {
+        font-size: 1.2rem; /* Further reduce font size */
+    }
+
+    .header-text p {
+        font-size: 0.9rem; /* Further reduce font size */
+    }
+}
+
+/* Navbar for large screens */
 .navbar {
     background-color: #444; /* Dark background for the navbar */
     padding: 10px 20px; /* Add some padding */
@@ -50,39 +92,158 @@ header img.logo {
     background-image: url('../assets/left-bg.png'); /* Background image for the navbar */
     background-position: bottom left; /* Position the background image */
     background-repeat: repeat-x; /* Repeat the image horizontally */
+    flex-wrap: wrap; /* Allow wrapping for smaller screens */
+    height: 60px;
 }
 
-.navbar ul {
-    list-style: none; /* Remove default list styling */
-    margin: 0; /* Remove default margin */
-    padding: 0; /* Remove default padding */
-    display: flex; /* Display list items in a row */
+/* Non-overlay menu for large screens */
+.non-overlay-menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex; /* Display items inline */
     gap: 20px; /* Add spacing between items */
+    justify-content: center;
 }
 
-.navbar li {
-    display: inline; /* Ensure list items are inline */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow to list items */
+.non-overlay-menu li {
+    display: inline;
 }
 
-.navbar a {
-    text-decoration: none; /* Remove underline from links */
-    color: white; /* White text color */
-    font-weight: bold; /* Make text bold */
-    padding: 8px 12px; /* Add padding around links */
-    border-radius: 4px; /* Add rounded corners */
-    transition: background-color 0.3s ease; /* Smooth hover effect */
-    background-color: #888; /* Change background on hover */
+.non-overlay-menu a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 4px;
+    background-color: #888;
+    transition: background-color 0.3s ease;
 }
 
-.navbar a:hover {
-    background-color: #555; /* Change background on hover */
-    color: #fff; /* Ensure text remains white */
+.non-overlay-menu a:hover {
+    background-color: #555;
+}
+
+/* Hamburger button for small screens */
+.hamburger {
+    display: none; /* Hidden by default */
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+/* Overlay menu for small screens */
+.overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.overlay ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+.overlay li {
+    margin: 20px 0;
+}
+
+.overlay a {
+    text-decoration: none;
+    color: white;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.overlay a:hover {
+    color: #ffcc00;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .non-overlay-menu {
+        display: none; /* Hide non-overlay menu on small screens */
+    }
+
+    .hamburger {
+        display: block; /* Show hamburger button */
+        position: absolute; /* Position it at the top right */
+        right: 20px; /* Align to the right */
+        top: 10px; /* Align to the top */
+        z-index: 1001; /* Ensure it appears above other elements */
+    }
+
+    .overlay.active {
+        display: flex; /* Show overlay menu when active */
+    }
+
+    .overlay.active ul {
+        display: flex; /* Show overlay menu when active */
+        flex-direction: column; /* Stack items vertically */
+        justify-content: center; /* Center the items */
+        align-items: center; /* Center the items vertically */
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+    }
+
+}
+
+/* Responsive styles for small screens */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block; /* Show hamburger button */
+        position: absolute; /* Position it at the top right */
+        right: 20px; /* Align to the right */
+        top: 10px; /* Align to the top */
+        z-index: 1001; /* Ensure it appears above other elements */
+    }
+
+    .navbar ul {
+        display: none; /* Hide the default navbar links */
+    }
+
+    .overlay.active {
+        display: flex; /* Show overlay menu when active */
+    }
+
+    .overlay.active ul {
+        display: flex; /* Show overlay menu when active */
+        flex-direction: column; /* Stack items vertically */
+        justify-content: center; /* Center the items */
+        align-items: center; /* Center the items vertically */
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+    }
+
+}
+
+main {
+    padding: 20px;
+    max-width: 1200px; /* Limit the width of the main content */
+    margin: 0 auto; /* Center the main content */
+    background: #003158; /* Darker blue background for main content */
 }
 
 section {
     padding: 60px 20px;
-    max-width: 1200px;
+    max-width: 1160px;
     margin: auto;
 }
 
@@ -159,12 +320,51 @@ img {
     padding: 20px; /* Add padding around the container */
 }
 
+.logo-container a:hover {
+    transform: scale(1.1); /* Slightly enlarge the logo on hover */
+}
+
 /* Style for individual logos */
 img.partner-logo {
     display: block; /* Make the image a block element */
-    margin: 0 auto; /* Center the image horizontally */
+    margin: 40px auto; /* Center the image horizontally */
     width: 300px; /* Adjust the width of the logos */
+    max-width: 100%; /* Ensure logos scale down on smaller screens */
+    height: auto; /* Maintain aspect ratio */
     box-shadow: none; /* Remove any box-shadow */
+    border-radius: 0px !important; /* Remove border-radius */
+    transition: transform 0.3s ease; /* Smooth scaling effect */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .logo-container {
+        grid-template-columns: repeat(2, 1fr); /* Reduce to 2 columns */
+        gap: 15px; /* Reduce spacing between logos */
+    }
+
+    img.partner-logo {
+        width: 250px; /* Reduce logo size */
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-container {
+        grid-template-columns: 1fr; /* Stack logos in a single column */
+        gap: 10px; /* Further reduce spacing */
+    }
+
+    img.partner-logo {
+        width: 200px; /* Further reduce logo size */
+    }
+}
+
+#technologies {
+    padding-top: 60px;
+}
+
+#partners {
+    padding-top: 60px;
 }
 
 #team {
@@ -220,9 +420,23 @@ img.partner-logo {
 .video-container iframe {
     width: 100%;
     max-width: 1200px;
-    height: 620px;
+    aspect-ratio: 16 / 9; /* Maintain a 16:9 aspect ratio */
     border: none;
     border-radius: 5px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .video-container iframe {
+        max-width: 100%; /* Ensure it scales down for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .video-container iframe {
+        max-width: 100%; /* Ensure it scales down further for very small screens */
+        border-radius: 3px; /* Slightly reduce border radius */
+    }
 }
 
 .testimonial {
@@ -231,6 +445,14 @@ img.partner-logo {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     margin: 20px auto;
+}
+
+footer {
+    background: #001122; /* Darker blue for footer */
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    border-top: #0066cc 4px solid; /* Top border for footer */
 }
 
 footer h2 {
@@ -257,4 +479,30 @@ footer .legal-links a {
 
 footer .legal-links a:hover {
     color: #aaa;
+}
+
+/* Scroll to top button */
+#scrollToTopBtn {
+    position: fixed;
+    bottom: 20px; /* Distance from the bottom */
+    right: 20px; /* Distance from the right */
+    width: 50px;
+    height: 50px;
+    background-color: #00509e; /* Button background color */
+    color: white; /* Button text color */
+    border: none;
+    border-radius: 50%; /* Make it round */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow */
+    cursor: pointer;
+    font-size: 18px;
+    text-align: center;
+    line-height: 50px; /* Vertically center the text */
+    display: none; /* Initially hidden */
+    z-index: 9999; /* Ensure it appears above other elements */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#scrollToTopBtn:hover {
+    background-color: #0066cc; /* Change background on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
 }

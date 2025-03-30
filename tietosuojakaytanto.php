@@ -21,13 +21,33 @@
     
         </div>
         <div class="nav-container">
-            <nav class="navbar">
-                <ul>
+        <nav class="navbar">
+                <!-- Non-overlay menu for large screens -->
+                <ul class="non-overlay-menu">
                     <li><a href="index.php#services">Palvelut</a></li>
+                    <li><a href="index.php#technologies">Teknologiat</a></li>
+                    <li><a href="index.php#partners">Kumppanuutemme</a></li>
                     <li><a href="index.php#team">Henkilökunta</a></li>
                     <li><a href="index.php#testimonials">Asiakaspalautteet</a></li>
                     <li><a href="index.php#contact">Ota yhteyttä</a></li>
                 </ul>
+
+                <!-- Hamburger button for small screens -->
+                <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">
+                    ☰
+                </button>
+
+                <!-- Overlay menu for small screens -->
+                <div class="overlay" id="overlayMenu">
+                    <ul>
+                        <li><a href="index.php#services">Palvelut</a></li>
+                        <li><a href="index.php#technologies">Teknologiat</a></li>
+                        <li><a href="index.php#partners">Kumppanuutemme</a></li>
+                        <li><a href="index.php#team">Henkilökunta</a></li>
+                        <li><a href="index.php#testimonials">Asiakaspalautteet</a></li>
+                        <li><a href="index.php#contact">Ota yhteyttä</a></li>
+                    </ul>
+                </div>
             </nav>
         </div>
     </header>
@@ -73,7 +93,7 @@
             <h3>Analytiikka</h3>
             <p>i4ware käyttää Google Analyticsia ja muita järjestelmiä verkkosivuston kävijätietojen keräämiseen.</p>
             <h3>Myyntidata</h3>
-            <p>i4ware kerää Atlassian-ostohistoriasi, mutta nämä tiedot saadaan REST-rajapinnan kautta eikä niitä tallenneta i4waren omille palvelimille. Tiedot ovat julkisesti nähtävissä osoitteessa <a href=https://atlassian-revenue.i4ware.fi/">https://atlassian-revenue.i4ware.fi/</a> osoittamaan i4waren liikevaihtoa.</p>
+            <p>i4ware kerää Atlassian-ostohistoriasi, mutta nämä tiedot saadaan REST-rajapinnan kautta eikä niitä tallenneta i4waren omille palvelimille. Tiedot ovat julkisesti nähtävissä osoitteessa <a href="https://atlassian-revenue.i4ware.fi/">https://atlassian-revenue.i4ware.fi/</a> osoittamaan i4waren liikevaihtoa.</p>
             <h2>Rekisteröidyn oikeudet</h2>
             <p>Sovellettavan tietosuojalainsäädännön mukaisesti sinulla on oikeus:</p>
             <ul>
@@ -92,5 +112,39 @@
         </ul>
         <p>&copy; 2025 i4ware Software. Kaikki oikeudet pidätetään.</p>
     </footer>
+    <button id="scrollToTopBtn" title="Scroll to top">↑</button>
+    <script>
+        // Get the button
+        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+        // Show the button when the user scrolls down 100px
+        window.onscroll = function () {
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                scrollToTopBtn.style.display = "block";
+            } else {
+                scrollToTopBtn.style.display = "none";
+            }
+        };
+
+        // Scroll to the top when the button is clicked
+        scrollToTopBtn.onclick = function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        const hamburgerBtn = document.getElementById("hamburgerBtn");
+        const overlayMenu = document.getElementById("overlayMenu");
+
+        // Toggle the overlay menu on hamburger button click
+        hamburgerBtn.addEventListener("click", () => {
+            overlayMenu.classList.toggle("active");
+        });
+
+        // Close the menu when clicking outside or on a link
+        overlayMenu.addEventListener("click", (e) => {
+            if (e.target.tagName === "A" || e.target === overlayMenu) {
+                overlayMenu.classList.remove("active");
+            }
+        });
+    </script>
 </body>
 </html>
