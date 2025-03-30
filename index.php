@@ -18,10 +18,21 @@
                 <h1>Mitä teemme?</h1>
                 <p>Luomme koodia, joka ratkaisee ongelmasi.</p>
             </div>
+    
+        </div>
+        <div class="nav-container">
+            <nav class="navbar">
+                <ul>
+                    <li><a href="#services">Palvelut</a></li>
+                    <li><a href="#team">Henkilökunta</a></li>
+                    <li><a href="#testimonials">Asiakaspalautteet</a></li>
+                    <li><a href="#contact">Ota yhteyttä</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
     <main>
-        <section class="services">
+        <section id="services" class="services">
             <h2>Palvelumme</h2>
             <div class="image-container">
                 <img src="assets/dreamstime_s_158835340.jpg" alt="Koodia" />
@@ -41,7 +52,7 @@
                 <img src="assets/deep-learning-ai-empowering-businesses-with-intel-2023-11-27-04-58-50-utc.jpg" alt="Tekoäly" />
             </div>
             <p>Tomcat, Apache 2, Python, Java EE, Spring Boot, Ubuntu Server, Red Hat Enterprise Linux, MySQL, PostgreSQL, PHP, Laravel, React, TypeScript, CSS, HTML, XML, AJAX, REST, RESTful, JSON, JSONP, JavaScript, Node.js, Firebase (NoSQL-tietokanta), Firebase (PHP-kehys JSON Web Tokenille), React Native, C#</p>
-            <p>Ota meihin yhteyttä, niin keskustellaan tarkemmin tarpeistasi ja siitä, miten voimme auttaa sinua saavuttamaan tavoitteesi.</p>
+            <p>Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>, niin keskustellaan tarkemmin tarpeistasi ja siitä, miten voimme auttaa sinua saavuttamaan tavoitteesi.</p>
             <h2>Kumppanuudet</h2>
             <p>Olemme ylpeitä kumppanuuksistamme ja sertifikaateistamme, jotka tukevat asiakkaitamme parhaalla mahdollisella tavalla. Kumppanuutemme tarjoavat meille pääsyn uusimpiin teknologioihin ja resursseihin, jotta voimme tarjota asiakkaillemme parasta mahdollista palvelua.</p>
             <p>Olemme kumppaneita seuraavien organisaatioiden kanssa:</p>
@@ -52,7 +63,7 @@
             </div>
         </section>
 
-        <section class="testimonials">
+        <section id="testimonials" class="testimonials">
             <div class="image-container">
                 <img src="assets/dreamstime_xl_31414185.jpg" alt="Matematiikkaa" />
                 <img src="assets/group-of-young-people-working-together-creative-b-2023-11-27-05-09-35-utc.jpg" alt="Yhteystyö" />

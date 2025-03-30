@@ -42,6 +42,39 @@ header img.logo {
     color: #ddd;
 }
 
+.navbar {
+    background-color: #333; /* Dark background for the navbar */
+    padding: 10px 20px; /* Add some padding */
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center the navigation items */
+}
+
+.navbar ul {
+    list-style: none; /* Remove default list styling */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+    display: flex; /* Display list items in a row */
+    gap: 20px; /* Add spacing between items */
+}
+
+.navbar li {
+    display: inline; /* Ensure list items are inline */
+}
+
+.navbar a {
+    text-decoration: none; /* Remove underline from links */
+    color: white; /* White text color */
+    font-weight: bold; /* Make text bold */
+    padding: 8px 12px; /* Add padding around links */
+    border-radius: 4px; /* Add rounded corners */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.navbar a:hover {
+    background-color: #555; /* Change background on hover */
+    color: #fff; /* Ensure text remains white */
+}
+
 section {
     padding: 60px 20px;
     max-width: 1200px;
