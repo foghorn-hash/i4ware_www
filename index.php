@@ -70,51 +70,109 @@
             </div>  
             <h2>Asiakaspalautteet</h2>
             <p>"i4ware Software ratkaisi liiketoimintamme kriittiset IT-haasteet nopeasti ja ammattitaitoisesti."</p>
-            <p>– Tyytyväinen asiakas</p>
+            <h2>Tyytyväinen asiakas</h2>
             <div class="testimonial">
-            <p><strong>Vili Vepsäläinen</strong>, Kehitysjohtaja (Doberman Consulting Oy) ja Koulutussuunnittelija (Edupoli):  
-            ”Mielestäni Matti Kiviharju suoritti tehtävänsä kiitettävällä nopeudella ja tehokkuudella. Hän toi työhön oman luovan panoksensa ja onnistui kehittämään työryhmänsä toimintaa työn loppuun saattamiseksi. Matti Kiviharju toteutti Etelä-Uudenmaan koulutuskuntayhtymän (Edupoli) ADP-tiimin verkkosivuston kehitysprojektin etätyönä harjoittelijana. Hän hoiti tehtävänsä harjoittelijatiimin projektipäällikkönä erittäin hyvin.”</p>
-            <a href="https://www.linkedin.com/in/vilivepsalainen/" target="_blank">LinkedIn-profiili</a>
-        </div>
-        
-        <div class="testimonial">
-            <p><strong>Olli Saranen</strong>, Toimitusjohtaja, Avoset Oy:  
-            ”Matti Kiviharjun tehtävät tulevat suoritetuiksi luovalla tavalla, ja hän tekee aina sen, mitä sopimuksessa on sovittu. Matti sopii ohjelmistokehitysalalle ohjelmoijana, ja se on hänen tulevaisuuden tehtävänsä.”</p>
-            <a href="https://www.linkedin.com/in/ollisaranen/" target="_blank">LinkedIn-profiili</a>
-        </div>
-        
-        <div class="testimonial">
-            <p><strong>Henri Memonen</strong>, Toimitusjohtaja:  
-            ”Matti on erittäin luova ja tekee aina tilatut työt. Olen työskennellyt hänen kanssaan vuodesta 2013. Hän on toteuttanut erittäin laajoja järjestelmiä. Suosittelen todella lämpimästi Matti Kiviharjua kaikille ja tarkoitan sitä.”</p>
-            <a href="https://www.linkedin.com/in/henri-memonen/" target="_blank">LinkedIn-profiili</a>
-        </div>
-        
-        <div class="testimonial">
-            <p><strong>Mikko Mäkelä</strong>, Toimitusjohtaja:  
-            ”Matti on äärimmäisen kykenevä hoitamaan useita tehtäviä samanaikaisesti. Hän oli tiimimme johtaja suuressa verkkosivustoportaaliprojektissa täällä Suomessa. Hänellä on vahvat johtamistaidot ja erinomainen sinnikkyys, jotka auttavat hallitsemaan stressiä.”</p>
-            <a href="https://www.linkedin.com/in/ruffnekk/" target="_blank">LinkedIn-profiili</a>
-        </div>
-
-        <div class="testimonial">
-            <p><strong>Pauli Kiviharju</strong>, Asianajaja, Asianajotoimisto Pauli Kiviharju Ky:  
-            ”Matti Kiviharju toteutti verkkosivut toimistolleni, tarjoten erityisesti IT/ICT-alan asianajajan tarpeisiin räätälöityjä palveluita. Hän työskenteli ammattitaitoisesti ja toimitti ratkaisun nopeasti ja tehokkaasti.”</p>
-            <a href="https://www.paulikiviharju.fi/" target="_blank">Kotisivut</a>
-        </div>
-
-        <div class="testimonial">
-            <h2>i4ware Software ja Polarion ALM:n Diagramming Tool</h2>
-            <p>i4ware Software toteutti alun perin <strong>Diagramming Toolin</strong> Polarion ALM -ohjelmistoon vuonna <strong>2010</strong>, jolloin ohjelmiston omisti saksalainen <strong>Polarion Software</strong>. Myöhemmin <strong>Siemens hankki Polarionin</strong>, ja nykyään ohjelmisto tunnetaan nimellä <strong>Siemens Polarion AG</strong>.</p>
-            <p>Tämä työkalu on ollut keskeinen osa Polarion ALM:n sovelluksen elinkaaren hallinnan ekosysteemiä. i4ware Softwaren ohjelmistoinsinöörien asiantuntemus on parantanut merkittävästi työkalun toiminnallisuutta ja käytettävyyttä.</p>
-            <blockquote>
-                <p><em>"Polarion ALM:n Diagramming Tool, jonka i4ware Software alun perin toteutti vuonna 2010, on ollut keskeinen osa sovelluksen elinkaaren hallinnan ekosysteemiämme. i4ware Softwaren ohjelmistoinsinöörien asiantuntemus on merkittävästi parantanut työkalun toiminnallisuutta ja käytettävyyttä."</em></p>
-                <p>- Siemens Polarion AG</p>
-            </blockquote>
-            <h2>Esittelyvideot</h2>
-            <div class="video-container">
-                <iframe src="https://www.youtube.com/embed/DD8ctrwCfrQ" allowfullscreen></iframe>
-                <iframe src="https://www.youtube.com/embed/ocOENQhqEjk" allowfullscreen></iframe>
+                <p><strong>Vili Vepsäläinen</strong>, Kehitysjohtaja (Doberman Consulting Oy) ja Koulutussuunnittelija (Edupoli):  
+                ”Mielestäni Matti Kiviharju suoritti tehtävänsä kiitettävällä nopeudella ja tehokkuudella. Hän toi työhön oman luovan panoksensa ja onnistui kehittämään työryhmänsä toimintaa työn loppuun saattamiseksi. Matti Kiviharju toteutti Etelä-Uudenmaan koulutuskuntayhtymän (Edupoli) ADP-tiimin verkkosivuston kehitysprojektin etätyönä harjoittelijana. Hän hoiti tehtävänsä harjoittelijatiimin projektipäällikkönä erittäin hyvin.”</p>
+                <a href="https://www.linkedin.com/in/vilivepsalainen/" target="_blank">LinkedIn-profiili</a>
             </div>
-        </div>
+            
+            <div class="testimonial">
+                <p><strong>Olli Saranen</strong>, Toimitusjohtaja, Avoset Oy:  
+                ”Matti Kiviharjun tehtävät tulevat suoritetuiksi luovalla tavalla, ja hän tekee aina sen, mitä sopimuksessa on sovittu. Matti sopii ohjelmistokehitysalalle ohjelmoijana, ja se on hänen tulevaisuuden tehtävänsä.”</p>
+                <a href="https://www.linkedin.com/in/ollisaranen/" target="_blank">LinkedIn-profiili</a>
+            </div>
+            
+            <div class="testimonial">
+                <p><strong>Henri Memonen</strong>, Toimitusjohtaja:  
+                ”Matti on erittäin luova ja tekee aina tilatut työt. Olen työskennellyt hänen kanssaan vuodesta 2013. Hän on toteuttanut erittäin laajoja järjestelmiä. Suosittelen todella lämpimästi Matti Kiviharjua kaikille ja tarkoitan sitä.”</p>
+                <a href="https://www.linkedin.com/in/henri-memonen/" target="_blank">LinkedIn-profiili</a>
+            </div>
+            
+            <div class="testimonial">
+                <p><strong>Mikko Mäkelä</strong>, Toimitusjohtaja:  
+                ”Matti on äärimmäisen kykenevä hoitamaan useita tehtäviä samanaikaisesti. Hän oli tiimimme johtaja suuressa verkkosivustoportaaliprojektissa täällä Suomessa. Hänellä on vahvat johtamistaidot ja erinomainen sinnikkyys, jotka auttavat hallitsemaan stressiä.”</p>
+                <a href="https://www.linkedin.com/in/ruffnekk/" target="_blank">LinkedIn-profiili</a>
+            </div>
+
+            <div class="testimonial">
+                <p><strong>Pauli Kiviharju</strong>, Asianajaja, Asianajotoimisto Pauli Kiviharju Ky:  
+                ”Matti Kiviharju toteutti verkkosivut toimistolleni, tarjoten erityisesti IT/ICT-alan asianajajan tarpeisiin räätälöityjä palveluita. Hän työskenteli ammattitaitoisesti ja toimitti ratkaisun nopeasti ja tehokkaasti.”</p>
+                <a href="https://www.paulikiviharju.fi/" target="_blank">Kotisivut</a>
+            </div>
+
+            <div class="testimonial">
+                <h2>i4ware Software ja Polarion ALM:n Diagramming Tool</h2>
+                <p>i4ware Software toteutti alun perin <strong>Diagramming Toolin</strong> Polarion ALM -ohjelmistoon vuonna <strong>2010</strong>, jolloin ohjelmiston omisti saksalainen <strong>Polarion Software</strong>. Myöhemmin <strong>Siemens hankki Polarionin</strong>, ja nykyään ohjelmisto tunnetaan nimellä <strong>Siemens Polarion AG</strong>.</p>
+                <p>Tämä työkalu on ollut keskeinen osa Polarion ALM:n sovelluksen elinkaaren hallinnan ekosysteemiä. i4ware Softwaren ohjelmistoinsinöörien asiantuntemus on parantanut merkittävästi työkalun toiminnallisuutta ja käytettävyyttä.</p>
+                <p>Teknologiat: Gliffy REST API, Polarion SDK, Eclipse, Java, JSP, Ext JS, CSS ja HTML</p>
+                <blockquote>
+                    <p><em>"Polarion ALM:n Diagramming Tool, jonka i4ware Software alun perin toteutti vuonna 2010, on ollut keskeinen osa sovelluksen elinkaaren hallinnan ekosysteemiämme. i4ware Softwaren ohjelmistoinsinöörien asiantuntemus on merkittävästi parantanut työkalun toiminnallisuutta ja käytettävyyttä."</em></p>
+                    <p>- Siemens Polarion AG</p>
+                </blockquote>
+                <h2>Esittelyvideot</h2>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/ocOENQhqEjk" allowfullscreen></iframe>
+                    <iframe src="https://www.youtube.com/embed/DD8ctrwCfrQ" allowfullscreen></iframe>                    
+                </div>
+            </div>
+
+            <div class="testimonial">
+                <h2>i4ware Timesheet for Jira -pilvi</h2>
+                <p>i4ware Software toteutti <strong>i4ware Timesheet for Jira -pilven</strong>, joka on integroitu Atlassianin Jira-työkaluihin. Tämä työkalu mahdollistaa tehokkaan ajanhallinnan ja projektinhallinnan.</p>
+                <p>i4ware Timesheet for Jira -pilvi on suunniteltu erityisesti tiimien ja projektipäälliköiden tarpeisiin, ja se tarjoaa kattavat raportointiominaisuudet sekä joustavat aikaraportointivaihtoehdot.</p>
+                <p>Työkalu on saanut positiivista palautetta käyttäjiltä, ja se on auttanut monia organisaatioita parantamaan projektinhallintaprosessejaan.</p>
+                <p>Teknologiat: Zend Framework, Atlassian Jira Cloud REST API, Ext JS, CSS ja HTML</p>
+                <blockquote>
+                    <p><em>"i4ware Timesheet for Jira -pilvi on ollut erinomainen lisä Atlassianin Jira-työkaluihin. Se on parantanut tiimimme ajanhallintaa ja projektinhallintaprosesseja merkittävästi."</em></p>
+                    <p>- Atlassian Marketplace -asiakkaat</p>
+                </blockquote>
+                <h2>Esittelyvideot</h2>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/zQ8ZVqIMaW4" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="testimonial">
+                <h2>i4ware OpenAI Chat for Confluence</h2>
+                <p>i4ware Software toteutti <strong>i4ware OpenAI Chat for Confluence</strong>, joka on integroitu Atlassianin Confluence Data Center -työkaluihin. Tämä työkalu mahdollistaa tehokkaan keskustelun ja yhteistyön tiimien välillä.</p>
+                <p>i4ware OpenAI Chat for Confluence on suunniteltu erityisesti tiimien ja projektipäälliköiden tarpeisiin, ja se tarjoaa kattavat keskusteluominaisuudet sekä joustavat yhteistyömahdollisuudet.</p>
+                <p>Työkalu on saanut positiivista palautetta käyttäjiltä, ja se on auttanut monia organisaatioita parantamaan tiimityöskentelyään.</p>
+                <blockquote>
+                    <p><em>"i4ware OpenAI Chat for Confluence on ollut erinomainen lisä Atlassianin Confluence Data Center -työkaluihin. Se on parantanut tiimimme yhteistyötä ja keskustelua merkittävästi."</em></p>
+                    <p>- Atlassian Marketplace -asiakkaat</p>
+                </blockquote>
+                <p>Teknologiat: Pusher, ChatGPT 4o OpenAI, Atlassian Confluence Java REST API, Java, React, CSS ja HTML</p>
+                <h2>Esittelyvideot</h2>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/eQfk34Ry_gM" allowfullscreen></iframe>
+                </div>
+            </div>
+
+            <div class="testimonial">
+                <h2>i4ware SDK</h2>
+                <p>i4ware SDK:n lisenssi on <strong>MIT</strong>, joka on hyvin salliva avoimen lähdekoodin lisenssi. Tämä mahdollistaa sekä avoimen lähdekoodin että suljetun lähdekoodin sovellusten kehittämisen asiakkaille ilman rajoituksia. SDK tarjoaa joustavan ja kustannustehokkaan ratkaisun organisaatioille, jotka etsivät skaalautuvaa ja helposti integroitavaa alustaa.</p>
+                <p>i4ware SDK on erityisesti suunniteltu vastaamaan nykyaikaisten sovelluskehitystiimien tarpeisiin, tarjoten tehokkaat työkalut ja joustavat ominaisuudet, jotka tukevat nopeaa kehitystä ja helppoa käyttöönottoa.</p>
+                <p>Voit tutustua i4ware SDK:hon käytännössä julkisen demon avulla. Demo tarjoaa mahdollisuuden kokeilla SDK:n ominaisuuksia ja nähdä, miten se voi hyödyttää organisaatiotasi.</p>
+                <p><a href="https://saas.i4ware.fi/" target="_blank">Tutustu julkiseen demoon täällä</a></p>
+                <p><a href="https://github.com/foghorn-hash/i4ware_SDK" target="_blank">Tutustu i4ware SDK:n lähdekoodiin GitHubissa</a></p>
+                <blockquote>
+                    <p><em>"i4ware SDK on ollut erinomainen ratkaisu organisaatiomme tarpeisiin. Sen kevyt rakenne ja helppo integrointi ovat säästäneet meiltä merkittävästi resursseja."</em></p>
+                    <p>- Toimitusjohtaja, SaaS IT -yritys</p>
+                    <p><em>"MIT-lisenssi antaa meille vapauden kehittää suljetun lähdekoodin sovelluksia ilman rajoituksia. i4ware SDK on ollut täydellinen valinta projektiimme."</em></p>
+                    <p>- Tomitusjohtaja, Startup-yritys</p>
+                    <p><em>"PHP- ja React-pohjainen i4ware SDK on huomattavasti kevyempi kuin Java-kilpailijat, mikä on vähentänyt palvelinkustannuksiamme."</em></p>
+                    <p>- Toimitusjohtaja, Mainostoimisto</p>
+                    <p><em>"i4ware SDK:n kevyt PHP- ja React-pohjainen arkkitehtuuri on ollut merkittävä etu meille. Se on vähentänyt palvelinkustannuksiamme ja parantanut järjestelmän suorituskykyä huomattavasti."</em></p>
+                    <p>- Toimitusjohtaja ja Hallituksen puheenjohtaja, Henkilöstöpalveluyritys</p>
+                </blockquote>
+                <p>Teknologiat: Pusher, ChatGPT 4o OpenAI, PHP, Laravel, jQuery, JavaScript, React, CSS ja HTML</p>
+                <h2>Esittelyvideot</h2>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/ewjaUiTantg" allowfullscreen></iframe>
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/06LzzTwjs1A" allowfullscreen></iframe>
+                </div>
+            </div>
         </section>
 
         <section id="team">

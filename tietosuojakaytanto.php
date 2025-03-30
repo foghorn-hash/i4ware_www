@@ -34,50 +34,55 @@
     <main>
         <section id="privacy-policy" class="privacy-policy">
             <h1>i4ware Software - Tietosuojakäytäntö</h1>
-
             <h2>Keitä olemme</h2>
-            <p>i4ware Software (“i4ware”) tarjoaa sovellusten elinkaaren hallinnan ja ohjelmistokehityksen palveluita ja tuotteita.</p>
-            <p>i4ware kunnioittaa yksityisyyttä ja haluaa antaa palveluidensa käyttäjille läpinäkyvää tietoa tietojenkäsittelystään.</p>
-
-            <h2>Henkilötietojen käsittelyn oikeusperuste</h2>
-            <p>i4ware käsittelee henkilötietoja tarjotakseen palveluiden ominaisuuksia, oikeutettujen etujen toteuttamiseksi, sopimuksen täytäntöön panemiseksi tai suostumuksen perusteella.</p>
-
-            <h2>Henkilötietojen käyttötarkoitukset</h2>
+            <p>i4ware Software (“i4ware”) tarjoaa palveluita ja tuotteita sovellusten elinkaaren hallintaan sekä ohjelmistokehitykseen.</p>
+            <p>i4ware kunnioittaa yksilöiden yksityisyyttä ja haluaa siksi tarjota palveluidensa käyttäjille läpinäkyvää tietoa henkilötietojen käsittelystä. Tämä tietosuojakäytäntö kuvaa, kuinka i4ware kerää, käyttää, tallentaa, jakaa ja suojaa henkilötietojasi i4ware-palveluissa ja -tuotteissa sekä verkkosivustollamme <a href="https://www.i4ware.fi">https://www.i4ware.fi</a> (jäljempänä “Palvelut”). i4ware sitoutuu noudattamaan sovellettavaa tietosuojalainsäädäntöä.</p>
+            <p>Tarjoamme tämän tietosuojakäytännön mahdollisimman selkeällä ja ymmärrettävällä kielellä. Jos sinulla on kysyttävää tietojen käsittelystä, voit ottaa meihin yhteyttä verkkosivuston “Ota yhteyttä” -sivun kautta tai lähettämällä sähköpostia osoitteeseen <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>.</p>
+            <p>Tämä tietosuojakäytäntö ei koske kolmansia osapuolia tai heidän toimintojaan, mukaan lukien kolmansien osapuolten verkkosivustot, palvelut ja sovellukset, joihin saatat päästä i4ware-palveluiden tai -verkkosivuston kautta.</p>
+            <h2>Henkilötietojen käsittelyn oikeusperusteet</h2>
+            <p>Tarjotakseen tiettyjä Palveluiden toimintoja i4ware käsittelee henkilötietojasi. Riippuen tilanteesta, käsittely perustuu joko i4waren oikeutettuun etuun, sopimuksen täytäntöönpanoon tai suostumukseesi.</p>
+            <p>Sinulla on oikeus peruuttaa suostumuksesi milloin tahansa. Suostumuksen peruuttaminen ei vaikuta ennen peruutusta tapahtuneen käsittelyn lainmukaisuuteen. Voit peruuttaa suostumuksesi ilmoittamalla siitä i4warelle osoitteeseen <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>.</p>
+            <h2>Henkilötietojen käsittelyn tarkoitukset</h2>
+            <p>Henkilötietoja voidaan käyttää seuraaviin tarkoituksiin:</p>
             <ul>
-                <li>Palveluiden tarjoaminen ja käyttöoikeuksien hallinta</li>
-                <li>Palveluiden kehittäminen, analysointi ja suojaaminen</li>
-                <li>Tilastointi ja tutkimustarkoitukset</li>
-                <li>Henkilökohtaisen käyttökokemuksen parantaminen</li>
-                <li>Asiakaspalvelu ja viestintä</li>
+                <li>Liiketoiminnan harjoittamiseen ja Palveluiden tarjoamiseen käyttäjille ja asiakkaille.</li>
+                <li>Palveluiden käyttämisen mahdollistamiseen.</li>
+                <li>Palveluiden kehittämiseen, analysointiin, hallintaan ja suojaamiseen.</li>
+                <li>Tilastollisiin ja tutkimuksellisiin tarkoituksiin sovellettavan lain mukaisesti.</li>
+                <li>Käyttäjäkokemuksen personointiin.</li>
+                <li>Viestintään ja käyttäjien pyyntöihin vastaamiseen.</li>
             </ul>
-
-            <h2>Käsiteltävät henkilötiedot</h2>
+            <p>Lisäksi i4ware voi kerätä teknisiä tietoja palveluiden käytöstä sekä tarjota ohjelmistopäivityksiä, tuotetukea ja muita palveluihin liittyviä palveluita.</p>
+            <p>Erillisellä suostumuksellasi i4ware voi käyttää henkilötietojasi myös markkinointi- ja mainontatarkoituksiin.</p>
+            <h2>Mitä henkilötietoja käsittelemme ja miksi?</h2>
             <h3>Kommentit</h3>
-            <p>Kun jätät kommentin, tallennamme kommentin sisällön, IP-osoitteen ja selainasetukset.</p>
-
+            <p>Kun käyttäjät jättävät kommentteja sivustolle, keräämme kommenttilomakkeessa annetut tiedot, sekä vierailijan IP-osoitteen ja selaimen käyttäjäagenttitiedot roskapostin torjuntaa varten.</p>
             <h3>Media</h3>
-            <p>Jos lataat kuvia verkkosivustolle, suosittelemme poistamaan sijaintitiedot (EXIF GPS), sillä vierailijat voivat ladata ja tarkastella niitä.</p>
-
+            <p>Jos lataat kuvia verkkosivustolle, vältä kuvien lataamista, jos niissä on upotettua sijaintitietoa (EXIF GPS). Vierailijat voivat ladata ja tarkastella näitä tietoja.</p>
             <h3>Yhteydenottolomakkeet</h3>
-            <p>i4ware käyttää yhteydenottolomakkeita vain työnhakemusten vastaanottamiseen.</p>
-
+            <p>i4ware käyttää yhteydenottolomakkeita vain työhakemusten vastaanottamiseen. Hakemuslomake voi pyytää koulutus-, pätevyys- ja työkokemustietoja, jotka tallennetaan tietokantaamme osoitteessa <a href="https://my.i4ware.fi">https://my.i4ware.fi</a>.</p>
             <h3>Evästeet</h3>
-            <p>Verkkosivusto käyttää evästeitä kirjautumistietojen ja käyttäjäasetusten tallentamiseen.</p>
-
-            <h3>Upotettu sisältö</h3>
-            <p>Sivustolla voi olla upotettua sisältöä (esim. videot, kuvat), joka toimii samalla tavalla kuin suoraan alkuperäisellä sivustolla vieraillessa.</p>
-
-            <h2>Analytiikka</h2>
-            <p>i4ware käyttää Google Analyticsia ja muita analytiikkajärjestelmiä.</p>
-
-            <h2>Henkilötietojen säilytysaika</h2>
-            <p>Henkilötietoja säilytetään vain niin kauan kuin on tarpeen niiden alkuperäiseen käyttötarkoitukseen.</p>
-
-            <h2>Oikeutesi tietosuojaan liittyen</h2>
-            <p>Sinulla on oikeus pyytää pääsyä tietoihisi, niiden korjaamista tai poistamista sekä rajoittaa tietojesi käsittelyä.</p>
-
-            <h2>Yhteystiedot</h2>
-            <p>Voit ottaa yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a></p>
+            <ul>
+                <li>Jos jätät kommentin, voit valita evästeen, joka tallentaa nimesi, sähköpostiosoitteesi ja verkkosivustosi, jotta sinun ei tarvitse täyttää tietoja uudelleen.</li>
+                <li>Kirjautumisen yhteydessä luodaan väliaikaisia evästeitä, jotka poistuvat selainistunnon päättyessä.</li>
+                <li>Kirjautumisen jälkeen asetetaan useita evästeitä kirjautumistietojen ja näyttöasetusten tallentamiseen.</li>
+                <li>Artikkelin muokkaamisen tai julkaisemisen jälkeen selaimeesi tallennetaan eväste, joka sisältää artikkelin tunnisteen.</li>
+            </ul>
+            <h3>Upotettu sisältö muilta sivustoilta</h3>
+            <p>Sivuston artikkelit voivat sisältää upotettua sisältöä (esim. videoita, kuvia, artikkeleita). Upotettu sisältö toimii samalla tavalla kuin jos käyttäjä vierailisi suoraan kyseisellä verkkosivustolla, joka voi kerätä tietoja, käyttää evästeitä ja seurata käyttäjän toimintaa.</p>
+            <h3>Analytiikka</h3>
+            <p>i4ware käyttää Google Analyticsia ja muita järjestelmiä verkkosivuston kävijätietojen keräämiseen.</p>
+            <h3>Myyntidata</h3>
+            <p>i4ware kerää Atlassian-ostohistoriasi, mutta nämä tiedot saadaan REST-rajapinnan kautta eikä niitä tallenneta i4waren omille palvelimille. Tiedot ovat julkisesti nähtävissä osoitteessa <a href=https://atlassian-revenue.i4ware.fi/">https://atlassian-revenue.i4ware.fi/</a> osoittamaan i4waren liikevaihtoa.</p>
+            <h2>Rekisteröidyn oikeudet</h2>
+            <p>Sovellettavan tietosuojalainsäädännön mukaisesti sinulla on oikeus:</p>
+            <ul>
+                <li>Päästä tietoihisi ja pyytää niiden oikaisua tai poistamista.</li>
+                <li>Pyytää henkilötietojesi käsittelyn rajoittamista tai vastustaa käsittelyä.</li>
+                <li>Saada tietosi siirrettävässä muodossa.</li>
+                <li>Tehdä valitus tietosuojaviranomaiselle.</li>
+            </ul>
+            <p>Voit käyttää oikeuksiasi ottamalla yhteyttä i4wareen osoitteessa <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>.</p>
         </section>
     </main>
     <footer>

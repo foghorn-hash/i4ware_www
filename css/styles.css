@@ -11,7 +11,7 @@ body {
 header {
     text-align: center;
     padding: 20px 0;
-    background-color: #002244; /* Optional: Add a background color */
+    background-color: #003344; /* Optional: Add a background color */
 }
 
 .header-container {
@@ -43,10 +43,13 @@ header img.logo {
 }
 
 .navbar {
-    background-color: #333; /* Dark background for the navbar */
+    background-color: #444; /* Dark background for the navbar */
     padding: 10px 20px; /* Add some padding */
     display: flex; /* Use flexbox for layout */
     justify-content: center; /* Center the navigation items */
+    background-image: url('../assets/left-bg.png'); /* Background image for the navbar */
+    background-position: bottom left; /* Position the background image */
+    background-repeat: repeat-x; /* Repeat the image horizontally */
 }
 
 .navbar ul {
@@ -59,6 +62,7 @@ header img.logo {
 
 .navbar li {
     display: inline; /* Ensure list items are inline */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow to list items */
 }
 
 .navbar a {
@@ -68,6 +72,7 @@ header img.logo {
     padding: 8px 12px; /* Add padding around links */
     border-radius: 4px; /* Add rounded corners */
     transition: background-color 0.3s ease; /* Smooth hover effect */
+    background-color: #888; /* Change background on hover */
 }
 
 .navbar a:hover {
@@ -214,9 +219,18 @@ img.partner-logo {
 
 .video-container iframe {
     width: 100%;
-    max-width: 560px;
-    height: 315px;
+    max-width: 1200px;
+    height: 620px;
     border: none;
+    border-radius: 5px;
+}
+
+.testimonial {
+    background: #00509e; /* Slightly lighter blue */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 20px auto;
 }
 
 footer h2 {
