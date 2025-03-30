@@ -13,7 +13,7 @@
 <body>
     <header>
         <div class="header-container">
-            <img src="assets/i4ware-software.png" alt="i4ware Software Logo" class="logo" />
+            <a href="index.php"><img src="assets/i4ware-software.png" alt="i4ware Software -logo" class="logo" /></a>
             <div class="header-text">
                 <h1>Mitä teemme?</h1>
                 <p>Luomme koodia, joka ratkaisee ongelmasi.</p>
@@ -167,6 +167,10 @@
         </section>
     </main>
     <footer>
+        <h2>Oikeudellisetsopimukset</h2>
+        <ul class="legal-links">
+            <li><a href="tietosuojakaytanto.php">Tietosuojakäytäntö</a></li>    
+        </ul>
         <p>&copy; 2025 i4ware Software. Kaikki oikeudet pidätetään.</p>
     </footer>
 </body>

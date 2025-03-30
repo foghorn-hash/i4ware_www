@@ -218,3 +218,29 @@ img.partner-logo {
     height: 315px;
     border: none;
 }
+
+footer h2 {
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+footer .legal-links {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+footer .legal-links li {
+    margin-bottom: 5px;
+}
+
+footer .legal-links a {
+    text-decoration: none;
+    color: #ccc;
+    transition: color 0.3s ease;
+}
+
+footer .legal-links a:hover {
+    color: #aaa;
+}
