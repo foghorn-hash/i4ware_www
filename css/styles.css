@@ -359,6 +359,55 @@ img.partner-logo {
     }
 }
 
+/* Add a container for the logos */
+.ent-logo-container {
+    display: grid; /* Use grid layout */
+    grid-template-columns: repeat(3, 1fr); /* Create 3 columns */
+    gap: 20px; /* Add spacing between logos */
+    justify-content: center; /* Center the grid horizontally */
+    align-items: center; /* Center items vertically */
+    max-width: 1200px; /* Limit the width of the container */
+    margin: 0 auto; /* Center the container horizontally */
+    padding: 20px; /* Add padding around the container */
+}
+
+.ent-logo-container a:hover {
+    transform: scale(1.1); /* Slightly enlarge the logo on hover */
+}
+
+/* Style for individual logos */
+.ent-logo-container img.partner-logo {
+    display: block; /* Make the image a block element */
+    margin: 40px auto; /* Center the image horizontally */
+    width: 100px; /* Adjust the width of the logos */
+    box-shadow: none; /* Remove any box-shadow */
+    border-radius: 0px !important; /* Remove border-radius */
+    transition: transform 0.3s ease; /* Smooth scaling effect */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .ent-logo-container {
+        grid-template-columns: repeat(2, 1fr); /* Reduce to 2 columns */
+        gap: 15px; /* Reduce spacing between logos */
+    }
+
+    .ent-logo-container img.partner-logo {
+        width: 100px; /* Reduce logo size */
+    }
+}
+
+@media (max-width: 480px) {
+    .ent-logo-container {
+        grid-template-columns: 1fr; /* Stack logos in a single column */
+        gap: 10px; /* Further reduce spacing */
+    }
+
+    .ent-logo-container img.partner-logo {
+        width: 100px; /* Further reduce logo size */
+    }
+}
+
 #technologies {
     padding-top: 60px;
 }
@@ -381,7 +430,7 @@ img.partner-logo {
 
 .team-member {
     display: inline-block;
-    width: 450px;
+    max-width: 450px;
     margin: 20px;
     text-align: center;
     color: #fff;
@@ -505,4 +554,8 @@ footer .legal-links a:hover {
 #scrollToTopBtn:hover {
     background-color: #0066cc; /* Change background on hover */
     transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+#root h1, h2, h3, h4, h5, h6 {
+    font-size: 1.5rem; /* Set a default font size for all headings */
 }

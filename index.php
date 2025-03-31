@@ -83,6 +83,9 @@
                     <a href="https://www.redhat.com/" target="_blank">
                         <img src="assets/red_hat-technology_partner.png" class="partner-logo" alt="Red Hat -teknologiakumppanilogo" />
                     </a>
+                    <a href="https://www.redhat.com/" target="_blank">
+                        <img src="assets/rh_readyisvlogo_rgb.png" class="partner-logo" alt="Red Hat -teknologiakumppanilogo" />
+                    </a>
                     <a href="https://marketplace.atlassian.com/" target="_blank">
                         <img src="assets/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace -kumppanilogo" />
                     </a>
@@ -94,6 +97,17 @@
                     </a>
                     <a href="https://netvisor.fi/" target="_blank">
                         <img src="assets/netvisor-logo-vud22-horizontal-cutoutwhite-900px.png" class="partner-logo" alt="Yrittäjätkumppanilogo" />
+                    </a>
+                </div>
+                <div class="ent-logo-container">
+                    <a href="https://www.yrittajat.fi/" target="_blank">
+                        <img src="assets/sy_jasenyritys_2017_150x75px.png" class="partner-logo" alt="Yrittäjätkumppanilogo" />
+                    </a>
+                    <a href="https://www.yrittajat.fi/" target="_blank">
+                        <img src="assets/sy_jasenyritys2018_suomi_150x75.png" class="partner-logo" alt="Yrittäjätkumppanilogo" />
+                    </a>
+                    <a href="https://www.yrittajat.fi/" target="_blank">
+                        <img src="assets/sy_jasenyritys2019_su_150x75_0.png" class="partner-logo" alt="Yrittäjätkumppanilogo" />
                     </a>
                 </div>
             </div>
