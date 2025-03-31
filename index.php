@@ -218,6 +218,14 @@
                 <h3>Matti Kiviharju, tradenomi</h3>
                 <p>Yrittäjä, Perustaja ja Expert Full-Stack -ohjelmoija sekä arkkitehti</p>
                 <p>Matti Kiviharju on kokenut ohjelmistoarkkitehti ja Full-Stack-kehittäjä, joka hallitsee sekä käyttöliittymien että backend-järjestelmien suunnittelun. Hänen visionäärinen johtajuutensa ja tekninen asiantuntemuksensa ovat olleet avainasemassa yrityksen menestyksessä.</p>
+                <p>Hän on työskennellyt useissa projekteissa eri toimialoilla, ja hänen kykynsä yhdistää liiketoimintatavoitteet teknisiin ratkaisuihin tekee hänestä arvokkaan resurssin asiakkaillemme.</p>
+                <p>Hän on myös aktiivinen yhteisön jäsen ja jakaa mielellään tietämystään ja kokemustaan ohjelmistokehityksen alalla.</p>
+                <p>Hän on työskennellyt ohjelmistokehityksen parissa vuodesta 2004 ja on erikoistunut erityisesti Java- ja PHP-teknologioihin.</p>
+                <p>Hän on myös sertifioitu Red Hat -B-to-B-myyjä:</p>
+                <div class="certificate-container">
+                    <img src="assets/redhat1.png" alt="Red Hat -todistus 1" />
+                    <img src="assets/redhat2.png" alt="Red Hat -todistus 2" />
+                </div>
             </div>
         </section>
 
