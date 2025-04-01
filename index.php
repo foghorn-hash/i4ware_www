@@ -73,7 +73,7 @@
                     <img src="assets/deep-learning-ai-empowering-businesses-with-intel-2023-11-27-04-58-50-utc.jpg" alt="Tekoäly" />
                 </div>
                 <p>Tomcat, Apache 2, Python, Java EE, Spring Boot, Ubuntu Server, Red Hat Enterprise Linux, MySQL, PostgreSQL, PHP, Laravel, React, TypeScript, CSS, HTML, XML, AJAX, REST, RESTful, JSON, JSONP, JavaScript, Node.js, Firebase (NoSQL-tietokanta), Firebase (PHP-kehys JSON Web Tokenille), React Native, C#</p>
-                <p>Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>, niin keskustellaan tarkemmin tarpeistasi ja siitä, miten voimme auttaa sinua saavuttamaan tavoitteesi.</p>
+                <p>Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; tai puhelimitse: +358 40 8200 691, niin keskustellaan tarkemmin tarpeistasi ja siitä, miten voimme auttaa sinua saavuttamaan tavoitteesi.</p>
             </div>
             <div id="partners">
                 <h2>Kumppanuudet</h2>
@@ -245,7 +245,7 @@
 
         <section class="contact" id="contact">
             <h2>Ota yhteyttä</h2>
-            <p>Olemme täällä auttamassa sinua. Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a></p>
+            <p>Olemme täällä auttamassa sinua. Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; tai puhelimitse: +358 40 8200 691.</p>
             <p>ALV-rek. FI27395946</p>
 
             <h2>Perustelut vajaakuntoisen koodarin tilaamiselle</h2>
@@ -278,6 +278,7 @@
             <p>Työllistämällä vajaakuntoisen työntekijän työn tilaaja osoittaa yhteiskunnallista vastuullisuutta ja edistää inklusiivista työkulttuuria. Tämä voi parantaa yrityksen mainetta ja antaa positiivista näkyvyyttä niin asiakkaiden kuin yhteistyökumppaneidenkin silmissä.</p>
 
             <p>Ota yhteyttä, niin keskustellaan tarkemmin yhteistyömahdollisuuksista!</p>
+            <p>Sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; tai puhelimitse: +358 40 8200 691.</p>
             <div id="root"></div>
             <script src="static/js/main.ba5695a1.js"></script>
         </section>
