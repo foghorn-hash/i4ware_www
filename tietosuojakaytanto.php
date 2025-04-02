@@ -16,7 +16,7 @@
             <a href="tietosuojakaytanto.php">FI</a> | <a href="privacy-policy.php">EN</a>
         </div>
         <div class="header-container">
-            <a href="index.php"><img src="assets/i4ware-software.png" alt="i4ware Software -logo" class="logo" /></a>
+            <a href="index.php?lang=fi"><img src="assets/i4ware-software.png" alt="i4ware Software -logo" class="logo" /></a>
             <div class="header-text">
                 <h1>Mitä teemme?</h1>
                 <p>Luomme koodia, joka ratkaisee ongelmasi.</p>
@@ -27,12 +27,12 @@
         <nav class="navbar">
                 <!-- Non-overlay menu for large screens -->
                 <ul class="non-overlay-menu">
-                    <li><a href="index.php#services">Palvelut</a></li>
-                    <li><a href="index.php#technologies">Teknologiat</a></li>
-                    <li><a href="index.php#partners">Kumppanuutemme</a></li>
-                    <li><a href="index.php#team">Henkilökunta</a></li>
-                    <li><a href="index.php#testimonials">Asiakaspalautteet</a></li>
-                    <li><a href="index.php#contact">Ota yhteyttä</a></li>
+                    <li><a href="index.php?lang=fi#services">Palvelut</a></li>
+                    <li><a href="index.php?lang=fi#technologies">Teknologiat</a></li>
+                    <li><a href="index.php?lang=fi#partners">Kumppanuutemme</a></li>
+                    <li><a href="index.php?lang=fi#team">Henkilökunta</a></li>
+                    <li><a href="index.php?lang=fi#testimonials">Asiakaspalautteet</a></li>
+                    <li><a href="index.php?lang=fi#contact">Ota yhteyttä</a></li>
                 </ul>
 
                 <!-- Hamburger button for small screens -->
@@ -43,12 +43,12 @@
                 <!-- Overlay menu for small screens -->
                 <div class="overlay" id="overlayMenu">
                     <ul>
-                        <li><a href="index.php#services">Palvelut</a></li>
-                        <li><a href="index.php#technologies">Teknologiat</a></li>
-                        <li><a href="index.php#partners">Kumppanuutemme</a></li>
-                        <li><a href="index.php#team">Henkilökunta</a></li>
-                        <li><a href="index.php#testimonials">Asiakaspalautteet</a></li>
-                        <li><a href="index.php#contact">Ota yhteyttä</a></li>
+                        <li><a href="index.php?lang=fi#services">Palvelut</a></li>
+                        <li><a href="index.php?lang=fi#technologies">Teknologiat</a></li>
+                        <li><a href="index.php?lang=fi#partners">Kumppanuutemme</a></li>
+                        <li><a href="index.php?lang=fi#team">Henkilökunta</a></li>
+                        <li><a href="index.php?lang=fi#testimonials">Asiakaspalautteet</a></li>
+                        <li><a href="index.php?lang=fi#contact">Ota yhteyttä</a></li>
                     </ul>
                 </div>
             </nav>

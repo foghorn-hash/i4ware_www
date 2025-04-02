@@ -291,5 +291,39 @@
         </ul>
         <p>&copy; 2025 i4ware Software. All rights reserved.</p>
     </footer>
+    <button id="scrollToTopBtn" title="Scroll to top">↑</button>
+    <script>
+        // Get the button
+        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+        // Show the button when the user scrolls down 100px
+        window.onscroll = function () {
+            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+                scrollToTopBtn.style.display = "block";
+            } else {
+                scrollToTopBtn.style.display = "none";
+            }
+        };
+
+        // Scroll to the top when the button is clicked
+        scrollToTopBtn.onclick = function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        };
+
+        const hamburgerBtn = document.getElementById("hamburgerBtn");
+        const overlayMenu = document.getElementById("overlayMenu");
+
+        // Toggle the overlay menu on hamburger button click
+        hamburgerBtn.addEventListener("click", () => {
+            overlayMenu.classList.toggle("active");
+        });
+
+        // Close the menu when clicking outside or on a link
+        overlayMenu.addEventListener("click", (e) => {
+            if (e.target.tagName === "A" || e.target === overlayMenu) {
+                overlayMenu.classList.remove("active");
+            }
+        });
+    </script>
 </body>
 </html>
