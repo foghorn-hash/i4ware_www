@@ -30,7 +30,7 @@
                     <li><a href="index.php#services">Palvelut</a></li>
                     <li><a href="index.php#technologies">Teknologiat</a></li>
                     <li><a href="index.php#partners">Kumppanuutemme</a></li>
-                    <li><a href="index.php#team">Henkilökunta</a></li>
+                    <li><a href="index.php#team">Tiimi</a></li>
                     <li><a href="index.php#testimonials">Asiakaspalautteet</a></li>
                     <li><a href="index.php#contact">Ota yhteyttä</a></li>
                 </ul>
@@ -46,7 +46,7 @@
                         <li><a href="index.php#services">Palvelut</a></li>
                         <li><a href="index.php#technologies">Teknologiat</a></li>
                         <li><a href="index.php#partners">Kumppanuutemme</a></li>
-                        <li><a href="index.php#team">Henkilökunta</a></li>
+                        <li><a href="index.php#team">Tiimi</a></li>
                         <li><a href="index.php#testimonials">Asiakaspalautteet</a></li>
                         <li><a href="index.php#contact">Ota yhteyttä</a></li>
                     </ul>
@@ -229,19 +229,19 @@
         </section>
 
         <section id="team">
-            <h2>Team</h2>
+            <h2>Tiimi</h2>
             <div class="team-member">
                 <img src="assets/matti.jpg" alt="Matti Kiviharju" />
-                <h3>Matti Kiviharju, Bachelor of Business Administration</h3>
-                <p>Entrepreneur, Founder, and Expert Full-Stack Developer and Architect</p>
-                <p>Matti Kiviharju is an experienced software architect and Full-Stack developer who excels in designing both user interfaces and backend systems. His visionary leadership and technical expertise have been key to the company's success.</p>
-                <p>He has worked on numerous projects across various industries, and his ability to align business goals with technical solutions makes him a valuable resource for our clients.</p>
-                <p>He is also an active member of the community and is happy to share his knowledge and experience in the field of software development.</p>
-                <p>He has been working in software development since 2004 and specializes particularly in Java and PHP technologies.</p>
-                <p>He is also a certified Red Hat B-to-B seller:</p>
+                <h3>Matti Kiviharju, Tradenomi</h3>
+                <p>Yrittäjä, perustaja ja asiantuntija Full-Stack-kehittäjä sekä arkkitehti</p>
+                <p>Matti Kiviharju on kokenut ohjelmistoarkkitehti ja Full-Stack-kehittäjä, joka hallitsee sekä käyttöliittymien että taustajärjestelmien suunnittelun. Hänen visionäärinen johtajuutensa ja tekninen asiantuntemuksensa ovat olleet avainasemassa yrityksen menestyksessä.</p>
+                <p>Hän on työskennellyt lukuisissa projekteissa eri toimialoilla, ja hänen kykynsä yhdistää liiketoiminnan tavoitteet teknisiin ratkaisuihin tekee hänestä arvokkaan resurssin asiakkaillemme.</p>
+                <p>Hän on myös aktiivinen yhteisön jäsen ja jakaa mielellään tietämystään ja kokemustaan ohjelmistokehityksen alalta.</p>
+                <p>Hän on työskennellyt ohjelmistokehityksen parissa vuodesta 2004 ja erikoistunut erityisesti Java- ja PHP-teknologioihin.</p>
+                <p>Hän on myös sertifioitu Red Hat B-to-B -myyjä:</p>
                 <div class="certificate-container">
-                    <img src="assets/redhat1.png" alt="Red Hat Certificate 1" />
-                    <img src="assets/redhat2.png" alt="Red Hat Certificate 2" />
+                    <img src="assets/redhat1.png" alt="Red Hat -sertifikaatti 1" />
+                    <img src="assets/redhat2.png" alt="Red Hat -sertifikaatti 2" />
                 </div>
             </div>
         </section>
