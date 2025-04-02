@@ -1,11 +1,48 @@
 import React, { useState } from "react";
 import { Card, Form, Button } from "react-bootstrap";
+import { API_DEFAULT_LANGUAGE } from "../../constants/apiConstants";
+// ES6 module syntax
+import LocalizedStrings from "react-localization";
+
+let strings = new LocalizedStrings({
+  en: {
+    title: "Legal Fee Calculator",
+    hourlyRate: "Hourly Rate (€)",
+    vatRate: "VAT Rate (%)",
+    projectHours: "Project Hours",
+    calculate: "Calculate",
+    results: "Results:",
+    baseAmount: "Total Hourly Fee (excl. VAT):",
+    vatAmount: "VAT Amount:",
+    totalWithVat: "Total Fee (incl. VAT):",
+  },
+  fi: {
+    title: "Asianajajan Hintalaskuri",
+    hourlyRate: "Tuntihinta (€)",
+    vatRate: "ALV-kanta (%)",
+    projectHours: "Tunteja projektissa",
+    calculate: "Laske",
+    results: "Tulokset:",
+    baseAmount: "Tuntihinta yhteensä (ilman ALV):",
+    vatAmount: "ALV-osuus:",
+    totalWithVat: "Hinta yhteensä (sis. ALV):",
+  },
+  sv: {
+    title: "Advokatarvodesräknare",
+    hourlyRate: "Timpris (€)",
+    vatRate: "Moms (%)",
+    projectHours: "Projekttimmar",
+    calculate: "Beräkna",
+    results: "Resultat:",
+    baseAmount: "Total timpris (exkl. moms):",
+    vatAmount: "Momsbelopp:",
+    totalWithVat: "Total avgift (inkl. moms):",
+  },
+});
 
 const LegalFeeCalculator = () => {
   const [hourlyRate, setHourlyRate] = useState(250);
   const [vatRate, setVatRate] = useState(25.5); // Default VAT in Finland is 25.5%
-  const [hoursPerWeek, setHoursPerWeek] = useState(37.5);
-  const [weeksPerMonth, setWeeksPerMonth] = useState(4.33);
   const [projectHours, setProjectHours] = useState(100);
 
   const calculate = () => {
@@ -22,15 +59,27 @@ const LegalFeeCalculator = () => {
 
   const result = calculate();
 
+  const [lang, setLang] = useState("en");
+
+  var query = window.location.search.substring(1);
+  var urlParams = new URLSearchParams(query);
+  var localization = urlParams.get("lang");
+
+  if (localization === null) {
+    strings.setLanguage("en");
+  } else {
+    strings.setLanguage(localization);
+  }
+
   return (
     <div className="p-4 max-w-xl mx-auto">
       <Card className="shadow-sm">
         <Card.Body>
-          <h1 className="text-center mb-4">Asianajajan Hintalaskuri</h1>
+          <h1 className="text-center mb-4">{strings.title}</h1>
 
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Tuntihinta (€)</Form.Label>
+              <Form.Label>{strings.hourlyRate}</Form.Label>
               <Form.Control
                 type="number"
                 value={hourlyRate}
@@ -39,7 +88,7 @@ const LegalFeeCalculator = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>ALV-kanta (%)</Form.Label>
+              <Form.Label>{strings.vatRate}</Form.Label>
               <Form.Control
                 type="text"
                 value={vatRate}
@@ -48,7 +97,7 @@ const LegalFeeCalculator = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Tunteja projektissa</Form.Label>
+              <Form.Label>{strings.projectHours}</Form.Label>
               <Form.Control
                 type="number"
                 value={projectHours}
@@ -57,15 +106,15 @@ const LegalFeeCalculator = () => {
             </Form.Group>
 
             <Button variant="primary" className="w-100" disabled>
-              Laske
+              {strings.calculate}
             </Button>
           </Form>
 
           <div className="mt-4">
-            <h2 className="text-center">Tulokset:</h2>
-            <p>Tuntihinta yhteensä (ilman ALV): €{result.baseAmount}</p>
-            <p>ALV-osuus: €{result.vatAmount}</p>
-            <p>Hinta yhteensä (sis. ALV): €{result.totalWithVat}</p>
+            <h2 className="text-center">{strings.results}</h2>
+            <p>{strings.baseAmount} €{result.baseAmount}</p>
+            <p>{strings.vatAmount} €{result.vatAmount}</p>
+            <p>{strings.totalWithVat} €{result.totalWithVat}</p>
           </div>
         </Card.Body>
       </Card>

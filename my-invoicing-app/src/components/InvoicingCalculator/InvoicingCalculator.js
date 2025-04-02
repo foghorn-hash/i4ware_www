@@ -1,5 +1,54 @@
 import React, { useState } from "react";
 import { Card, Form, Button } from "react-bootstrap";
+import LocalizedStrings from "react-localization";
+
+let strings = new LocalizedStrings({
+  en: {
+    title: "IT Project Pricing Calculator",
+    hourlyRate: "Hourly Rate (€)",
+    vatRate: "VAT Rate (%)",
+    hoursPerWeek: "Hours per Week",
+    weeksPerMonth: "Weeks per Month",
+    projectDuration: "Project Duration (Months)",
+    calculate: "Calculate",
+    results: "Results:",
+    hoursPerMonth: "Hours per Month:",
+    baseAmount: "Base Amount:",
+    vatAmount: "VAT Amount:",
+    totalWithVat: "Total (incl. VAT):",
+    totalForProject: "Total Project Cost:",
+  },
+  fi: {
+    title: "IT-projektin Hintalaskuri",
+    hourlyRate: "Tuntihinta (€)",
+    vatRate: "ALV-kanta (%)",
+    hoursPerWeek: "Tunteja viikossa",
+    weeksPerMonth: "Viikkoja kuukaudessa",
+    projectDuration: "Projektin kesto (Kuukausia)",
+    calculate: "Laske",
+    results: "Tulokset:",
+    hoursPerMonth: "Tunteja kuukaudessa:",
+    baseAmount: "Tuntihinta:",
+    vatAmount: "ALV-osuus:",
+    totalWithVat: "Hinta sis. ALV:",
+    totalForProject: "Projektin hinta:",
+  },
+  sv: {
+    title: "IT-projektets Prisräknare",
+    hourlyRate: "Timpris (€)",
+    vatRate: "Moms (%)",
+    hoursPerWeek: "Timmar per vecka",
+    weeksPerMonth: "Veckor per månad",
+    projectDuration: "Projektets längd (Månader)",
+    calculate: "Beräkna",
+    results: "Resultat:",
+    hoursPerMonth: "Timmar per månad:",
+    baseAmount: "Grundbelopp:",
+    vatAmount: "Momsbelopp:",
+    totalWithVat: "Totalt (inkl. moms):",
+    totalForProject: "Projektets totalkostnad:",
+  },
+});
 
 const InvoicingCalculator = () => {
   const [hourlyRate, setHourlyRate] = useState(95);
@@ -26,15 +75,27 @@ const InvoicingCalculator = () => {
 
   const result = calculate();
 
+  const [lang, setLang] = useState("en");
+
+  var query = window.location.search.substring(1);
+  var urlParams = new URLSearchParams(query);
+  var localization = urlParams.get("lang");
+
+  if (localization === null) {
+    strings.setLanguage("en");
+  } else {
+    strings.setLanguage(localization);
+  }
+
   return (
     <div className="p-4 max-w-xl mx-auto">
       <Card className="shadow-sm">
         <Card.Body>
-          <h1 className="text-center mb-4">IT-projektin Hintalaskuri</h1>
+          <h1 className="text-center mb-4">{strings.title}</h1>
 
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Tuntihinta (€)</Form.Label>
+              <Form.Label>{strings.hourlyRate}</Form.Label>
               <Form.Control
                 type="number"
                 value={hourlyRate}
@@ -43,7 +104,7 @@ const InvoicingCalculator = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>ALV-kanta (%)</Form.Label>
+              <Form.Label>{strings.vatRate}</Form.Label>
               <Form.Control
                 type="text"
                 value={vatRate}
@@ -52,7 +113,7 @@ const InvoicingCalculator = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Tunteja viikossa</Form.Label>
+              <Form.Label>{strings.hoursPerWeek}</Form.Label>
               <Form.Control
                 type="text"
                 value={hoursPerWeek}
@@ -61,7 +122,7 @@ const InvoicingCalculator = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Viikkoja kuukaudesa</Form.Label>
+              <Form.Label>{strings.weeksPerMonth}</Form.Label>
               <Form.Control
                 type="text"
                 value={weeksPerMonth}
@@ -70,7 +131,7 @@ const InvoicingCalculator = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Projektin kesto (Kuukausia)</Form.Label>
+              <Form.Label>{strings.projectDuration}</Form.Label>
               <Form.Control
                 type="number"
                 value={projectMonths}
@@ -79,17 +140,17 @@ const InvoicingCalculator = () => {
             </Form.Group>
 
             <Button variant="primary" className="w-100" disabled>
-              Laske
+              {strings.calculate}
             </Button>
           </Form>
 
           <div className="mt-4">
-            <h2 className="text-center">Tulokset:</h2>
-            <p>Tunteja kuukaudesa: {result.hoursPerMonth}</p>
-            <p>Tuntihinta: €{result.baseAmount}</p>
-            <p>ALV-osuus: €{result.vatAmount}</p>
-            <p>Hinta sis. ALV: €{result.totalWithVat}</p>
-            <p>Projektin hinta: €{result.totalForProject}</p>
+            <h2 className="text-center">{strings.results}</h2>
+            <p>{strings.hoursPerMonth} {result.hoursPerMonth}</p>
+            <p>{strings.baseAmount} €{result.baseAmount}</p>
+            <p>{strings.vatAmount} €{result.vatAmount}</p>
+            <p>{strings.totalWithVat} €{result.totalWithVat}</p>
+            <p>{strings.totalForProject} €{result.totalForProject}</p>
           </div>
         </Card.Body>
       </Card>

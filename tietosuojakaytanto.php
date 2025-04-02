@@ -12,6 +12,9 @@
 </head>
 <body>
     <header>
+        <div class="language-switcher">
+            <a href="tietosuojakaytanto.php">FI</a> | <a href="privacy-policy.php">EN</a>
+        </div>
         <div class="header-container">
             <a href="index.php"><img src="assets/i4ware-software.png" alt="i4ware Software -logo" class="logo" /></a>
             <div class="header-text">
