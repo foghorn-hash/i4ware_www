@@ -7,6 +7,7 @@
     <meta name="description" content="i4ware Software tarjoaa räätälöityjä ohjelmistoratkaisuja. Tutustu palveluihimme ja ota yhteyttä tänään.">
     <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="static/css/main.fb961db8.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -250,6 +251,7 @@
             <h2>Ota yhteyttä</h2>
             <p>Olemme täällä auttamassa sinua. Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; tai puhelimitse: +358 40 8200 691.</p>
             <p>ALV-rek. FI27395946</p>
+            <p>Y-tunnus: 2739594-6</p>
 
             <h2>Perustelut vajaakuntoisen koodarin tilaamiselle</h2>
 

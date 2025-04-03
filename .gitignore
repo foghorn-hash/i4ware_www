@@ -22,3 +22,5 @@
 /my-invoicing-app/npm-debug.log*
 /my-invoicing-app/yarn-debug.log*
 /my-invoicing-app/yarn-error.log*
+
+/vendor

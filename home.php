@@ -230,7 +230,7 @@
             <h2>Team</h2>
             <div class="team-member">
                 <img src="assets/matti.jpg" alt="Matti Kiviharju" />
-                <h3>Matti Kiviharju, Bachelor of Business Administration</h3>
+                <h3>Matti Kiviharju, Specialization in IT/ICT and BBA</h3>
                 <p>Entrepreneur, Founder, and Expert Full-Stack Developer and Architect</p>
                 <p>Matti Kiviharju is an experienced software architect and Full-Stack developer who excels in designing both user interfaces and backend systems. His visionary leadership and technical expertise have been key to the company's success.</p>
                 <p>He has worked on numerous projects across various industries, and his ability to align business goals with technical solutions makes him a valuable resource for our clients.</p>
@@ -248,6 +248,7 @@
             <h2>Contact Us</h2>
             <p>We are here to help you. Contact us via email: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; or by phone: +358 40 8200 691.</p>
             <p>VAT-ID: FI27395946</p>
+            <p>Tax ID: 2739594-6</p>
 
             <h2>Reasons to Hire a Partially Disabled Developer</h2>
 
