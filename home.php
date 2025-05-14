@@ -249,40 +249,8 @@
             <p>We are here to help you. Contact us via email: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; or by phone: +358 40 8200 691.</p>
             <p>VAT-ID: FI27395946</p>
             <p>Tax ID: 2739594-6</p>
-
-            <h2>Reasons to Hire a Partially Disabled Developer</h2>
-
-            <h2>1. Tax Benefits</h2>
-            <p>As a partially disabled employee, I am entitled to a disability deduction, which means no withholding tax is applied to my pension. This tax benefit significantly increases my net income, even if my gross income is relatively lower. Additionally, only the portion of work compensation exceeding a fixed €980.30/month + VAT 25.5% is taxed, keeping the overall tax rate low.</p>
-
-            <h2>2. Four Sources of Income</h2>
-            <p>My pension and support system allow for four different sources of income per month:</p>
-            <ul>
-                <li><strong>Pension:</strong> €783.41/month</li>
-                <li><strong>Housing Allowance:</strong> €470.09/month</li>
-                <li><strong>Guarantee Pension:</strong> €202.89/month</li>
-                <li><strong>Work Compensation:</strong> Up to €980.30/month + VAT 25.5%</li>
-            </ul>
-            <p>In total, this enables monthly earnings that are higher than many full-time employees, such as nurses, whose gross salary is approximately €2,500/month without bonuses.</p>
-
-            <h2>3. Cost-Effectiveness for the Employer</h2>
-            <p>My services are cost-effective for the employer because:</p>
-            <ul>
-                <li><strong>Fixed Monthly Price:</strong> My work is clearly priced at €980.30/month + VAT 25.5%.</li>
-                <li><strong>No Overtime Costs:</strong> I am willing to work flexibly without additional costs.</li>
-                <li><strong>Optimized YEL Insurance Contribution:</strong> My YEL income level is set to maximize cost efficiency from the employer's perspective.</li>
-            </ul>
-
-            <h2>4. High Net Income</h2>
-            <p>As a partially disabled developer, my net income is significantly higher relative to gross income compared to a full-time employee. This means I receive more take-home pay at the same cost, providing the employer with high-quality and competitive services.</p>
-
-            <h2>5. Ethical and Social Responsibility</h2>
-            <p>By employing a partially disabled worker, the employer demonstrates social responsibility and promotes an inclusive work culture. This can enhance the company's reputation and provide positive visibility among customers and partners.</p>
-
-            <p>Contact us to discuss collaboration opportunities in more detail!</p>
-            <p>Email: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; or phone: +358 40 8200 691.</p>
             <div id="root"></div>
-            <script src="static/js/main.d7fad76e.js"></script>
+            <script src="static/js/main.4d9a1c42.js"></script>
         </section>
     </main>
     <footer>

@@ -252,40 +252,8 @@
             <p>Olemme täällä auttamassa sinua. Ota meihin yhteyttä sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; tai puhelimitse: +358 40 8200 691.</p>
             <p>ALV-rek. FI27395946</p>
             <p>Y-tunnus: 2739594-6</p>
-
-            <h2>Perustelut vajaakuntoisen koodarin tilaamiselle</h2>
-
-            <h2>1. Verotukselliset edut</h2>
-            <p>Vajaakuntoisena työntekijänä minulla on oikeus invaliidivähennykseen, mikä tarkoittaa, että eläkkeestäni ei mene lainkaan ennakonpidätystä. Tämä verohyöty tekee nettotuloistani merkittävästi korkeammat, vaikka bruttotulot olisivat verrattain alhaisemmat. Lisäksi työkorvauksista verotetaan vain osuus, joka ylittää kiinteän 980,30 €/kk + ALV 25,5 %, mikä pitää kokonaisveroasteen matalana.</p>
-
-            <h2>2. Neljä tulonlähdettä</h2>
-            <p>Eläke- ja tukijärjestelmäni mahdollistaa neljä eri tulonlähdettä kuukaudessa:</p>
-            <ul>
-                <li><strong>Eläke:</strong> 783,41 €/kk</li>
-                <li><strong>Asumistuki:</strong> 470,09 €/kk</li>
-                <li><strong>Takuueläke:</strong> 202,89 €/kk</li>
-                <li><strong>Työkorvaus:</strong> Jopa 980,30 €/kk + ALV 25,5 %</li>
-            </ul>
-            <p>Yhteensä tämä mahdollistaa kuukausitulot, jotka ovat korkeammat kuin monilla täysipäiväisillä työntekijöillä, kuten sairaanhoitajilla, joiden bruttopalkka on noin 2500 €/kk ilman lisiä.</p>
-
-            <h2>3. Kustannustehokkuus työn tilaajalle</h2>
-            <p>Työn tilaajalle palveluni ovat kustannustehokkaita, koska:</p>
-            <ul>
-                <li><strong>Kiinteä kuukausihinta:</strong> Työni hinnoitellaan selkeästi 980,30 €/kk + ALV 25,5 %.</li>
-                <li><strong>Ei ylitöiden lisäkuluja:</strong> Olen valmis tekemään työtä joustavasti ilman lisäkustannuksia.</li>
-                <li><strong>YEL-vakuutusmaksun optimointi:</strong> YEL-työtuloni on asetettu tasolle, joka maksimoi kustannustehokkuuden työn tilaajan näkökulmasta.</li>
-            </ul>
-
-            <h2>4. Korkea nettotulo</h2>
-            <p>Vajaakuntoisena koodarina nettotuloni ovat merkittävästi korkeammat suhteessa bruttotuloihin verrattuna täysipäiväiseen työntekijään. Tämä tarkoittaa, että saan enemmän käteen samalla hinnalla, jolla työn tilaaja saa laadukasta ja kilpailukykyistä palvelua.</p>
-
-            <h2>5. Eettinen ja sosiaalinen vastuu</h2>
-            <p>Työllistämällä vajaakuntoisen työntekijän työn tilaaja osoittaa yhteiskunnallista vastuullisuutta ja edistää inklusiivista työkulttuuria. Tämä voi parantaa yrityksen mainetta ja antaa positiivista näkyvyyttä niin asiakkaiden kuin yhteistyökumppaneidenkin silmissä.</p>
-
-            <p>Ota yhteyttä, niin keskustellaan tarkemmin yhteistyömahdollisuuksista!</p>
-            <p>Sähköpostitse: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; tai puhelimitse: +358 40 8200 691.</p>
             <div id="root"></div>
-            <script src="static/js/main.d7fad76e.js"></script>
+            <script src="static/js/main.4d9a1c42.js"></script>
         </section>
     </main>
     <footer>

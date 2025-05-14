@@ -50,8 +50,6 @@ function App() {
   return (
     <div className="App">
       <InvoicingCalculator />
-      <LegalFeeCalculator />
-      <IncomeComparisonCalculator />
       <Charts />
     </div>
   );
