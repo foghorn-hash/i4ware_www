@@ -110,14 +110,14 @@ const IncomeComparisonCalculator = () => {
 
   const result = calculate();
 
-  const [lang, setLang] = useState("en");
+  const [lang, setLang] = useState(API_DEFAULT_LANGUAGE);
 
   var query = window.location.search.substring(1);
   var urlParams = new URLSearchParams(query);
   var localization = urlParams.get("lang");
 
   if (localization === null) {
-    strings.setLanguage("en");
+    strings.setLanguage(API_DEFAULT_LANGUAGE);
   } else {
     strings.setLanguage(localization);
   }

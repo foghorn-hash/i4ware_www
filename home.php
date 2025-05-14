@@ -282,7 +282,7 @@
             <p>Contact us to discuss collaboration opportunities in more detail!</p>
             <p>Email: <a href="mailto:info@i4ware.fi">info@i4ware.fi</a>; or phone: +358 40 8200 691.</p>
             <div id="root"></div>
-            <script src="static/js/main.d8de4565.js"></script>
+            <script src="static/js/main.d7fad76e.js"></script>
         </section>
     </main>
     <footer>
