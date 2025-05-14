@@ -81,6 +81,11 @@
                 <h2>Partnerships</h2>
                 <p>We are proud of our partnerships and certifications that support our clients in the best possible way. Our partnerships provide us access to the latest technologies and resources, enabling us to offer our clients the best possible service.</p>
                 <p>We are partners with the following organizations:</p>
+                <div class="up-logo-container">
+                    <a href="https://www.yrittajat.fi/" target="_blank">
+                        <img src="assets/jasesenyritys_banneri_25_1000x500_fin_musta.png" class="up-partner-logo" alt="Entrepreneurs partner logo" />
+                    </a>    
+                </div>
                 <div class="logo-container">
                     <a href="https://www.redhat.com/" target="_blank">
                         <img src="assets/red_hat-technology_partner.png" class="partner-logo" alt="Red Hat technology partner logo" />

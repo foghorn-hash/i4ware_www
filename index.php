@@ -83,6 +83,11 @@
                 <h2>Kumppanuudet</h2>
                 <p>Olemme ylpeitä kumppanuuksistamme ja sertifikaateistamme, jotka tukevat asiakkaitamme parhaalla mahdollisella tavalla. Kumppanuutemme tarjoavat meille pääsyn uusimpiin teknologioihin ja resursseihin, jotta voimme tarjota asiakkaillemme parasta mahdollista palvelua.</p>
                 <p>Olemme kumppaneita seuraavien organisaatioiden kanssa:</p>
+                <div class="up-logo-container">
+                    <a href="https://www.yrittajat.fi/" target="_blank">
+                        <img src="assets/jasesenyritys_banneri_25_1000x500_fin_musta.png" class="up-partner-logo" alt="Yrittäjätkumppanilogo" />
+                    </a>    
+                </div>
                 <div class="logo-container">
                     <a href="https://www.redhat.com/" target="_blank">
                         <img src="assets/red_hat-technology_partner.png" class="partner-logo" alt="Red Hat -teknologiakumppanilogo" />

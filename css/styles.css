@@ -575,3 +575,25 @@ footer .legal-links a:hover {
 #root h1, h2, h3, h4, h5, h6 {
     font-size: 1.5rem; /* Set a default font size for all headings */
 }
+
+.up-logo-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Space between logos */
+    padding: 20px;
+}
+
+.up-partner-logo {
+    max-width: 300px; /* Adjust as needed */
+    height: auto;
+    object-fit: contain;
+    box-shadow: none; /* Remove any box-shadow */
+    border-radius: 0px !important; /* Remove border-radius */
+    transition: transform 0.3s ease; /* Smooth scaling effect */
+}
+
+.up-logo-container a:hover {
+    transform: scale(1.1); /* Slightly enlarge the logo on hover */
+}
