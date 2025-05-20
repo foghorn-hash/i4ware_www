@@ -3,7 +3,6 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InvoicingCalculator from './components/InvoicingCalculator/InvoicingCalculator';
 import LegalFeeCalculator from './components/LegalFeeCalculator/LegalFeeCalculator';
-import IncomeComparisonCalculator from './components/IncomeComparisonCalculator/IncomeComparisonCalculator';
 import Charts from './components/RevenueCharts/Charts.js';
 import { API_DEFAULT_LANGUAGE } from "./constants/apiConstants";
 // ES6 module syntax

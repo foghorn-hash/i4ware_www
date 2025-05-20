@@ -28,6 +28,37 @@
   color: #61dafb;
 }
 
+.invoicing-calculator-form {
+  padding: 20px;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.calculator-title {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.calculator-container p {
+  color: white;
+}
+
+.form-label {
+  color: white;
+  font-size: 1.2rem;
+}
+
+.form-control {
+  width: 80%;
+  margin: 10px auto;
+}
+
+.form-control:focus {
+  border-color: #61dafb;
+  box-shadow: 0 0 5px #61dafb;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
