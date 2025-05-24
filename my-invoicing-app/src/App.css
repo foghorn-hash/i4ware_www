@@ -59,6 +59,18 @@
   box-shadow: 0 0 5px #61dafb;
 }
 
+@media (max-width: 600px) {
+  .calculator-title {
+    font-size: 0.8rem !important;
+  }
+  .form-label {
+    font-size: 0.6rem;
+  }
+  .calculator-container p {
+    font-size: 0.8rem !important;
+  }
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
