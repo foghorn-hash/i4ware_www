@@ -36,7 +36,7 @@ let strings = new LocalizedStrings({
   }
  });
 
-const TransactionsTableAll = () => {
+const TransactionsTableAll = ({ revenueSource }) => {
   const [transactions, setTransactions] = useState([]);
   const [transactionsMerged, setTransactionsMerged] = useState([]);
   const [chartData, setChartData] = useState([]);
@@ -57,13 +57,13 @@ const TransactionsTableAll = () => {
 
   useEffect(() => {
     fetchMergedTransactions();
-  }, []);
+  }, [revenueSource]); // Add revenueSource as dependency
 
   const fetchMergedTransactions = async () => {
     try {
       const response = await axios.get(
-        API_BASE_URL + "/api/reports/merged-sales"
-      ); // Replace with your Laravel API URL
+        `${API_BASE_URL}/api/reports/merged-sales?source=${revenueSource}`
+      ); // Pass revenueSource to backend
       const data = response.data.root;
 
       // Prepare chart data

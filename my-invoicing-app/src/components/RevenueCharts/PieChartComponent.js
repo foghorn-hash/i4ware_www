@@ -29,7 +29,7 @@ let strings = new LocalizedStrings({
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#ff0066"];
 
-const PieChartComponent = () => {
+const PieChartComponent = ({ revenueSource }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,11 +47,13 @@ const PieChartComponent = () => {
 
   useEffect(() => {
     fetchPieData();
-  }, []);
+  }, [revenueSource]); // Add revenueSource as dependency
 
   const fetchPieData = async () => {
     try {
-      const response = await axios.get(API_BASE_URL + "/api/reports/sales-distribution"); // Replace with your API endpoint
+      const response = await axios.get(
+        `${API_BASE_URL}/api/reports/sales-distribution?source=${revenueSource}`
+      ); // Pass revenueSource to backend
       const fetchedData = response.data.root;
 
       // Format data for pie chart

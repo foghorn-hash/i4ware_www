@@ -31,7 +31,7 @@ let strings = new LocalizedStrings({
   }
 });
 
-const TransactionsTable = () => {
+const TransactionsTable = ({ revenueSource }) => {
   const [transactions, setTransactions] = useState([]);
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,28 +49,30 @@ const TransactionsTable = () => {
   }
 
   useEffect(() => {
-    fetchTransactions();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/api/reports/sales-report?source=${revenueSource}`
+        );
+        const data = response.data.root || [];
 
-  const fetchTransactions = async () => {
-    try {
-      const response = await axios.get(API_BASE_URL + "/api/reports/sales-report"); // Replace with your Laravel API URL
-      const data = response.data.root;
+        // Format data for Recharts
+        const formattedData = data.map((item) => ({
+          year: item.saleYear,
+          revenue: item.balanceVendor,
+        }));
 
-      // Prepare chart data
-      const formattedChartData = data.map((item) => ({
-        year: item.saleYear,
-        balanceVendor: parseFloat(item.balanceVendor),
-      }));
+        setTransactions(data);
+        setChartData(formattedData);
+        setLoading(false);
+      } catch (err) {
+        setError(strings.error);
+        setLoading(false);
+      }
+    };
 
-      setTransactions(data);
-      setChartData(formattedChartData);
-    } catch (err) {
-      setError(strings.error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchData();
+  }, [revenueSource]);
 
   if (loading) return <div className="loading-screen"><img src={LOADING} alt={strings.loading} /></div>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -86,7 +88,7 @@ const TransactionsTable = () => {
           <XAxis dataKey="year" />
           <YAxis />
           <Tooltip />
-          <Bar dataKey="balanceVendor" fill="#ff0066" name={strings.name} />
+          <Bar dataKey="revenue" fill="#ff0066" name={strings.name} />
         </BarChart>
       </ResponsiveContainer>
     </div>

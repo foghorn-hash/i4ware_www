@@ -36,7 +36,7 @@ let strings = new LocalizedStrings({
   }
  });
 
-const CumulativeChart = () => {
+const CumulativeChart = ({ revenueSource }) => {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,11 +54,13 @@ const CumulativeChart = () => {
 
   useEffect(() => {
     fetchCumulativeData();
-  }, []);
+  }, [revenueSource]); // Add revenueSource as dependency
 
   const fetchCumulativeData = async () => {
     try {
-      const response = await axios.get(API_BASE_URL + "/api/reports/cumulative-sales"); // Update to your API URL
+      const response = await axios.get(
+        `${API_BASE_URL}/api/reports/cumulative-sales?source=${revenueSource}`
+      ); // Pass revenueSource to backend
       setChartData(response.data.root);
     } catch (err) {
       setError(strings.error);

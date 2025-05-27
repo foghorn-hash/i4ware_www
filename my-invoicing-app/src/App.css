@@ -79,3 +79,27 @@
     transform: rotate(360deg);
   }
 }
+
+.revenue-source-select {
+  padding: 10px 16px;
+  border: 1.5px solid #0088FE;
+  border-radius: 6px;
+  background: #f9fafd;
+  color: #222;
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0,136,254,0.05);
+}
+
+.revenue-source-select:focus {
+  border-color: #005fa3;
+  box-shadow: 0 0 0 2px rgba(0,136,254,0.15);
+}
+
+.revenue-source-select option {
+  background: #fff;
+  color: #222;
+}
