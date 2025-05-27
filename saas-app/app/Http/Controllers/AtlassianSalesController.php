@@ -108,7 +108,6 @@ class AtlassianSalesController extends Controller
                     return [
                         'saleDate' => $transaction['saleDate'],
                         'vendorAmount' => $transaction['vendorAmount'],
-                        'description' => 'Atlassian Sale',
                     ];
                 }, $atlassianSales['root']);
             } else {
@@ -130,7 +129,6 @@ class AtlassianSalesController extends Controller
                     return [
                         'saleDate' => $invoice->due_date,
                         'vendorAmount' => $invoice->total_including_vat,
-                        'description' => "Invoice #{$invoice->id}",
                     ];
                 });
             }
@@ -196,7 +194,7 @@ class AtlassianSalesController extends Controller
     }
 
     public function getSalesReport(Request $request)
-{
+    {
         $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly'
 
         // Configurations
@@ -266,6 +264,7 @@ class AtlassianSalesController extends Controller
         }
 
         // Convert the aggregated data into a flat array
+        ksort($json['root']);
         $yearData = ['root' => []];
         $i = 0;
         foreach ($json['root'] as $year => $data) {
