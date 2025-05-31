@@ -48,10 +48,19 @@ a:focus {
 }
 
 header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
   background: rgba(0, 0, 0, .6);
   backdrop-filter: blur(6px);
-  top: 0;
   z-index: 1000;
+}
+
+.space-container {  
+  height: 200px;
+  clear: both;
 }
 
 .container {
@@ -405,7 +414,6 @@ img.partner-logo {
 
 .section-title {
   text-align: left;
-  font-size: 2rem;
   margin-bottom: 3rem;
   color: var(--accent);
 }
@@ -504,7 +512,6 @@ img.partner-logo {
 .main div article div :where(p, h1, h2, h3, h4, h5, h6) {
   margin-bottom: 2rem;
   text-align: left;
-  font-size: 1.1rem;
 }
 
 /* Footer styles */
@@ -839,7 +846,7 @@ article[class^="post-"]:hover {
   color: #3949ab;
 }
 
-.entry-header h2, .entry-header h1 {
+.entry-header h1, .entry-header h2 {
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-size: 2rem;
