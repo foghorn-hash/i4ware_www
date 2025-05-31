@@ -94,7 +94,7 @@ const InvoicingCalculator = () => {
         <Card.Body>
           <h1 className="text-center mb-4 calculator-title">{strings.title}</h1>
 
-          <Form className="invoicing-calculator-form">
+          <Form>
             <Form.Group className="mb-3">
               <Form.Label>{strings.hourlyRate}</Form.Label>
               <Form.Control

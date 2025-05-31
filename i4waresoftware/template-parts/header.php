@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>i4ware Software <?php wp_title(); ?></title>
+    <title><?php bloginfo('name'); ?> - <?php bloginfo('description'); ?><?php wp_title('|', true, 'left'); ?></title>
     <?php wp_head(); ?>
     <script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script>

@@ -123,26 +123,26 @@ add_shortcode('i4ware_team', function() {
     ?>
     <section id="team" class="i4ware-team-contact-wrap">
         <div class="i4ware-contact-left">
-            <h2><?php _e('Contact', 'i4ware'); ?></h2>
+            <h2><?php _e('Yhteystiedot', 'i4ware'); ?></h2>
             <div class="i4ware-contact-details">
-                <strong><?php esc_html_e('Address:', 'i4ware'); ?></strong><br>
+                <strong><?php esc_html_e('Osoite:', 'i4ware'); ?></strong><br>
                 <?php echo nl2br(esc_html(get_theme_mod('i4ware_address', "Example Street 1\n00100 Helsinki, Finland"))); ?><br><br>
-                <strong><?php esc_html_e('VAT ID:', 'i4ware'); ?></strong>
+                <strong><?php esc_html_e('ALV-rek.:', 'i4ware'); ?></strong>
                 <?php echo esc_html(get_theme_mod('i4ware_vat_id', 'FI12345678')); ?><br>
-                <strong><?php esc_html_e('Business ID:', 'i4ware'); ?></strong>
+                <strong><?php esc_html_e('Y-tunnus:', 'i4ware'); ?></strong>
                 <?php echo esc_html(get_theme_mod('i4ware_business_id', '1234567-8')); ?><br><br>
                 <?php echo nl2br(esc_html(get_theme_mod('i4ware_contact_details', "Email: info@i4ware.fi\nPhone: +358 40 123 4567"))); ?>
             </div>
             <form id="i4ware-contact-form">
-                <input type="text" name="name" placeholder="<?php esc_attr_e('Your Name', 'i4ware'); ?>" required>
-                <input type="email" name="email" placeholder="<?php esc_attr_e('Your Email', 'i4ware'); ?>" required>
-                <textarea name="message" placeholder="<?php esc_attr_e('Your Message', 'i4ware'); ?>" required></textarea>
-                <button type="submit"><?php esc_html_e('Send', 'i4ware'); ?></button>
+                <input type="text" name="name" placeholder="<?php esc_attr_e('Kokonimesi', 'i4ware'); ?>" required>
+                <input type="email" name="email" placeholder="<?php esc_attr_e('Sähköpostiosoitteesei', 'i4ware'); ?>" required>
+                <textarea name="message" placeholder="<?php esc_attr_e('Viestisi', 'i4ware'); ?>" required></textarea>
+                <button type="submit"><?php esc_html_e('Lähetä', 'i4ware'); ?></button>
                 <div class="i4ware-contact-response"></div>
             </form>
         </div>
         <div class="i4ware-team-right">
-            <h2><?php _e('Team', 'i4ware'); ?></h2>
+            <h2><?php _e('Tiimi', 'i4ware'); ?></h2>
             <div class="team-member">
                 <img src="<?php echo esc_url(get_theme_mod('i4ware_team_img', plugin_dir_url(__FILE__).'assets/matti.jpg')); ?>" alt="Matti Kiviharju" />
                 <h3><?php echo esc_html(get_theme_mod('i4ware_team_name', 'Matti Kiviharju, Specialization in IT/ICT and BBA')); ?></h3>
@@ -176,8 +176,8 @@ function i4ware_contact_form_handler() {
     $body = "Name: $name\nEmail: $email\n\n$message";
     $headers = array('Reply-To: ' . $email);
     if (wp_mail($to, $subject, $body, $headers)) {
-        wp_send_json_success('Thank you for contacting us!');
+        wp_send_json_success('Kiitos yhteydenotostasi!');
     } else {
-        wp_send_json_error('Failed to send. Please try again.');
+        wp_send_json_error('Virhe viestin lähetyksessä.');
     }
 }

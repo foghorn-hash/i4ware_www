@@ -124,42 +124,42 @@ function i4ware_partnerships_shortcode() {
     $base_url = $upload_dir['baseurl'] . '/partners';
 
     $output = '<div id="partners">
-        <p>We are proud of our partnerships and certifications that support our clients in the best possible way. Our partnerships provide us access to the latest technologies and resources, enabling us to offer our clients the best possible service.</p>
-        <p>We are partners with the following organizations:</p>
+        <p>Olemme ylpeitä kumppanuuksistamme ja sertifioinneistamme, jotka tukevat asiakkaitamme parhaalla mahdollisella tavalla. Kumppanuudet tarjoavat meille pääsyn uusimpiin teknologioihin ja resursseihin, mikä mahdollistaa parhaan mahdollisen palvelun tarjoamisen asiakkaillemme.</p>
+        <p>Olemme kumppaneita seuraavien organisaatioiden kanssa:</p>
         <div class="up-logo-container">
             <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/jasesenyritys_banneri_25_1000x500_fin_musta.png') . '" class="up-partner-logo" alt="Entrepreneurs partner logo">
+                <img src="' . esc_url($base_url . '/jasesenyritys_banneri_25_1000x500_fin_musta.png') . '" class="up-partner-logo" alt="Yrittäjien kumppanilogo">
             </a>    
         </div>
         <div class="logo-container">
             <a href="https://www.redhat.com/" target="_blank">
-                <img src="' . esc_url($base_url . '/red_hat-technology_partner.png') . '" class="partner-logo" alt="Red Hat technology partner logo">
+                <img src="' . esc_url($base_url . '/red_hat-technology_partner.png') . '" class="partner-logo" alt="Red Hat teknologiapartnerin logo">
             </a>
             <a href="https://www.redhat.com/" target="_blank">
-                <img src="' . esc_url($base_url . '/rh_readyisvlogo_rgb.png') . '" class="partner-logo" alt="Red Hat technology partner logo">
+                <img src="' . esc_url($base_url . '/rh_readyisvlogo_rgb.png') . '" class="partner-logo" alt="Red Hat teknologiapartnerin logo">
             </a>
             <a href="https://marketplace.atlassian.com/" target="_blank">
-                <img src="' . esc_url($base_url . '/marketplace_partner_wht_nobg.png') . '" class="partner-logo" alt="Atlassian Marketplace partner logo">
+                <img src="' . esc_url($base_url . '/marketplace_partner_wht_nobg.png') . '" class="partner-logo" alt="Atlassian Marketplace -kumppanilogo">
             </a>
             <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/jasenyritys_banneri_23_625x313px_fin_musta.jpg') . '" class="partner-logo" alt="Entrepreneurs partner logo">
+                <img src="' . esc_url($base_url . '/jasenyritys_banneri_23_625x313px_fin_musta.jpg') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
             </a>
             <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/jasenyritys_banneri_24_625x312px_fin_musta.png') . '" class="partner-logo" alt="Entrepreneurs partner logo">
+                <img src="' . esc_url($base_url . '/jasenyritys_banneri_24_625x312px_fin_musta.png') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
             </a>
             <a href="https://netvisor.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/netvisor-logo-vud22-horizontal-cutoutwhite-900px.png') . '" class="partner-logo" alt="Entrepreneurs partner logo">
+                <img src="' . esc_url($base_url . '/netvisor-logo-vud22-horizontal-cutoutwhite-900px.png') . '" class="partner-logo" alt="Netvisor kumppanilogo">
             </a>
         </div>
         <div class="ent-logo-container">
             <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/sy_jasenyritys_2017_150x75px.png') . '" class="partner-logo" alt="Entrepreneurs partner logo">
+                <img src="' . esc_url($base_url . '/sy_jasenyritys_2017_150x75px.png') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
             </a>
             <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/sy_jasenyritys2018_suomi_150x75.png') . '" class="partner-logo" alt="Entrepreneurs partner logo">
+                <img src="' . esc_url($base_url . '/sy_jasenyritys2018_suomi_150x75.png') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
             </a>
             <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/sy_jasenyritys2019_su_150x75_0.png') . '" class="partner-logo" alt="Entrepreneurs partner logo">
+                <img src="' . esc_url($base_url . '/sy_jasenyritys2019_su_150x75_0.png') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
             </a>
         </div>
     </div>';

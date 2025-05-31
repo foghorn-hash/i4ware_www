@@ -6,7 +6,7 @@ import LocalizedStrings from "react-localization";
 
 let strings = new LocalizedStrings({
   en: {
-    title: "Legal Fee Calculator",
+    title: "Hourly Rated Calculator",
     hourlyRate: "Hourly Rate (€)",
     vatRate: "VAT Rate (%)",
     projectHours: "Project Hours",
@@ -17,7 +17,7 @@ let strings = new LocalizedStrings({
     totalWithVat: "Total Fee (incl. VAT):",
   },
   fi: {
-    title: "Asianajajan Hintalaskuri",
+    title: "Tuntipohjainen Hintalaskuri",
     hourlyRate: "Tuntihinta (€)",
     vatRate: "ALV-kanta (%)",
     projectHours: "Tunteja projektissa",
@@ -28,7 +28,7 @@ let strings = new LocalizedStrings({
     totalWithVat: "Hinta yhteensä (sis. ALV):",
   },
   sv: {
-    title: "Advokatarvodesräknare",
+    title: "Timbaserad Priskalkylator",
     hourlyRate: "Timpris (€)",
     vatRate: "Moms (%)",
     projectHours: "Projekttimmar",
@@ -41,7 +41,7 @@ let strings = new LocalizedStrings({
 });
 
 const LegalFeeCalculator = () => {
-  const [hourlyRate, setHourlyRate] = useState(250);
+  const [hourlyRate, setHourlyRate] = useState(95);
   const [vatRate, setVatRate] = useState(25.5); // Default VAT in Finland is 25.5%
   const [projectHours, setProjectHours] = useState(100);
 

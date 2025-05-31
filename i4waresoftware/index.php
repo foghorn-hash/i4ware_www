@@ -49,7 +49,7 @@
     </a>
     <div class="up-logo-container">
       <a href="https://marketplace.atlassian.com/" target="_blank">
-        <img decoding="async" src="https://www.i4ware.fi/wp-content/uploads/partners/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace partner logo">
+        <img decoding="async" src="https://www.i4ware.fi/wp-content/uploads/partners/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace -kumppani" />
       </a>
     </div>
   </div>
@@ -79,9 +79,9 @@
                   <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
                   <div class="entry-meta">
                     <span class="posted-on"><?php echo get_the_date(); ?></span>
-                    <span class="byline"><?php esc_html_e('by', 'i4waresoftware'); ?> <?php echo esc_html( get_the_author_meta('display_name') ); ?>  <?php echo get_avatar( get_the_author_meta('ID'), 16 ); ?></span>
-                    <span class="cat-links"><?php esc_html_e('in', 'i4waresoftware'); ?> <?php the_category(', '); ?></span>
-                    <span class="comments-link"><?php comments_popup_link( esc_html__('No Comments', 'i4waresoftware'), esc_html__('1 Comment', 'i4waresoftware'), esc_html__('% Comments', 'i4waresoftware') ); ?></span>
+                    <span class="byline"><?php esc_html_e('-', 'i4waresoftware'); ?> <?php echo esc_html( get_the_author_meta('display_name') ); ?>  <?php echo get_avatar( get_the_author_meta('ID'), 16 ); ?></span>
+                    <span class="cat-links"><?php esc_html_e('-', 'i4waresoftware'); ?> <?php the_category(', '); ?></span>
+                    <span class="comments-link"><?php comments_popup_link( esc_html__('Ei kommentteja', 'i4waresoftware'), esc_html__('1 kommentti', 'i4waresoftware'), esc_html__('% kommenttia', 'i4waresoftware') ); ?></span>
                   </div>
                 </header>
                 <div class="entry-summary">
@@ -95,7 +95,7 @@
           <?php the_posts_pagination(); ?>
         </div>
       <?php else : ?>
-        <p><?php esc_html_e( 'No posts found.', 'i4waresoftware' ); ?></p>
+        <p><?php esc_html_e( 'Ei sisältöä.', 'i4waresoftware' ); ?></p>
       <?php endif; ?>
     </div>
     <aside class="sidebar">
@@ -111,9 +111,9 @@
         <h1><?php the_title(); ?></h1>
         <div class="entry-meta">
           <span class="posted-on"><?php echo get_the_date(); ?></span>
-          <span class="byline"><?php esc_html_e('by', 'i4waresoftware'); ?> <?php echo esc_html( get_the_author_meta('display_name') ); ?>  <?php echo get_avatar( get_the_author_meta('ID'), 16 ); ?></span>
-          <span class="cat-links"><?php esc_html_e('in', 'i4waresoftware'); ?> <?php the_category(', '); ?></span>
-          <span class="comments-link"><?php comments_popup_link( esc_html__('No Comments', 'i4waresoftware'), esc_html__('1 Comment', 'i4waresoftware'), esc_html__('% Comments', 'i4waresoftware') ); ?></span>
+          <span class="byline"><?php esc_html_e('-', 'i4waresoftware'); ?> <?php echo esc_html( get_the_author_meta('display_name') ); ?>  <?php echo get_avatar( get_the_author_meta('ID'), 16 ); ?></span>
+          <span class="cat-links"><?php esc_html_e('-', 'i4waresoftware'); ?> <?php the_category(', '); ?></span>
+          <span class="comments-link"><?php comments_popup_link( esc_html__('Ei kommentteja', 'i4waresoftware'), esc_html__('1 kommentti', 'i4waresoftware'), esc_html__('% kommenttia', 'i4waresoftware') ); ?></span>
         </div>
       </header>
       <div class="entry-content">
@@ -121,17 +121,17 @@
       </div>
     </article>
   <?php else : ?>
-    <p><?php esc_html_e( 'No content found.', 'i4waresoftware' ); ?></p>
+    <p><?php esc_html_e( 'Ei sisältöä.', 'i4waresoftware' ); ?></p>
   <?php endif; ?>
 <?php endif; ?>
 <?php if ( (is_single() || is_page()) && (comments_open() || get_comments_number()) ) : ?>
   <div class="container-comments">
-    <h2><?php esc_html_e('Comments', 'i4waresoftware'); ?></h2>
+    <h2><?php esc_html_e('Kommentit', 'i4waresoftware'); ?></h2>
     <?php
 $comments_number = get_comments_number();
 if ( $comments_number == 0 ) {
     echo sprintf(
-        esc_html(_n('%s Comment', '%s Comments', $comments_number, 'i4waresoftware')),
+        esc_html(_n('%s kommentti', '%s kommenttia', $comments_number, 'i4waresoftware')),
         number_format_i18n($comments_number)
     );
 } else {
