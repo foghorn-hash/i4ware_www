@@ -254,6 +254,18 @@ nav {
   color: var(--light);
 }
 
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
 /* Add a container for the logos */
 .logo-container {
     display: grid; /* Use grid layout */
@@ -793,7 +805,6 @@ article[class^="post-"]:hover {
 }
 
 .wp-block-heading {
-  font-size: 2.5rem;
   margin-bottom: 1.5rem;
   color: var(--accent);
 }
@@ -849,7 +860,6 @@ article[class^="post-"]:hover {
 .entry-header h1, .entry-header h2 {
   margin-top: 0;
   margin-bottom: 0.5rem;
-  font-size: 2rem;
   font-weight: 700;
   line-height: 1.2;
 }
