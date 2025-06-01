@@ -126,8 +126,7 @@ const IncomeComparisonCalculator = () => {
     <div className="p-4 max-w-xl mx-auto">
       <Card className="shadow-sm">
         <Card.Body>
-          <h1 className="text-center mb-4">{strings.title}</h1>
-
+          <h2 className="text-center mb-4 calculator-title">{strings.title}</h2>
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>{strings.competitorRate}</Form.Label>

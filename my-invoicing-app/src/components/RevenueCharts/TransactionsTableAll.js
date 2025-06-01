@@ -87,8 +87,7 @@ const TransactionsTableAll = ({ revenueSource }) => {
 
   return (
     <div>
-      <h2>{strings.title}</h2>
-
+      <h2 className="calculator-title">{strings.title}</h2>
       {/* Bar Chart */}
       <ResponsiveContainer width="100%" height={400}>
         <BarChart data={chartDataMerged}>

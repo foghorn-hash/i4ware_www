@@ -74,7 +74,7 @@ const CumulativeChart = ({ revenueSource }) => {
 
   return (
     <div>
-      <h2>{strings.title}</h2>
+      <h2 className="calculator-title">{strings.title}</h2>
       <ResponsiveContainer width="100%" height={400}>
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />

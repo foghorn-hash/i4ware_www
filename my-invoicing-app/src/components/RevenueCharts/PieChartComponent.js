@@ -75,7 +75,7 @@ const PieChartComponent = ({ revenueSource }) => {
 
   return (
     <div>
-      <h2>{strings.title}</h2>
+      <h2 className="calculator-title">{strings.title}</h2>
       <ResponsiveContainer width="100%" height={400}>
         <PieChart>
           <Pie

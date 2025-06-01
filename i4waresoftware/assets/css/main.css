@@ -1166,3 +1166,13 @@ table.has-fixed-layout caption {
     letter-spacing: 0.5px;
   }
 }
+
+p.wp-comment-cookies-consent input {
+  margin-right: 1.4em;
+  vertical-align: middle;
+  display: inline-block !important;
+}
+
+p.comment-form-cookies-consent label{
+  display: inline-block !important;
+}
