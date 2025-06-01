@@ -43,6 +43,19 @@
   <?php if ( is_active_sidebar( 'sidebar-2' ) ) : ?>
       <?php dynamic_sidebar( 'sidebar-2' ); ?>
   <?php endif; ?>
+  <?php if ( function_exists( 'pll_the_languages' ) ) : ?>
+      <div class="language-switcher">
+        <?php
+          pll_the_languages( array(
+            'show_flags' => 1,
+            'show_names' => 1,
+            'hide_if_no_translation' => 0,
+            'display_names_as' => 'name',
+            'dropdown' => 0,
+          ) );
+        ?>
+      </div>
+    <?php endif; ?>
   </div>
 </div>
 <?php if ( is_front_page() ) : ?>
