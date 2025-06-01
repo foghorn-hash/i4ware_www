@@ -38,6 +38,13 @@
    ));
  ?>
 </div>
+<div class="top-container">
+  <div class="container">
+  <?php if ( is_active_sidebar( 'sidebar-2' ) ) : ?>
+      <?php dynamic_sidebar( 'sidebar-2' ); ?>
+  <?php endif; ?>
+  </div>
+</div>
 <?php if ( is_front_page() ) : ?>
 <section class="hero">
   <div class="container hero-content">

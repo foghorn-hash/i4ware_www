@@ -119,51 +119,59 @@ function i4ware_customize_register($wp_customize) {
 }
 add_action('customize_register', 'i4ware_customize_register');
 
+function i4ware_register_partner_logo_cpt() {
+    $labels = array(
+        'name' => 'Partner Logot',
+        'singular_name' => 'Partner Logo',
+        'add_new' => 'Lisää uusi',
+        'add_new_item' => 'Lisää uusi logo',
+        'edit_item' => 'Muokkaa logoa',
+        'new_item' => 'Uusi logo',
+        'view_item' => 'Näytä logo',
+        'search_items' => 'Etsi logoja',
+        'not_found' => 'Ei logoja',
+        'menu_name' => 'Partner Logot',
+    );
+    $args = array(
+        'labels' => $labels,
+        'public' => true,
+        'show_ui' => true,
+        'menu_icon' => 'dashicons-images-alt2',
+        'supports' => array('title', 'thumbnail'),
+    );
+    register_post_type('partner_logo', $args);
+}
+add_action('init', 'i4ware_register_partner_logo_cpt');
+
 function i4ware_partnerships_shortcode() {
-    $upload_dir = wp_upload_dir();
-    $base_url = $upload_dir['baseurl'] . '/partners';
-
-    $output = '<div id="partners">
-        <p>Olemme ylpeitä kumppanuuksistamme ja sertifioinneistamme, jotka tukevat asiakkaitamme parhaalla mahdollisella tavalla. Kumppanuudet tarjoavat meille pääsyn uusimpiin teknologioihin ja resursseihin, mikä mahdollistaa parhaan mahdollisen palvelun tarjoamisen asiakkaillemme.</p>
-        <p>Olemme kumppaneita seuraavien organisaatioiden kanssa:</p>
-        <div class="up-logo-container">
-            <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/jasesenyritys_banneri_25_1000x500_fin_musta.png') . '" class="up-partner-logo" alt="Yrittäjien kumppanilogo">
-            </a>    
-        </div>
-        <div class="logo-container">
-            <a href="https://www.redhat.com/" target="_blank">
-                <img src="' . esc_url($base_url . '/red_hat-technology_partner.png') . '" class="partner-logo" alt="Red Hat teknologiapartnerin logo">
-            </a>
-            <a href="https://www.redhat.com/" target="_blank">
-                <img src="' . esc_url($base_url . '/rh_readyisvlogo_rgb.png') . '" class="partner-logo" alt="Red Hat teknologiapartnerin logo">
-            </a>
-            <a href="https://marketplace.atlassian.com/" target="_blank">
-                <img src="' . esc_url($base_url . '/marketplace_partner_wht_nobg.png') . '" class="partner-logo" alt="Atlassian Marketplace -kumppanilogo">
-            </a>
-            <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/jasenyritys_banneri_23_625x313px_fin_musta.jpg') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
-            </a>
-            <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/jasenyritys_banneri_24_625x312px_fin_musta.png') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
-            </a>
-            <a href="https://netvisor.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/netvisor-logo-vud22-horizontal-cutoutwhite-900px.png') . '" class="partner-logo" alt="Netvisor kumppanilogo">
-            </a>
-        </div>
-        <div class="ent-logo-container">
-            <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/sy_jasenyritys_2017_150x75px.png') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
-            </a>
-            <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/sy_jasenyritys2018_suomi_150x75.png') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
-            </a>
-            <a href="https://www.yrittajat.fi/" target="_blank">
-                <img src="' . esc_url($base_url . '/sy_jasenyritys2019_su_150x75_0.png') . '" class="partner-logo" alt="Yrittäjien kumppanilogo">
-            </a>
-        </div>
-    </div>';
-
+    $groups = array(
+        'top' => array('container' => 'top-logo-container', 'img_class' => 'top-partner-logo'),
+        'main' => array('container' => 'main-logo-container', 'img_class' => 'partner-logo'),
+        'bottom' => array('container' => 'bottom-logo-container', 'img_class' => 'partner-logo'),
+    );
+    $output = '<div id="partners">';
+    foreach ($groups as $group => $info) {
+        $args = array(
+            'post_type' => 'partner_logo',
+            'posts_per_page' => -1,
+            'meta_key' => 'logo_group',
+            'meta_value' => $group,
+            'orderby' => 'menu_order',
+            'order' => 'ASC'
+        );
+        $logos = get_posts($args);
+        $output .= '<div class="' . esc_attr($info['container']) . '">';
+        foreach ($logos as $logo) {
+            $url = get_field('logo_url', $logo->ID); // ACF
+            $img = get_the_post_thumbnail_url($logo->ID, 'large');
+            $alt = esc_attr(get_the_title($logo->ID));
+            $output .= '<a href="' . esc_url($url) . '" target="_blank">';
+            $output .= '<img src="' . esc_url($img) . '" class="' . esc_attr($info['img_class']) . '" alt="' . $alt . '">';
+            $output .= '</a>';
+        }
+        $output .= '</div>';
+    }
+    $output .= '</div>';
     return $output;
 }
 add_shortcode('partnerships', 'i4ware_partnerships_shortcode');
@@ -177,8 +185,17 @@ add_action( 'wp_enqueue_scripts', 'i4waresoftware_enqueue_comment_reply' );
 
 function i4waresoftware_widgets_init() {
     register_sidebar( array(
-        'name'          => __( 'Sidebar', 'i4waresoftware' ),
+        'name'          => __( 'Sidebar 1', 'i4waresoftware' ),
         'id'            => 'sidebar-1',
+        'description'   => __( 'Add widgets here.', 'i4waresoftware' ),
+        'before_widget' => '<section id="%1$s" class="widget %2$s">',
+        'after_widget'  => '</section>',
+        'before_title'  => '<h2 class="widget-title">',
+        'after_title'   => '</h2>',
+    ) );
+    register_sidebar( array(
+        'name'          => __( 'Sidebar 2', 'i4waresoftware' ),
+        'id'            => 'sidebar-2',
         'description'   => __( 'Add widgets here.', 'i4waresoftware' ),
         'before_widget' => '<section id="%1$s" class="widget %2$s">',
         'after_widget'  => '</section>',

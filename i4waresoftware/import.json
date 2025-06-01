@@ -1,0 +1,53 @@
+[
+  {
+    "key": "group_partner_logo_fields",
+    "title": "Partner Logo Fields",
+    "fields": [
+      {
+        "key": "field_logo_url",
+        "label": "Logo URL",
+        "name": "logo_url",
+        "type": "url",
+        "instructions": "Kumppanilinkin osoite",
+        "required": 1
+      },
+      {
+        "key": "field_logo_group",
+        "label": "Logo Group",
+        "name": "logo_group",
+        "type": "select",
+        "instructions": "Valitse logon ryhmä",
+        "required": 1,
+        "choices": {
+          "top": "Top",
+          "main": "Main",
+          "bottom": "Bottom"
+        },
+        "default_value": [],
+        "allow_null": 0,
+        "multiple": 0,
+        "ui": 1,
+        "ajax": 0,
+        "return_format": "value",
+        "placeholder": ""
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "post_type",
+          "operator": "==",
+          "value": "partner_logo"
+        }
+      ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": ""
+  }
+]

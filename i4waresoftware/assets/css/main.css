@@ -63,6 +63,15 @@ header {
   clear: both;
 }
 
+.top-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;  /* Align items to the top (for column) */
+  align-items: flex-start;      /* Align items to the right */
+  background: linear-gradient(135deg, rgba(255,0,91,0.1), rgba(255,0,91,0.05));
+}
+
 .container {
   width: 90%;
   max-width: 1200px;
@@ -267,7 +276,7 @@ h3 {
 }
 
 /* Add a container for the logos */
-.logo-container {
+.main-logo-container {
     display: grid; /* Use grid layout */
     grid-template-columns: repeat(3, 1fr); /* Create 3 columns */
     gap: 20px; /* Add spacing between logos */
@@ -278,7 +287,7 @@ h3 {
     padding: 20px; /* Add padding around the container */
 }
 
-.logo-container a:hover {
+.main-logo-container a:hover {
     transform: scale(1.1); /* Slightly enlarge the logo on hover */
 }
 
@@ -296,7 +305,7 @@ img.partner-logo {
 
 /* Responsive styles */
 @media (max-width: 768px) {
-    .logo-container {
+    .main-logo-container {
         grid-template-columns: repeat(2, 1fr); /* Reduce to 2 columns */
         gap: 15px; /* Reduce spacing between logos */
     }
@@ -307,7 +316,7 @@ img.partner-logo {
 }
 
 @media (max-width: 480px) {
-    .logo-container {
+    .main-logo-container {
         grid-template-columns: 1fr; /* Stack logos in a single column */
         gap: 10px; /* Further reduce spacing */
     }
@@ -318,7 +327,7 @@ img.partner-logo {
 }
 
 /* Add a container for the logos */
-.ent-logo-container {
+.bottom-logo-container {
     display: grid; /* Use grid layout */
     grid-template-columns: repeat(3, 1fr); /* Create 3 columns */
     gap: 20px; /* Add spacing between logos */
@@ -329,12 +338,12 @@ img.partner-logo {
     padding: 20px; /* Add padding around the container */
 }
 
-.ent-logo-container a:hover {
+.bottom-logo-container a:hover {
     transform: scale(1.1); /* Slightly enlarge the logo on hover */
 }
 
 /* Style for individual logos */
-.ent-logo-container img.partner-logo {
+.bottom-logo-container img.partner-logo {
     display: block; /* Make the image a block element */
     margin: 40px auto; /* Center the image horizontally */
     width: 100px; /* Adjust the width of the logos */
@@ -345,28 +354,28 @@ img.partner-logo {
 
 /* Responsive styles */
 @media (max-width: 768px) {
-    .ent-logo-container {
+    .bottom-logo-container {
         grid-template-columns: repeat(2, 1fr); /* Reduce to 2 columns */
         gap: 15px; /* Reduce spacing between logos */
     }
 
-    .ent-logo-container img.partner-logo {
+    .bottom-logo-container img.partner-logo {
         width: 100px; /* Reduce logo size */
     }
 }
 
 @media (max-width: 480px) {
-    .ent-logo-container {
+    .bottom-logo-container {
         grid-template-columns: 1fr; /* Stack logos in a single column */
         gap: 10px; /* Further reduce spacing */
     }
 
-    .ent-logo-container img.partner-logo {
+    .bottom-logo-container img.partner-logo {
         width: 100px; /* Further reduce logo size */
     }
 }
 
-.up-logo-container {
+.top-logo-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -375,7 +384,7 @@ img.partner-logo {
     padding: 20px;
 }
 
-.up-partner-logo {
+.top-partner-logo {
     max-width: 300px; /* Adjust as needed */
     height: auto;
     object-fit: contain;
@@ -384,12 +393,12 @@ img.partner-logo {
     transition: transform 0.3s ease; /* Smooth scaling effect */
 }
 
-.up-logo-container a:hover {
+.top-logo-container a:hover {
     transform: scale(1.1); /* Slightly enlarge the logo on hover */
 }
 
 #partners {
-    padding-top: 60px;
+    padding: 0px;
 }
 
 .btn {
@@ -737,24 +746,29 @@ article[class^="post-"]:hover {
 /* Stack image above content */
 .post-row {
   gap: 1.5rem;
+  width: 100%;
 }
 
 .post-thumbnail {
-  width: 100%;
-  max-width: 100%;
+  width: 100% !important;
+  max-width: 100% !important;
   height: 320px;
   display: flex;
   align-items: stretch;
   margin-bottom: 0; /* Remove extra space */
+  position: relative;
 }
 
-.post-thumbnail img {
-  width: 100%;
+.post-thumbnail a img {
+  width: 100% !important;
   height: 100%;
   object-fit: cover;
   display: block;
   border-radius: 8px;
   margin-bottom: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .post-content {
@@ -1147,11 +1161,13 @@ p.comment-form-cookies-consent label{
   flex-direction: column;
   gap: 0.5rem;
   padding-bottom: 1rem;
+  margin-bottom: 2rm;
   width: 320px;
 }
 
 .widget_search form label {
   display: block;
+  margin-top: 1em;
   margin-bottom: 0.5em;
   font-size: 1.08rem;
   color: var(--accent);
