@@ -684,7 +684,6 @@ footer .legal-nav-links a:focus {
 }
 
 figure.wp-block-embed {
-    max-width: 800px; /* or your preferred max width */
     margin: 2rem auto; /* center on page */
     width: 100%;
 }
@@ -694,8 +693,16 @@ figure.wp-block-embed iframe {
     aspect-ratio: 16 / 9;
     height: auto;
     display: block;
-    border-radius: 5px;
+    border-radius: 8px;
     border: none;
+}
+
+.wp-block-image.size-large img {
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 /* Responsive styles */
@@ -712,66 +719,33 @@ figure.wp-block-embed iframe {
     }
 }
 
-.main-row {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
-}
-
-.main-content {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.sidebar {
-  flex: 0 0 320px;
-  max-width: 320px;
-  width: 100%;
-  background: #232323;
-  padding: 2rem 1.5rem;
-  border-radius: 12px;
-  color: #fff;
-}
-
-@media (max-width: 900px) {
-  .main-row {
-    flex-direction: column;
-    gap: 0;
-  }
-  .sidebar {
-    max-width: 100%;
-    margin-top: 2rem;
-    padding: 1.5rem 1rem;
-  }
-}
-
 /* Blog Article Styles */
 article[class^="post-"] {
   border-radius: 12px;
   box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem; /* Reduced space at bottom */
   padding: 2rem;
   background-color: #222;
   align-items: stretch;
+  gap: 1.5rem;
 }
 
 article[class^="post-"]:hover {
   box-shadow: 0 4px 24px rgba(0,0,0,0.13);
 }
 
+/* Stack image above content */
 .post-row {
-  display: flex;
-  gap: 24px;
-  align-items: stretch;
-  height: 100%;
+  gap: 1.5rem;
 }
 
 .post-thumbnail {
-  flex: 0 0 220px;
-  max-width: 220px;
-  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  height: 320px;
   display: flex;
   align-items: stretch;
+  margin-bottom: 0; /* Remove extra space */
 }
 
 .post-thumbnail img {
@@ -780,26 +754,17 @@ article[class^="post-"]:hover {
   object-fit: cover;
   display: block;
   border-radius: 8px;
-}
-
-.post-thumbnail img:hover {
-  transform: scale(1.05);
-  transition: transform 0.3s;
+  margin-bottom: 0;
 }
 
 .post-content {
   flex: 1 1 0;
 }
 
-/* Responsive: Stack image above text on small screens */
+/* Responsive: Reduce image height on small screens */
 @media (max-width: 700px) {
-  .post-row {
-    flex-direction: column;
-    gap: 16px;
-  }
   .post-thumbnail,
   .post-thumbnail img {
-    max-width: 100%;
     height: 220px;
   }
 }
@@ -1175,4 +1140,82 @@ p.wp-comment-cookies-consent input {
 
 p.comment-form-cookies-consent label{
   display: inline-block !important;
+}
+
+.widget_search form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+  width: 320px;
+}
+
+.widget_search form label {
+  display: block;
+  margin-bottom: 0.5em;
+  font-size: 1.08rem;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+
+.widget_search form div input[type="search"] {
+  width: 320px;
+  padding: 0.75em;
+  border: 1px solid #3949ab;
+  border-radius: 6px;
+  background: #181818;
+  color: var(--light);
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+@media (max-width: 600px) {
+  .widget_search form {
+    width: 100%;
+  }
+
+  .widget_search form div input[type="search"] {
+    width: 100%;
+  }
+}
+
+.widget_search form div input[type="search"]:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255,0,91,0.08);
+}
+
+.widget_search form div input[type="search"]::placeholder {
+  color: #888;
+}
+
+.widget_search form div input[type="search"]:hover {
+  border-color: var(--accent);
+}
+
+.widget_search form div button {
+  padding: 0.5em;
+  border: 1px solid #3949ab;
+  border-radius: 6px;
+  background: #181818;
+  color: var(--light);
+  font-size: 1rem;
+}
+
+.widget_search form div button:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255,0,91,0.08);
+}
+
+.widget_search form div button:hover {
+  background: #ff4e00;
+  transform: scale(1.05);
+}
+
+h2.wp-block-heading {
+  font-size: 1.2rem;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
 }

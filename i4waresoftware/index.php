@@ -60,49 +60,7 @@
      <?php if ( ! is_home() && ! is_archive() && ! is_single() ) : ?>
   <?php get_template_part('template-parts/content'); ?>
 <?php elseif ( is_home() || is_archive() ) : ?>
-  <div class="main-row">
-    <div class="main-content">
-      <?php if ( have_posts() ) : ?>
-        <?php while ( have_posts() ) : the_post(); ?>
-          <article <?php post_class(); ?>>
-            <div class="post-row">
-              <?php if ( has_post_thumbnail() ) : ?>
-                <div class="post-thumbnail">
-                  <a href="<?php the_permalink(); ?>">
-                    <?php the_post_thumbnail('large'); ?>
-                  </a>
-                </div>
-              <?php endif; ?>
-              <div class="post-content">
-                <div class="entry-header">
-                  <h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-                  <div class="entry-meta">
-                    <span class="posted-on"><?php echo get_the_date(); ?></span>
-                    <span class="byline"><?php esc_html_e('-', 'i4waresoftware'); ?> <?php echo esc_html( get_the_author_meta('display_name') ); ?>  <?php echo get_avatar( get_the_author_meta('ID'), 16 ); ?></span>
-                    <span class="cat-links"><?php esc_html_e('-', 'i4waresoftware'); ?> <?php the_category(', '); ?></span>
-                    <span class="comments-link"><?php comments_popup_link( esc_html__('Ei kommentteja', 'i4waresoftware'), esc_html__('1 kommentti', 'i4waresoftware'), esc_html__('% kommenttia', 'i4waresoftware') ); ?></span>
-                  </div>
-              </div>
-                <div class="entry-summary">
-                  <?php the_excerpt(); ?>
-                </div>
-              </div>
-            </div>
-          </article>
-        <?php endwhile; ?>
-        <div class="pagination">
-          <?php the_posts_pagination(); ?>
-        </div>
-      <?php else : ?>
-        <p><?php esc_html_e( 'Ei sisältöä.', 'i4waresoftware' ); ?></p>
-      <?php endif; ?>
-    </div>
-    <aside class="sidebar">
-      <?php if ( is_active_sidebar( 'sidebar-1' ) ) : ?>
-        <?php dynamic_sidebar( 'sidebar-1' ); ?>
-      <?php endif; ?>
-    </aside>
-  </div>
+  <?php get_template_part('template-parts/blog'); ?>
 <?php else : ?>
   <?php if ( have_posts() ) : the_post(); ?>
     <article <?php post_class(); ?>>
@@ -110,7 +68,6 @@
         <h1><?php the_title(); ?></h1>
         <div class="entry-meta">
           <span class="posted-on"><?php echo get_the_date(); ?></span>
-          <span class="byline"><?php esc_html_e('-', 'i4waresoftware'); ?> <?php echo esc_html( get_the_author_meta('display_name') ); ?>  <?php echo get_avatar( get_the_author_meta('ID'), 16 ); ?></span>
           <span class="cat-links"><?php esc_html_e('-', 'i4waresoftware'); ?> <?php the_category(', '); ?></span>
           <span class="comments-link"><?php comments_popup_link( esc_html__('Ei kommentteja', 'i4waresoftware'), esc_html__('1 kommentti', 'i4waresoftware'), esc_html__('% kommenttia', 'i4waresoftware') ); ?></span>
         </div>
