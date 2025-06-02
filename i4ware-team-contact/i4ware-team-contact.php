@@ -74,10 +74,11 @@ add_action('customize_register', function($wp_customize) {
             'type' => 'textarea',
         ));
 
-        $wp_customize->add_setting("i4ware_contact_details_$lang_code", array(
+       $wp_customize->add_setting("i4ware_contact_details_$lang_code", array(
             'default' => ($lang_code === 'fi') ? "Sähköposti: info@i4ware.fi\nPuhelin: +358 40 123 4567" : "Email: info@i4ware.fi\nPhone: +358 40 123 4567",
-            'sanitize_callback' => 'wp_kses_post',
+            'sanitize_callback' => 'sanitize_textarea_field',
         ));
+
         $wp_customize->add_control("i4ware_contact_details_$lang_code", array(
             'label' => __('Contact Details', 'i4ware') . " ($lang_label)",
             'section' => 'i4ware_team_section',

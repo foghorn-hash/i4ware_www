@@ -18,4 +18,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="<?php echo get_template_directory_uri(); ?>/assets/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="<?php echo get_template_directory_uri(); ?>/assets/android-chrome-512x512.png">
     <link rel="shortcut icon" href="<?php echo get_template_directory_uri(); ?>/assets/favicon.ico">
+    <!-- Start cookieyes banner -->
+     <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/a1eed8ea8ae24b05c992cf15/script.js"></script>
+    <!-- End cookieyes banner -->
 </head>    
