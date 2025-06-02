@@ -36,21 +36,30 @@ let strings = new LocalizedStrings({
   }
  });
 
+ const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-tooltip" style={{ background: "#000", border: "1px solid #ccc", padding: 10 }}>
+        <div>
+          <strong>{strings.title}:</strong> {label}
+        </div>
+        <div>
+          <strong>{strings.name}:</strong> {payload[0].value}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 const CumulativeChart = ({ revenueSource }) => {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lang, setLang] = useState(API_DEFAULT_LANGUAGE);
 
-  var query = window.location.search.substring(1);
-  var urlParams = new URLSearchParams(query);
-  var localization = urlParams.get('lang');
-
-  if (localization===null) {
-    strings.setLanguage(API_DEFAULT_LANGUAGE);
-  } else {
-    strings.setLanguage(localization);
-  }
+  const htmlLang = document.documentElement.lang || API_DEFAULT_LANGUAGE;
+  strings.setLanguage(htmlLang);
 
   useEffect(() => {
     fetchCumulativeData();
@@ -80,7 +89,7 @@ const CumulativeChart = ({ revenueSource }) => {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="saleDate" />
           <YAxis />
-          <Tooltip />
+          <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="cumulativeVendorBalance" fill="#99ff00" name={strings.name} />
         </BarChart>
       </ResponsiveContainer>

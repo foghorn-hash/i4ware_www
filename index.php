@@ -105,7 +105,7 @@
                         <img src="assets/jasenyritys_banneri_24_625x312px_fin_musta.png" class="partner-logo" alt="Yrittäjätkumppanilogo" />
                     </a>
                     <a href="https://netvisor.fi/" target="_blank">
-                        <img src="assets/netvisor-logo-vud22-horizontal-cutoutwhite-900px.png" class="partner-logo" alt="Yrittäjätkumppanilogo" />
+                        <img src="assets/netvisor-logo-vud22-horizontal-cutoutwhite-900px.png" class="partner-logo" alt="Netvisorkumppanilogo" />
                     </a>
                 </div>
                 <div class="ent-logo-container">

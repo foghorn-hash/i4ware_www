@@ -49,56 +49,72 @@ function i4waresoftware_register_menus() {
 add_action('after_setup_theme', 'i4waresoftware_register_menus');
 
 function i4ware_customize_register($wp_customize) {
+    // Selvitetään kielet Polylangista
+    $languages = array(
+        'fi' => __('Finnish', 'i4waresoftware'),
+        'en' => __('English', 'i4waresoftware')
+    );
+    if (function_exists('pll_languages_list')) {
+        $pll_langs = pll_languages_list();
+        $languages = array();
+        foreach ($pll_langs as $lang) {
+            $languages[$lang] = strtoupper($lang);
+        }
+    }
+
+    // Hero Section
     $wp_customize->add_section('hero_section', array(
         'title'    => __('Hero Section', 'i4waresoftware'),
         'priority' => 30,
     ));
 
-    $wp_customize->add_setting('hero_title', array(
-        'default'   => 'What do we do?',
-        'transport' => 'refresh',
-    ));
+    foreach ($languages as $lang_code => $lang_label) {
+        // Hero Title
+        $wp_customize->add_setting("hero_title_$lang_code", array(
+            'default'   => ($lang_code === 'fi') ? 'Mitä teemme?' : 'What do we do?',
+            'transport' => 'refresh',
+        ));
+        $wp_customize->add_control("hero_title_$lang_code", array(
+            'label'    => __('Hero Title', 'i4waresoftware') . " ($lang_label)",
+            'section'  => 'hero_section',
+            'type'     => 'text',
+        ));
 
-    $wp_customize->add_setting('hero_text', array(
-        'default'   => 'We create code that solves your problems.',
-        'transport' => 'refresh',
-    ));
+        // Hero Text
+        $wp_customize->add_setting("hero_text_$lang_code", array(
+            'default'   => ($lang_code === 'fi') ? 'Luomme koodia, joka ratkaisee ongelmasi.' : 'We create code that solves your problems.',
+            'transport' => 'refresh',
+        ));
+        $wp_customize->add_control("hero_text_$lang_code", array(
+            'label'    => __('Hero Text', 'i4waresoftware') . " ($lang_label)",
+            'section'  => 'hero_section',
+            'type'     => 'textarea',
+        ));
 
-    $wp_customize->add_control('hero_title', array(
-        'label'    => __('Hero Title', 'i4waresoftware'),
-        'section'  => 'hero_section',
-        'type'     => 'text',
-    ));
+        // Hero Button Text
+        $wp_customize->add_setting("hero_button_text_$lang_code", array(
+            'default'           => ($lang_code === 'fi') ? 'Lue lisää' : 'Learn More',
+            'sanitize_callback' => 'sanitize_text_field',
+            'transport'         => 'refresh',
+        ));
+        $wp_customize->add_control("hero_button_text_$lang_code", array(
+            'label'    => __('Hero Button Text', 'i4waresoftware') . " ($lang_label)",
+            'section'  => 'hero_section',
+            'type'     => 'text',
+        ));
+    }
 
-    $wp_customize->add_control('hero_text', array(
-        'label'    => __('Hero Text', 'i4waresoftware'),
-        'section'  => 'hero_section',
-        'type'     => 'textarea',
-    ));
-
-    $wp_customize->add_setting( 'hero_button_link', array(
+    // Hero Button Link (sama kaikille kielille)
+    $wp_customize->add_setting('hero_button_link', array(
         'default'           => 'https://marketplace.atlassian.com/search?query=i4ware',
         'sanitize_callback' => 'esc_url_raw',
         'transport'         => 'refresh',
-    ) );
-
-    $wp_customize->add_control( 'hero_button_link', array(
-        'label'    => __( 'Hero Button Link', 'i4waresoftware' ),
-        'section'  => 'title_tagline', // Or create a custom section
+    ));
+    $wp_customize->add_control('hero_button_link', array(
+        'label'    => __('Hero Button Link', 'i4waresoftware'),
+        'section'  => 'hero_section',
         'type'     => 'url',
-    ) );
-
-    // Hero Button Text
-    $wp_customize->add_setting( 'hero_button_text', array(
-        'default'           => 'Learn More',
-        'sanitize_callback' => 'sanitize_text_field',
-        'transport'         => 'refresh',
-    ) );
-    $wp_customize->add_control( 'hero_button_text', array(
-        'label'    => __( 'Hero Button Text', 'i4waresoftware' ),
-        'section'  => 'title_tagline', // Or create a custom section
-        'type'     => 'text',
-    ) );
+    ));
 
     // Footer Section
     $wp_customize->add_section('footer_section', array(
@@ -106,16 +122,17 @@ function i4ware_customize_register($wp_customize) {
         'priority' => 40,
     ));
 
-    $wp_customize->add_setting('footer_text', array(
-        'default'   => '© 2025 i4ware Software. All rights reserved.',
-        'transport' => 'refresh',
-    ));
-
-    $wp_customize->add_control('footer_text', array(
-        'label'    => __('Footer Text', 'i4waresoftware'),
-        'section'  => 'footer_section',
-        'type'     => 'textarea',
-    ));
+    foreach ($languages as $lang_code => $lang_label) {
+        $wp_customize->add_setting("footer_text_$lang_code", array(
+            'default'   => ($lang_code === 'fi') ? '© 2025 i4ware Software. Kaikki oikeudet pidätetään.' : '© 2025 i4ware Software. All rights reserved.',
+            'transport' => 'refresh',
+        ));
+        $wp_customize->add_control("footer_text_$lang_code", array(
+            'label'    => __('Footer Text', 'i4waresoftware') . " ($lang_label)",
+            'section'  => 'footer_section',
+            'type'     => 'textarea',
+        ));
+    }
 }
 add_action('customize_register', 'i4ware_customize_register');
 
@@ -164,7 +181,22 @@ function i4ware_partnerships_shortcode() {
         foreach ($logos as $logo) {
             $url = get_field('logo_url', $logo->ID); // ACF
             $img = get_the_post_thumbnail_url($logo->ID, 'large');
-            $alt = esc_attr(get_the_title($logo->ID));
+            // Polylang: get current language
+            if (function_exists('pll_current_language')) {
+                $lang = pll_current_language();
+            } else {
+                $lang = 'fi'; // oletus
+            }
+            // Hae alt-teksti oikealla kielellä
+            if ($lang === 'en') {
+                $alt = get_field('logo_alt_en', $logo->ID);
+            } else {
+                $alt = get_field('logo_alt_fi', $logo->ID);
+            }
+            if (!$alt) {
+                $alt = get_the_title($logo->ID);
+            }
+            $alt = esc_attr($alt);
             $output .= '<a href="' . esc_url($url) . '" target="_blank">';
             $output .= '<img src="' . esc_url($img) . '" class="' . esc_attr($info['img_class']) . '" alt="' . $alt . '">';
             $output .= '</a>';
@@ -175,13 +207,6 @@ function i4ware_partnerships_shortcode() {
     return $output;
 }
 add_shortcode('partnerships', 'i4ware_partnerships_shortcode');
-
-function i4waresoftware_enqueue_comment_reply() {
-    if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
-        wp_enqueue_script( 'comment-reply' );
-    }
-}
-add_action( 'wp_enqueue_scripts', 'i4waresoftware_enqueue_comment_reply' );
 
 function i4waresoftware_widgets_init() {
     register_sidebar( array(

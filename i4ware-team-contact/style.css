@@ -1,52 +1,68 @@
-.i4ware-team-contact-wrap {
+.team-contact-wrap {
     display: flex;
     flex-wrap: wrap;
     gap: 2rem;
     margin: 2rem 0;
 }
-.i4ware-contact-left, .i4ware-team-right {
+
+.contact-left, .team-right {
     flex: 1 1 300px;
     min-width: 300px;
     background: #2c2c2c;
     padding: 2rem;
     border-radius: 10px;
 }
-.i4ware-contact-left {
+
+.contact-left {
     margin-right: 1rem;
 }
-.i4ware-team-right {
+
+.contact-left h2, .team-right h2 {
+    color: #fafafa;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.team-right {
     margin-left: 1rem;
 }
+
 .team-member img {
     max-width: 220px;
     border-radius: 50%;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     transition: transform 0.3s;
 }
+
 .team-member img:hover {
     transform: scale(1.1);
 }
+
 .certificate-container {
     display: block;
     text-align: center; 
     width: 100%;   
 }
+
 .certificate-container img {
     max-width: 220px;
     margin-right: 10px;
     transition: transform 0.3s;
 }
+
 .certificate-container img:hover {
     transform: scale(1.1);
 }
-#i4ware-contact-form input, #i4ware-contact-form textarea {
+
+#contact-form input, #contact-form textarea {
     width: 100%;
     margin-bottom: 2rem;
     padding: 0.5rem;
     border-radius: 5px;
     border: 1px solid #ccc;
 }
-#i4ware-contact-form button {
+
+#contact-form button {
     background: #0073aa;
     color: #fff;
     border: none;
@@ -55,15 +71,26 @@
     cursor: pointer;
     margin-bottom: 1rem;
 }
-.i4ware-contact-response {
+#contact-form button:hover {
+    background: #005f8a;
+}
+
+.contact-response {
     margin-top: 3rem;
     color: #85b4b2;
 }
+
 @media (max-width: 900px) {
-    .i4ware-team-contact-wrap {
+    .team-contact-wrap {
         flex-direction: column;
     }
-    .i4ware-contact-left, .i4ware-team-right {
+    .contact-left, .team-right {
         margin: 0 0 1rem 0;
     }
+}
+
+#contact-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #fff;
 }

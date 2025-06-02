@@ -1,12 +1,18 @@
+    <?php
+        $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+    ?>
     <footer>
-        <p><?php echo esc_html( get_theme_mod('footer_text', '© 2025 i4ware Software. All rights reserved.') ); ?> <?php
-        wp_nav_menu(array(
-          'theme_location' => 'footer',
-          'menu_class'     => 'legal-nav-links',
-          'container'      => false,
-          'fallback_cb'    => false
-        ));
-        ?></p>
+        <p>
+            <?php echo esc_html( get_theme_mod("footer_text_$lang", '© 2025 i4ware Software. All rights reserved.') ); ?>
+            <?php
+            wp_nav_menu(array(
+                'theme_location' => 'footer',
+                'menu_class'     => 'legal-nav-links',
+                'container'      => false,
+                'fallback_cb'    => false
+            ));
+            ?>
+        </p>
     </footer>
     <button id="scrollToTopBtn" title="Scroll to top">↑</button>
     <script>

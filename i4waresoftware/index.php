@@ -59,16 +59,19 @@
   </div>
 </div>
 <?php if ( is_front_page() ) : ?>
+<?php
+$lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+?>
 <section class="hero">
   <div class="container hero-content">
-    <h1><?php echo esc_html( get_theme_mod('hero_title', 'What do we do?') ); ?></h1>
-    <p><?php echo esc_html( get_theme_mod('hero_text', 'We create code that solves your problems.') ); ?></p>
+    <h1><?php echo esc_html( get_theme_mod("hero_title_$lang", 'What do we do?') ); ?></h1>
+    <p><?php echo esc_html( get_theme_mod("hero_text_$lang", 'We create code that solves your problems.') ); ?></p>
     <a href="<?php echo esc_url( get_theme_mod('hero_button_link', 'https://marketplace.atlassian.com/search?query=i4ware' ) ); ?>" class="btn" target="_blank">
-      <?php echo esc_html( get_theme_mod('hero_button_text', 'Learn More') ); ?>
+      <?php echo esc_html( get_theme_mod("hero_button_text_$lang", 'Learn More') ); ?>
     </a>
-    <div class="up-logo-container">
+    <div class="top-logo-container">
       <a href="https://marketplace.atlassian.com/" target="_blank">
-        <img decoding="async" src="https://www.i4ware.fi/wp-content/uploads/partners/marketplace_partner_wht_nobg.png" class="partner-logo" alt="Atlassian Marketplace -kumppani" />
+        <img decoding="async" src="https://www.i4ware.fi/wp-content/uploads/partners/marketplace_partner_wht_nobg.png" class="partner-logo" alt="<?php echo ($lang === 'fi') ? 'Atlassian Marketplace -kumppani' : 'Atlassian Marketplace Partner'; ?>" />
       </a>
     </div>
   </div>
@@ -102,20 +105,27 @@
 <?php endif; ?>
 <?php if ( (is_single() || is_page()) && (comments_open() || get_comments_number()) ) : ?>
   <div class="container-comments">
-    <h2><?php esc_html_e('Kommentit', 'i4waresoftware'); ?></h2>
     <?php
-$comments_number = get_comments_number();
-if ( $comments_number == 0 ) {
-    echo sprintf(
-        esc_html(_n('%s kommentti', '%s kommenttia', $comments_number, 'i4waresoftware')),
-        number_format_i18n($comments_number)
-    );
-} else {
+    if ($lang === 'fi') {
+        echo '<h2>Kommentit</h2>';
+    } else {
+        echo '<h2>Comments</h2>';
+    }
 
-}
-?>
+    $comments_number = get_comments_number();
+    if ($lang === 'fi') {
+        echo sprintf(
+            esc_html(_n('%s kommentti', '%s kommenttia', $comments_number, 'i4waresoftware')),
+            number_format_i18n($comments_number)
+        );
+    } else {
+        echo sprintf(
+            esc_html(_n('%s comment', '%s comments', $comments_number, 'i4waresoftware')),
+            number_format_i18n($comments_number)
+        );
+    }
+    ?>
     <?php comments_template(); ?>
-  </div>
 <?php endif; ?>
   </div>
 </section>
