@@ -1276,3 +1276,43 @@ h2.wp-block-heading {
   color: var(--accent);
   margin-bottom: 1.5rem;
 }
+
+.reference-carousel {
+  text-align: center;
+  padding: 40px 0;
+  overflow: hidden;
+  background: transparent;
+  margin-bottom: 20px;
+  width: 100%;
+  border-radius: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.reference-carousel h2 {
+  font-size: 24px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.carousel-track {
+  display: flex;
+  gap: 40px;
+  animation: scroll 20s linear infinite;
+}
+
+.carousel-track img {
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
