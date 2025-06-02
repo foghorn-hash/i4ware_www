@@ -91,17 +91,39 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
         <h1><?php the_title(); ?></h1>
         <div class="entry-meta">
           <span class="posted-on"><?php echo get_the_date(); ?></span>
-          <span class="cat-links"><?php esc_html_e('-', 'i4waresoftware'); ?> <?php the_category(', '); ?></span>
-          <span class="comments-link"><?php comments_popup_link( esc_html__('Ei kommentteja', 'i4waresoftware'), esc_html__('1 kommentti', 'i4waresoftware'), esc_html__('% kommenttia', 'i4waresoftware') ); ?></span>
+          <span class="cat-links"><?php echo ($lang === 'fi') ? '-' : '-'; ?> <?php the_category(', '); ?></span>
+          <span class="comments-link">
+            <?php
+            if ($lang === 'fi') {
+                comments_popup_link(
+                    esc_html__('Ei kommentteja', 'i4waresoftware'),
+                    esc_html__('1 kommentti', 'i4waresoftware'),
+                    esc_html__('% kommenttia', 'i4waresoftware')
+                );
+            } else {
+                comments_popup_link(
+                    esc_html__('No comments', 'i4waresoftware'),
+                    esc_html__('1 comment', 'i4waresoftware'),
+                    esc_html__('% comments', 'i4waresoftware')
+                );
+            }
+            ?>
+          </span>
         </div>
       </div>
       <div class="entry-content">
         <?php the_content(); ?>
       </div>
     </article>
-  <?php else : ?>
-    <p><?php esc_html_e( 'Ei sisältöä.', 'i4waresoftware' ); ?></p>
-  <?php endif; ?>
+<?php else : ?>
+    <p>
+      <?php
+      echo ($lang === 'fi')
+        ? esc_html__('Ei sisältöä.', 'i4waresoftware')
+        : esc_html__('No content.', 'i4waresoftware');
+      ?>
+    </p>
+<?php endif; ?>
 <?php endif; ?>
 <?php if ( (is_single() || is_page()) && (comments_open() || get_comments_number()) ) : ?>
   <div class="container-comments">
