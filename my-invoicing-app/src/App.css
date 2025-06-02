@@ -99,3 +99,18 @@
   background: #fff;
   color: #222;
 }
+
+.custom-tooltip {
+  background-color: #5f0077;
+  border: 1px solid #ff0000;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  height: 46px;
+}
+
+.custom-tooltip p {
+  margin: 0;
+  color: #fff;
+  font-size: 0.9rem;
+}

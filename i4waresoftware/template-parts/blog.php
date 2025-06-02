@@ -4,8 +4,8 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
 <div class="main-row">
     <div class="main-content">
         <aside class="sidebar">
-            <?php if ( is_active_sidebar( 'sidebar-1-' ) ) : ?>
-                <?php dynamic_sidebar( 'sidebar-1' ); ?>
+            <?php if ( is_active_sidebar( 'sidebar-1-' . $lang ) ) : ?>
+                <?php dynamic_sidebar( 'sidebar-1-' . $lang ); ?>
             <?php endif; ?>
         </aside>
         <?php if ( have_posts() ) : ?>

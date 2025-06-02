@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<?php
+    $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+?>
+<html lang="<?php echo esc_attr($lang); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

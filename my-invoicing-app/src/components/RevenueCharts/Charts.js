@@ -11,21 +11,21 @@ let strings = new LocalizedStrings({
   en: {
     all: "All Sources",
     atlassian: "Atlassian Pty Ltd",
-    kela: "KELA/VARMA",
+    kela: "Pension Insurance",
     horuly: "Hourly Rate Customers",
     grandparents: "Grandparents' Inheritance"
   },
   fi: {
     all: "Kaikki lähteet",
     atlassian: "Atlassian Pty Ltd",
-    kela: "KELA/VARMA",
+    kela: "Eläkevakuutus",
     horuly: "Tuntiveloitusasiakkaat",
     grandparents: "Isovanhempien perintö"
   },
-sv: {
+  sv: {
     all: "Alla källor",
     atlassian: "Atlassian Pty Ltd",
-    kela: "FPA/VARMA",
+    kela: "Pensionsförsäkring",
     horuly: "Timdebiterade kunder",
     grandparents: "Mor- och farföräldrars arv"
   },
@@ -33,10 +33,20 @@ sv: {
 
 const Charts = () => {
     const [revenueSource, setRevenueSource] = useState('all');
-    const [lang, setLang] = useState(API_DEFAULT_LANGUAGE);
 
-    const htmlLang = document.documentElement.lang || API_DEFAULT_LANGUAGE;
-    strings.setLanguage(htmlLang);
+    const [lang, setLang] = useState(document.documentElement.lang || API_DEFAULT_LANGUAGE);
+
+    useEffect(() => {
+      const observer = new MutationObserver(() => {
+        setLang(document.documentElement.lang || API_DEFAULT_LANGUAGE);
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+      return () => observer.disconnect();
+    }, []);
+
+    useEffect(() => {
+      strings.setLanguage(lang);
+    }, [lang]);
 
     return (
       <div>

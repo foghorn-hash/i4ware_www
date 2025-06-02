@@ -39,13 +39,11 @@ let strings = new LocalizedStrings({
  const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="custom-tooltip" style={{ background: "#000", border: "1px solid #ccc", padding: 10 }}>
-        <div>
-          <strong>{strings.title}:</strong> {label}
-        </div>
-        <div>
-          <strong>{strings.name}:</strong> {payload[0].value}
-        </div>
+      <div className="custom-tooltip">
+        <p>
+          <strong>{strings.title}:</strong> {label}{" "}
+          <strong>{strings.name}:</strong> {Number(payload[0].value).toFixed(2)} €
+        </p>
       </div>
     );
   }
@@ -59,10 +57,20 @@ const TransactionsTableAll = ({ revenueSource }) => {
   const [chartDataMerged, setChartDataMerged] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [lang, setLang] = useState(API_DEFAULT_LANGUAGE);
 
-  const htmlLang = document.documentElement.lang || API_DEFAULT_LANGUAGE;
-  strings.setLanguage(htmlLang);
+  const [lang, setLang] = useState(document.documentElement.lang || API_DEFAULT_LANGUAGE);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setLang(document.documentElement.lang || API_DEFAULT_LANGUAGE);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    strings.setLanguage(lang);
+  }, [lang]);
 
   useEffect(() => {
     fetchMergedTransactions();

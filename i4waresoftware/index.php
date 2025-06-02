@@ -1,6 +1,7 @@
 <?php get_template_part('template-parts/header'); ?>
-
-
+<?php
+$lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+?>
 <body>
  <header>
   <div class="container">
@@ -40,8 +41,8 @@
 </div>
 <div class="top-container">
   <div class="container">
-  <?php if ( is_active_sidebar( 'sidebar-2' ) ) : ?>
-      <?php dynamic_sidebar( 'sidebar-2' ); ?>
+  <?php if ( is_active_sidebar( 'sidebar-2-'.$lang ) ) : ?>
+      <?php dynamic_sidebar( 'sidebar-2-'.$lang ); ?>
   <?php endif; ?>
   <?php if ( function_exists( 'pll_the_languages' ) ) : ?>
       <div class="language-switcher">

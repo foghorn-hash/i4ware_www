@@ -12,8 +12,8 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 function revenue_react_app_enqueue_assets() {
     $plugin_url = plugin_dir_url( __FILE__ ) . 'static/';
     // Adjust filenames if your build uses hashes
-    wp_enqueue_style( 'revenue-react-app-css', $plugin_url . 'css/main.fd13b534.css', array(), null );
-    wp_enqueue_script( 'revenue-react-app-js', $plugin_url . 'js/main.ec5de32e.js', array(), null, true );
+    wp_enqueue_style( 'revenue-react-app-css', $plugin_url . 'css/main.330f75a7.css', array(), null );
+    wp_enqueue_script( 'revenue-react-app-js', $plugin_url . 'js/main.f8c9c5b6.js', array(), null, true );
 }
 add_action( 'wp_enqueue_scripts', 'revenue_react_app_enqueue_assets' );
 

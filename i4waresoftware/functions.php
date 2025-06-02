@@ -49,7 +49,7 @@ function i4waresoftware_register_menus() {
 add_action('after_setup_theme', 'i4waresoftware_register_menus');
 
 function i4ware_customize_register($wp_customize) {
-    // Selvitetään kielet Polylangista
+    // Add customizer settings for the hero section and footer
     $languages = array(
         'fi' => __('Finnish', 'i4waresoftware'),
         'en' => __('English', 'i4waresoftware')
@@ -209,6 +209,44 @@ function i4ware_partnerships_shortcode() {
 add_shortcode('partnerships', 'i4ware_partnerships_shortcode');
 
 function i4waresoftware_widgets_init() {
+    // Register sidebars
+    $languages = array(
+        'fi' => __('Finnish', 'i4waresoftware'),
+        'en' => __('English', 'i4waresoftware')
+    );
+    // If Polylang is active, get the list of languages
+    if (function_exists('pll_languages_list')) {
+        $pll_langs = pll_languages_list();
+        $languages = array();
+        foreach ($pll_langs as $lang) {
+            $languages[$lang] = strtoupper($lang);
+        }
+    }
+
+    foreach ($languages as $lang_code => $lang_label) {
+        register_sidebar( array(
+            'name'          => sprintf( __( 'Sidebar 1 (%s)', 'i4waresoftware' ), $lang_label ),
+            'id'            => 'sidebar-1-' . $lang_code,
+            'description'   => sprintf( __( 'Add widgets here for %s.', 'i4waresoftware' ), $lang_label ),
+            'before_widget' => '<section id="%1$s" class="widget %2$s">',
+            'after_widget'  => '</section>',
+            'before_title'  => '<h2 class="widget-title">',
+            'after_title'   => '</h2>',
+        ) );
+    }
+
+    foreach ($languages as $lang_code => $lang_label) {
+        register_sidebar( array(
+            'name'          => sprintf( __( 'Sidebar 2 (%s)', 'i4waresoftware' ), $lang_label ),
+            'id'            => 'sidebar-2-' . $lang_code,
+            'description'   => sprintf( __( 'Add widgets here for %s.', 'i4waresoftware' ), $lang_label ),
+            'before_widget' => '<section id="%1$s" class="widget %2$s">',
+            'after_widget'  => '</section>',
+            'before_title'  => '<h2 class="widget-title">',
+            'after_title'   => '</h2>',
+        ) );
+    }
+
     register_sidebar( array(
         'name'          => __( 'Sidebar 1', 'i4waresoftware' ),
         'id'            => 'sidebar-1',
