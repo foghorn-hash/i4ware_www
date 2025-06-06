@@ -45,7 +45,7 @@ add_action('customize_register', function($wp_customize) {
 
     foreach ($languages as $lang_code => $lang_label) {
         $wp_customize->add_setting("i4ware_team_name_$lang_code", array(
-            'default' => ($lang_code === 'fi') ? 'Matti Kiviharju, IT/ICT ja tradenomi' : 'Matti Kiviharju, Specialization in IT/ICT and BBA',
+            'default' => ($lang_code === 'fi') ? 'Matti Kiviharju, IT/ICT tradenomi' : 'Matti Kiviharju, Specialization in IT/ICT and BBA',
             'sanitize_callback' => 'sanitize_text_field',
         ));
         $wp_customize->add_control("i4ware_team_name_$lang_code", array(
