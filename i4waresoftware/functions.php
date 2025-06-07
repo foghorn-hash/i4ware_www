@@ -208,6 +208,77 @@ function i4ware_partnerships_shortcode() {
 }
 add_shortcode('partnerships', 'i4ware_partnerships_shortcode');
 
+function i4ware_register_customer_logo_cpt() {
+    $labels = array(
+        'name' => 'Asiakaslogot',
+        'singular_name' => 'Asiakaslogo',
+        'add_new' => 'Lisää uusi',
+        'add_new_item' => 'Lisää uusi asiakaslogo',
+        'edit_item' => 'Muokkaa asiakaslogoa',
+        'new_item' => 'Uusi asiakaslogo',
+        'view_item' => 'Näytä asiakaslogo',
+        'search_items' => 'Etsi asiakaslogoja',
+        'not_found' => 'Ei asiakaslogoja',
+        'menu_name' => 'Asiakaslogot',
+    );
+    $args = array(
+        'labels' => $labels,
+        'public' => true,
+        'show_ui' => true,
+        'menu_icon' => 'dashicons-groups',
+        'supports' => array('title', 'thumbnail'),
+    );
+    register_post_type('customer_logo', $args);
+}
+add_action('init', 'i4ware_register_customer_logo_cpt');
+
+function i4ware_customers_shortcode() {
+    $output = '<div id="customers">';
+    $args = array(
+        'post_type' => 'customer_logo',
+        'posts_per_page' => -1,
+        'orderby' => 'menu_order',
+        'order' => 'ASC'
+    );
+    $customers = get_posts($args);
+    foreach ($customers as $customer) {
+        $url = get_field('customer_url', $customer->ID); // ACF
+        $img = get_the_post_thumbnail_url($customer->ID, 'large');
+        // Polylang: get current language
+        if (function_exists('pll_current_language')) {
+            $lang = pll_current_language();
+        } else {
+            $lang = 'fi';
+        }
+        // Hae kuvausteksti oikealla kielellä
+        if ($lang === 'en') {
+            $use_case = get_field('use_case_en', $customer->ID);
+        } else {
+            $use_case = get_field('use_case_fi', $customer->ID);
+        }
+        if (!$use_case) {
+            $use_case = '';
+        }
+        $alt = get_the_title($customer->ID);
+        $output .= '<div class="customer-logo-block">';
+        if ($url) {
+            $output .= '<a href="' . esc_url($url) . '" target="_blank">';
+        }
+        $output .= '<img src="' . esc_url($img) . '" class="customer-logo" alt="' . esc_attr($alt) . '">';
+        if ($url) {
+            $output .= '</a>';
+        }
+        $output .= '<div class="customer-name">' . esc_html(get_the_title($customer->ID)) . '</div>';
+        if ($use_case) {
+            $output .= '<div class="customer-use-case">' . esc_html($use_case) . '</div>';
+        }
+        $output .= '</div>';
+    }
+    $output .= '</div>';
+    return $output;
+}
+add_shortcode('customers', 'i4ware_customers_shortcode');
+
 function i4waresoftware_widgets_init() {
     // Register sidebars
     $languages = array(

@@ -1,135 +1,38 @@
 [
-  {
-    "key": "group_reference_carousel",
-    "title": "Reference Carousel",
-    "fields": [
-      {
-        "key": "field_reference_carousel_title",
-        "label": "Carousel Title",
-        "name": "reference_carousel_title",
-        "type": "text",
-        "instructions": "Carousel section title",
-        "required": 0
-      },
-      {
-        "key": "field_reference_carousel_image_1",
-        "label": "Image 1",
-        "name": "reference_carousel_image_1",
-        "type": "image",
-        "instructions": "First logo",
-        "required": 0,
-        "return_format": "array"
-      },
-      {
-        "key": "field_reference_carousel_alt_1",
-        "label": "Alt Text 1",
-        "name": "reference_carousel_alt_1",
-        "type": "text",
-        "instructions": "Alt text for image 1",
-        "required": 0
-      },
-      {
-        "key": "field_reference_carousel_image_2",
-        "label": "Image 2",
-        "name": "reference_carousel_image_2",
-        "type": "image",
-        "instructions": "Second logo",
-        "required": 0,
-        "return_format": "array"
-      },
-      {
-        "key": "field_reference_carousel_alt_2",
-        "label": "Alt Text 2",
-        "name": "reference_carousel_alt_2",
-        "type": "text",
-        "instructions": "Alt text for image 2",
-        "required": 0
-      },
-      {
-        "key": "field_reference_carousel_image_3",
-        "label": "Image 3",
-        "name": "reference_carousel_image_3",
-        "type": "image",
-        "instructions": "Third logo",
-        "required": 0,
-        "return_format": "array"
-      },
-      {
-        "key": "field_reference_carousel_alt_3",
-        "label": "Alt Text 3",
-        "name": "reference_carousel_alt_3",
-        "type": "text",
-        "instructions": "Alt text for image 3",
-        "required": 0
-      },
-      {
-        "key": "field_reference_carousel_image_4",
-        "label": "Image 4",
-        "name": "reference_carousel_image_4",
-        "type": "image",
-        "instructions": "Fourth logo",
-        "required": 0,
-        "return_format": "array"
-      },
-      {
-        "key": "field_reference_carousel_alt_4",
-        "label": "Alt Text 4",
-        "name": "reference_carousel_alt_4",
-        "type": "text",
-        "instructions": "Alt text for image 4",
-        "required": 0
-      },
-      {
-        "key": "field_reference_carousel_image_5",
-        "label": "Image 5",
-        "name": "reference_carousel_image_5",
-        "type": "image",
-        "instructions": "Fifth logo",
-        "required": 0,
-        "return_format": "array"
-      },
-      {
-        "key": "field_reference_carousel_alt_5",
-        "label": "Alt Text 5",
-        "name": "reference_carousel_alt_5",
-        "type": "text",
-        "instructions": "Alt text for image 5",
-        "required": 0
-      },
-      {
-        "key": "field_reference_carousel_image_6",
-        "label": "Image 6",
-        "name": "reference_carousel_image_6",
-        "type": "image",
-        "instructions": "Sixth logo",
-        "required": 0,
-        "return_format": "array"
-      },
-      {
-        "key": "field_reference_carousel_alt_6",
-        "label": "Alt Text 6",
-        "name": "reference_carousel_alt_6",
-        "type": "text",
-        "instructions": "Alt text for image 6",
-        "required": 0
-      }
-    ],
-    "location": [
-      [
-        {
-          "param": "post_type",
-          "operator": "==",
-          "value": "page"
-        }
-      ]
-    ],
-    "menu_order": 0,
-    "position": "normal",
-    "style": "default",
-    "label_placement": "top",
-    "instruction_placement": "label",
-    "hide_on_screen": "",
-    "active": true,
-    "description": ""
-  }
+    {
+        "key": "group_customer_logo",
+        "title": "Customer Logo Fields",
+        "fields": [
+            {
+                "key": "field_customer_url",
+                "label": "Customer URL",
+                "name": "customer_url",
+                "type": "url"
+            },
+            {
+                "key": "field_use_case_fi",
+                "label": "Use Case (Finnish)",
+                "name": "use_case_fi",
+                "type": "textarea"
+            },
+            {
+                "key": "field_use_case_en",
+                "label": "Use Case (English)",
+                "name": "use_case_en",
+                "type": "textarea"
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "customer_logo"
+                }
+            ]
+        ],
+        "position": "normal",
+        "style": "default",
+        "active": true
+    }
 ]
