@@ -264,13 +264,13 @@ function i4ware_customers_shortcode() {
         if ($url) {
             $output .= '<a href="' . esc_url($url) . '" target="_blank">';
         }
-        $output .= '<img src="' . esc_url($img) . '" class="customer-logo" alt="' . esc_attr($alt) . '">';
+        $output .= '<img src="' . esc_url($img) . '" class="customer-logo" alt="' . esc_attr($alt) . '" align="left">';
         if ($url) {
             $output .= '</a>';
         }
-        $output .= '<div class="customer-name">' . esc_html(get_the_title($customer->ID)) . '</div>';
+       
         if ($use_case) {
-            $output .= '<div class="customer-use-case">' . esc_html($use_case) . '</div>';
+            $output .= nl2br(esc_html($use_case));
         }
         $output .= '</div>';
     }

@@ -1335,36 +1335,111 @@ h2.wp-block-heading {
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     padding: 24px 18px 18px 18px;
-    margin: 0 8px 24px 8px;
-    text-align: center;
-    width: 260px;
+    margin: 0 0 24px 0;
+    text-align: left;
+    width: 100%;
+    display: inline-block;
+    box-sizing: border-box;
     transition: box-shadow 0.2s;
-}
-
-.customer-logo-block:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
-}
-
-.customer-logo {
-    max-width: 180px;
-    max-height: 80px;
-    margin-bottom: 16px;
-    object-fit: contain;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.customer-name {
-    font-weight: bold;
-    font-size: 1.1em;
-    margin-bottom: 8px;
-    color: #222;
-}
-
-.customer-use-case {
     font-size: 0.98em;
     color: #555;
     margin-top: 6px;
     line-height: 1.5;
+}
+
+.customer-logo-block:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    transform: matrix(1.01, 0, 0, 1.01, 0, 0);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.customer-logo {
+    height: 120px;
+    margin-bottom: 10px;
+    margin-right: 20px;
+    object-fit: contain;
+    display: block;
+}
+
+.awsm-job-form {
+	background-color: transparent;
+	border: 0;
+}
+
+.awsm-job-form:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+    transform: matrix(1.01, 0, 0, 1.01, 0, 0);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.awsm-job-wrap {
+	background-color: #333;
+	border: 1px #555 solid;
+	border-radius: 20px; 
+}
+
+.awsm-lists {
+	background-color: transparent;
+	border: 0;
+}
+
+.awsm-job-item {
+	background-color: transparent !important;
+	border: 0 !important;
+}
+
+.awsm-list-item {
+	background-color: transparent !important;
+	border: 0 !important;
+}
+
+.awsm-job-listing-item {
+	background-color: transparent !important;
+	border: 0 !important;
+}
+
+.awsm-job-item {
+	background-color: transparent;
+	border: 0;
+}
+
+.awsm-job-post-title a {
+	color: white;
+}
+
+.awsm-job-post-title a:hover {
+	color: gray;
+}
+
+.awsm-job-more {
+	color: white;
+}
+
+.awsm-job-more:hover {
+	color: gray;
+}
+.awsm-list-item {
+	background-color: #333;
+}
+
+.awsm-filter-items {
+	display: none !important;
+}
+
+.awsm-list-right-col {
+	display: none !important;
+}
+
+.customize-unpreviewable {
+	display: none !important;
+}
+
+.awsm-filter-wrap {
+  display: none !important;
+}
+
+.awsm-job-form .awsm-job-form-inner {
+  background-color: #333;
+	border: 1px #555 solid;
+	border-radius: 20px;
 }
