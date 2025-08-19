@@ -122,6 +122,17 @@ function i4ware_customize_register($wp_customize) {
         'priority' => 40,
     ));
 
+    // Add Social Media text setting and control
+    $wp_customize->add_setting("footer_social_text_$lang_code", array(
+        'default'   => ($lang_code === 'fi') ? 'Seuraa meitä YouTubessa' : 'Follow us on YouTube',
+        'transport' => 'refresh',
+    ));
+    $wp_customize->add_control("footer_social_text_$lang_code", array(
+        'label'    => __('Footer Social Media Text', 'i4waresoftware') . " ($lang_label)",
+        'section'  => 'footer_section',
+        'type'     => 'text',
+    ));
+
     foreach ($languages as $lang_code => $lang_label) {
         $wp_customize->add_setting("footer_text_$lang_code", array(
             'default'   => ($lang_code === 'fi') ? '© 2025 i4ware Software. Kaikki oikeudet pidätetään.' : '© 2025 i4ware Software. All rights reserved.',

@@ -1443,3 +1443,38 @@ h2.wp-block-heading {
 	border: 1px #555 solid;
 	border-radius: 20px;
 }
+
+.footer-social {
+    display: flex;
+    flex-direction: column; /* Stack h3 above the link */
+    align-items: center; /* Align items to the left */
+    gap: 0; /* Remove extra gap between h3 and link */
+    float: left;
+    margin-bottom: 12px;
+}
+
+.footer-social a {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    background: transparent;
+    padding: 6px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.footer-social a:hover,
+.footer-social a:focus {
+    background: #444;
+    color: #ffd700;
+    text-decoration: none;
+}
+
+.footer-social svg {
+    vertical-align: middle;
+    fill: currentColor;
+    width: 24px;
+    height: 24px;
+}
