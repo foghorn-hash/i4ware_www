@@ -89,7 +89,7 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
   <?php if ( have_posts() ) : the_post(); ?>
     <article <?php post_class(); ?>>
       <div class="entry-header">
-        <h1><?php the_title(); ?></h1>
+        <h1 class="section-title"><?php the_title(); ?></h1>
         <div class="entry-meta">
           <span class="posted-on"><?php echo get_the_date(); ?></span>
           <span class="cat-links"><?php echo ($lang === 'fi') ? '-' : '-'; ?> <?php the_category(', '); ?></span>
