@@ -1,4 +1,5 @@
     <?php
+        $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
         $social_text = esc_html( get_theme_mod("footer_social_text_$lang", 'Follow us on YouTube') );
     ?>
     <footer>
