@@ -3,13 +3,14 @@ import axios from "axios";
 import Table from 'react-bootstrap/Table';
 import LOADING from '../../tube-spinner.svg';
 import {
+  ResponsiveContainer,
   BarChart,
-  Bar,
+  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
+  Bar,
+  Brush,
 } from "recharts";
 import { API_BASE_URL, API_DEFAULT_LANGUAGE } from "../../constants/apiConstants";
 // ES6 module syntax
@@ -123,10 +124,12 @@ const TransactionsTableAll = ({ revenueSource }) => {
             tick={{ fontSize: 12 }}   // bump size a bit
             allowDuplicatedCategory={false}
             tickFormatter={(d) => d.slice(0, 7)} // e.g. "YYYY-MM" (shorter)
+            height={70}       // ensures labels don’t collide with Brush
           />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="vendorAmount" fill="#007bff" name={strings.name} />
+          <Brush dataKey="saleDate" height={24} travellerWidth={8} />
         </BarChart>
       </ResponsiveContainer>
     </div>

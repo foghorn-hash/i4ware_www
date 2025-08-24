@@ -92,7 +92,7 @@ const CumulativeChart = ({ revenueSource }) => {
   return (
     <div>
       <h2 className="calculator-title">{strings.title}</h2>
-      <ResponsiveContainer width="100%" height={420}>
+      <ResponsiveContainer width="100%" height={520}>
         <BarChart data={chartData} margin={{ top: 16, right: 24, left: 16, bottom: 80 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
@@ -105,6 +105,7 @@ const CumulativeChart = ({ revenueSource }) => {
             tick={{ fontSize: 12 }}
             allowDuplicatedCategory={false}
             tickFormatter={(d) => d.slice(0, 7)} // e.g., "YYYY-MM"
+            height={70}       // ensures labels don’t collide with Brush
           />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />

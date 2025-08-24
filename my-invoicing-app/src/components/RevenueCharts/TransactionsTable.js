@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Table from 'react-bootstrap/Table';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer } from "recharts";
+import {
+  ResponsiveContainer,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Bar,
+  Brush,
+} from "recharts";
 import LOADING from '../../tube-spinner.svg';
 import { API_BASE_URL, API_DEFAULT_LANGUAGE } from "../../constants/apiConstants";
 // ES6 module syntax
@@ -102,7 +111,7 @@ const TransactionsTable = ({ revenueSource }) => {
       <ResponsiveContainer width="100%" height={400}>
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" angle={-90} textAnchor="end" dy={10} />
+          <XAxis dataKey="year" angle={-90} textAnchor="end" dy={10} height={80} tickMargin={12} tickFormatter={(d) => d.slice(0, 7)} />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="revenue" fill="#ff0066" name={strings.name} />
