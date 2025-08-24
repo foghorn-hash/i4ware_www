@@ -102,7 +102,7 @@ const TransactionsTable = ({ revenueSource }) => {
       <ResponsiveContainer width="100%" height={400}>
         <BarChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" />
+          <XAxis dataKey="year" angle={-90} textAnchor="end" dy={10} />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="revenue" fill="#ff0066" name={strings.name} />

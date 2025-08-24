@@ -3,13 +3,14 @@ import axios from "axios";
 import Table from 'react-bootstrap/Table';
 import LOADING from '../../tube-spinner.svg';
 import {
+  ResponsiveContainer,
   BarChart,
-  Bar,
+  CartesianGrid,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
-  ResponsiveContainer,
+  Bar,
+  Brush,
 } from "recharts";
 import { API_BASE_URL, API_DEFAULT_LANGUAGE } from "../../constants/apiConstants";
 // ES6 module syntax
@@ -91,13 +92,24 @@ const CumulativeChart = ({ revenueSource }) => {
   return (
     <div>
       <h2 className="calculator-title">{strings.title}</h2>
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={chartData}>
+      <ResponsiveContainer width="100%" height={420}>
+        <BarChart data={chartData} margin={{ top: 16, right: 24, left: 16, bottom: 80 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="saleDate" />
+          <XAxis
+            dataKey="saleDate"
+            angle={-45}
+            textAnchor="end"
+            interval="preserveStartEnd"
+            minTickGap={20}
+            tickMargin={10}
+            tick={{ fontSize: 12 }}
+            allowDuplicatedCategory={false}
+            tickFormatter={(d) => d.slice(0, 7)} // e.g., "YYYY-MM"
+          />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
           <Bar dataKey="cumulativeVendorBalance" fill="#99ff00" name={strings.name} />
+          <Brush dataKey="saleDate" height={24} travellerWidth={8} />
         </BarChart>
       </ResponsiveContainer>
     </div>
