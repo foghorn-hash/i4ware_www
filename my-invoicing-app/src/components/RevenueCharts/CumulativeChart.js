@@ -115,8 +115,7 @@ const CumulativeChart = ({ revenueSource }) => {
           />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
-          <Legend />
-
+  
           {/* Dashed line */}
           <Line
             type="monotone"
