@@ -160,10 +160,10 @@ nav {
 
 .overlay-menu a {
   color: #fff;
-  font-size: 2rem;
+  font-size: 1.1em !important;
   text-decoration: none;
   transition: color 0.2s;
-  letter-spacing: 2px;
+  letter-spacing: 1px;
   font-weight: 500;
 }
 
@@ -700,7 +700,7 @@ footer .legal-nav-links a:focus {
 /* Sub-menu links */
 .nav-links .sub-menu li a {
     color: #fff;
-    padding: 0.75em 1.5em;
+    padding: 0.75em 0.80em;
     display: block;
     text-decoration: none;
     transition: background 0.2s;
@@ -715,7 +715,6 @@ footer .legal-nav-links a:focus {
 /* Optional: Arrow indicator for parent */
 .nav-links .menu-item-has-children > a:after {
     content: " ▼";
-    font-size: 0.7em;
     margin-left: 0.3em;
 }
 

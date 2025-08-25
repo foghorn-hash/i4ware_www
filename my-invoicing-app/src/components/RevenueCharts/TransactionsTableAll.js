@@ -100,6 +100,19 @@ const TransactionsTableAll = ({ revenueSource }) => {
     }
   };
 
+  const groupedByDay = Object.values(
+  chartDataMerged.reduce((acc, row) => {
+    const key = row.saleDate.slice(0, 10);           // daily bucket
+    const amount = typeof row.vendorAmount === "number"
+      ? row.vendorAmount
+      : parseFloat(String(row.vendorAmount).replace(/[^\d.-]/g, "")) || 0; // strip € and commas
+
+    if (!acc[key]) acc[key] = { saleDate: key, vendorAmount: 0 };
+    acc[key].vendorAmount += amount;                  // sum (keeps negatives/refunds)
+    return acc;
+  }, {})
+).sort((a, b) => new Date(a.saleDate) - new Date(b.saleDate));
+
   if (loading) return <div className="loading-screen"><img src={LOADING} alt={strings.loading} /></div>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
@@ -109,25 +122,29 @@ const TransactionsTableAll = ({ revenueSource }) => {
       {/* Bar Chart */}
       <ResponsiveContainer width="100%" height={420}>
         <BarChart
-          data={chartDataMerged}
+          data={groupedByDay}
           margin={{ top: 16, right: 24, left: 16, bottom: 70 }}
-          barCategoryGap="20%"       // more space between bars
+          barCategoryGap="20%"
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="saleDate"
-            angle={-45}               // easier to read than -90
+            angle={-45}
             textAnchor="end"
-            interval="preserveStartEnd" // auto-skip in between
-            minTickGap={20}           // force gaps between ticks
+            interval="preserveStartEnd"
+            minTickGap={20}
             tickMargin={10}
-            tick={{ fontSize: 12 }}   // bump size a bit
+            tick={{ fontSize: 12 }}
             allowDuplicatedCategory={false}
-            tickFormatter={(d) => d.slice(0, 7)} // e.g. "YYYY-MM" (shorter)
-            height={70}       // ensures labels don’t collide with Brush
+            tickFormatter={(d) => d}  // shows full YYYY-MM-DD
+            height={70}
           />
           <YAxis />
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip
+            formatter={(v) => [`${Number(v).toFixed(2)} €`, "Vendor Amount"]} // add € only here
+            labelFormatter={(d) => d}
+            content={<CustomTooltip />}
+          />
           <Bar dataKey="vendorAmount" fill="#007bff" name={strings.name} />
           <Brush dataKey="saleDate" height={24} travellerWidth={8} />
         </BarChart>
