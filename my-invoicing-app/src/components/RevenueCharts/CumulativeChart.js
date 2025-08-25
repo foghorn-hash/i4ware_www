@@ -3,14 +3,15 @@ import axios from "axios";
 import Table from 'react-bootstrap/Table';
 import LOADING from '../../tube-spinner.svg';
 import {
-  ResponsiveContainer,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Bar,
-  Brush,
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer, 
+  Brush
 } from "recharts";
 import { API_BASE_URL, API_DEFAULT_LANGUAGE } from "../../constants/apiConstants";
 // ES6 module syntax
@@ -75,6 +76,7 @@ const CumulativeChart = ({ revenueSource }) => {
 
   const fetchCumulativeData = async () => {
     try {
+      setLoading(true); setError(null);
       const response = await axios.get(
         `${API_BASE_URL}/api/reports/cumulative-sales?source=${revenueSource}`
       ); // Pass revenueSource to backend
@@ -93,8 +95,12 @@ const CumulativeChart = ({ revenueSource }) => {
     <div>
       <h2 className="calculator-title">{strings.title}</h2>
       <ResponsiveContainer width="100%" height={520}>
-        <BarChart data={chartData} margin={{ top: 16, right: 24, left: 16, bottom: 80 }}>
+        <LineChart
+          data={chartData}
+          margin={{ top: 16, right: 24, left: 16, bottom: 80 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
+
           <XAxis
             dataKey="saleDate"
             angle={-45}
@@ -104,14 +110,29 @@ const CumulativeChart = ({ revenueSource }) => {
             tickMargin={10}
             tick={{ fontSize: 12 }}
             allowDuplicatedCategory={false}
-            tickFormatter={(d) => d.slice(0, 7)} // e.g., "YYYY-MM"
-            height={70}       // ensures labels don’t collide with Brush
+            tickFormatter={(d) => d.slice(0, 7)} // format YYYY-MM
+            height={70}
           />
           <YAxis />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="cumulativeVendorBalance" fill="#99ff00" name={strings.name} />
+          <Legend />
+
+          {/* Dashed line */}
+          <Line
+            type="monotone"
+            dataKey="cumulativeVendorBalance"
+            name={strings.name}
+            stroke="#8884d8"
+            strokeDasharray="5 5"     // dashed pattern
+            dot={false}               // optional: remove dots for cleaner lines
+            strokeWidth={2}
+          />
+
+          {/* Optional: multiple lines for comparisons */}
+          {/* <Line type="monotone" dataKey="anotherMetric" stroke="#82ca9d" strokeDasharray="3 4 5 2" dot={false} /> */}
+
           <Brush dataKey="saleDate" height={24} travellerWidth={8} />
-        </BarChart>
+        </LineChart>
       </ResponsiveContainer>
     </div>
   );

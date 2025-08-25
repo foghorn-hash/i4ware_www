@@ -15,9 +15,15 @@ import { API_BASE_URL, API_DEFAULT_LANGUAGE } from "../../constants/apiConstants
 import LocalizedStrings from "react-localization";
 
 let strings = new LocalizedStrings({
-  en: { title: "Monthly Income", loading: "Loading...", error: "Failed to fetch monthly income." },
-  fi: { title: "Kuukausitulot", loading: "Ladataan...", error: "Kuukausitulojen hakeminen epäonnistui." },
-  sv: { title: "Månadsinkomst", loading: "Laddar...", error: "Misslyckades att hämta månadsinkomst." },
+  en: { title: "Monthly Income", loading: "Loading...", error: "Failed to fetch monthly income.", total: "Total",
+        src_all: "All Sources", src_atlassian: "Atlassian Pty Ltd", src_kela: "Pension Insurance",
+        src_hourly: "Hourly Rate Customers", src_grandparents: "Grandparents' Inheritance" },
+  fi: { title: "Kuukausitulot", loading: "Ladataan...", error: "Kuukausitulojen hakeminen epäonnistui.", total: "Yhteensä",
+        src_all: "Kaikki lähteet", src_atlassian: "Atlassian Pty Ltd", src_kela: "Eläkevakuutus",
+        src_hourly: "Tuntiveloitusasiakkaat", src_grandparents: "Isovanhempien perintö" },
+  sv: { title: "Månadsinkomst", loading: "Laddar...", error: "Misslyckades att hämta månadsinkomst.", total: "Totalt",
+        src_all: "Alla källor", src_atlassian: "Atlassian Pty Ltd", src_kela: "Pensionsförsäkring",
+        src_hourly: "Timdebiterade kunder", src_grandparents: "Mor- och farföräldrars arv" },
 });
 
 const MonthlyIncomeForYear = ({ revenueSource = "all", year = new Date().getFullYear() }) => {
@@ -26,6 +32,7 @@ const MonthlyIncomeForYear = ({ revenueSource = "all", year = new Date().getFull
   const [yearTotal, setYearTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const keyToSourceLabel = (key) => strings[`src_${key}`] || key;
 
   // track <html lang="">
   useEffect(() => {
@@ -61,9 +68,11 @@ const MonthlyIncomeForYear = ({ revenueSource = "all", year = new Date().getFull
   return (
     <div>
       <h2 className="calculator-title">
-        {strings.title} — {year} ({revenueSource})
+        {strings.title} — {year} ({keyToSourceLabel(revenueSource)})
       </h2>
-      <div style={{ marginBottom: 8 }}><strong>Total:</strong> {yearTotal.toFixed(2)} €</div>
+      <div style={{ marginBottom: 8 }}>
+        <strong>{strings.total}:</strong> {yearTotal.toFixed(2)} €
+      </div>
 
       <ResponsiveContainer width="100%" height={420}>
         <BarChart data={data} margin={{ top: 16, right: 24, left: 16, bottom: 24 }} barCategoryGap="25%">
@@ -71,7 +80,7 @@ const MonthlyIncomeForYear = ({ revenueSource = "all", year = new Date().getFull
           <XAxis dataKey="label" tickMargin={8} height={40} />
           <YAxis />
           <Tooltip formatter={(v)=>[`${Number(v).toFixed(2)} €`, "Total"]} />
-          <Bar dataKey="total" name="Total" fill="#ff006e" />
+          <Bar dataKey="total" name="Total" fill="#d71bddff" />
         </BarChart>
       </ResponsiveContainer>
     </div>

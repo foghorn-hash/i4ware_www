@@ -44,6 +44,7 @@ const PieChartComponent = ({ revenueSource }) => {
 
   const fetchPieData = async () => {
     try {
+      setLoading(true); setError(null);
       const response = await axios.get(
         `${API_BASE_URL}/api/reports/sales-distribution?source=${revenueSource}`
       ); // Pass revenueSource to backend

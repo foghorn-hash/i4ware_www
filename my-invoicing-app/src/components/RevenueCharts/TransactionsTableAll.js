@@ -79,6 +79,7 @@ const TransactionsTableAll = ({ revenueSource }) => {
 
   const fetchMergedTransactions = async () => {
     try {
+      setLoading(true); setError(null);
       const response = await axios.get(
         `${API_BASE_URL}/api/reports/merged-sales?source=${revenueSource}`
       ); // Pass revenueSource to backend
@@ -120,10 +121,10 @@ const TransactionsTableAll = ({ revenueSource }) => {
     <div>
       <h2 className="calculator-title">{strings.title}</h2>
       {/* Bar Chart */}
-      <ResponsiveContainer width="100%" height={420}>
+      <ResponsiveContainer width="100%" height={620}>
         <BarChart
           data={groupedByDay}
-          margin={{ top: 16, right: 24, left: 16, bottom: 70 }}
+          margin={{ top: 16, right: 24, left: 16, bottom: 120 }}
           barCategoryGap="20%"
         >
           <CartesianGrid strokeDasharray="3 3" />
@@ -141,7 +142,7 @@ const TransactionsTableAll = ({ revenueSource }) => {
           />
           <YAxis />
           <Tooltip
-            formatter={(v) => [`${Number(v).toFixed(2)} €`, "Vendor Amount"]} // add € only here
+            formatter={(v) => [`${Number(v).toFixed(2)} €`, strings.name]} // add € only here
             labelFormatter={(d) => d}
             content={<CustomTooltip />}
           />

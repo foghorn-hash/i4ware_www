@@ -76,7 +76,9 @@ const TransactionsTable = ({ revenueSource }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true); setError(null);
       try {
+        setLoading(true); setError(null);
         const response = await axios.get(
           `${API_BASE_URL}/api/reports/sales-report?source=${revenueSource}`
         );

@@ -103,14 +103,16 @@ useEffect(() => {
       {/* Tables & Charts */}
       <TransactionsTable revenueSource={revenueSource} />
       <select
-          className="revenue-source-select"
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-          aria-label={strings.year}
-        >
-          {availableYears.map((y) => (
-            <option key={y} value={y}>{y}</option>
-          ))}
+        className="revenue-source-select"
+        value={year}
+        onChange={(e) => setYear(Number(e.target.value))}
+        aria-label={strings.year}
+      >
+        {availableYears.map((y) => (
+          <option key={y} value={y}>
+            {strings.year} {y}
+          </option>
+        ))}
       </select>
       <MonthlyIncomeForYear revenueSource={revenueSource} year={year} />
       <TransactionsTableAll revenueSource={revenueSource} />
