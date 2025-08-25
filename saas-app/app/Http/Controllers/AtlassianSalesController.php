@@ -9,6 +9,9 @@ use App\Models\Expense;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Carbon\CarbonImmutable;
 
 
 class AtlassianSalesController extends Controller
@@ -92,6 +95,100 @@ class AtlassianSalesController extends Controller
             return response()->json($data);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function getMergedMonthlyIncomeAllYears(Request $request)
+    {
+        try {
+            $year   = (int) $request->query('year', now()->year);
+            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly', 'grandparents'
+
+            // --- Fetch Atlassian sales (if requested) ---
+            $normalizedAtlassianSales = [];
+            if ($source === 'all' || $source === 'atlassian') {
+                $atlassianSales = $this->fetchTransactions(); // expects ['root' => [ ['saleDate' => ..., 'vendorAmount' => ...], ... ]]
+                $normalizedAtlassianSales = array_map(function ($tx) {
+                    return [
+                        'saleDate'     => $tx['saleDate'],
+                        'vendorAmount' => (float) $tx['vendorAmount'],
+                    ];
+                }, $atlassianSales['root'] ?? []);
+            }
+
+            // --- Fetch local sales (if requested) ---
+            $localSales = collect();
+            if (in_array($source, ['all', 'kela', 'hourly', 'grandparents'], true)) {
+                $query = Invoice::orderBy('due_date');
+                if ($source === 'kela') {
+                    $query->whereIn('customer_id', [1, 7]);
+                } elseif ($source === 'hourly') {
+                    $query->whereNotIn('customer_id', [1, 7, 8]);
+                } elseif ($source === 'grandparents') {
+                    $query->where('customer_id', 8);
+                }
+                $localSales = $query->get()->map(function ($invoice) {
+                    return [
+                        'saleDate'     => $invoice->due_date,                 // date/datetime
+                        'vendorAmount' => (float) $invoice->total_including_vat,
+                    ];
+                });
+            }
+
+            // --- Merge and keep only the requested year ---
+            $merged = collect($normalizedAtlassianSales)
+                ->merge($localSales)
+                ->filter(function ($row) use ($year) {
+                    try {
+                        $d = CarbonImmutable::parse($row['saleDate']);
+                        return $d->year === $year;
+                    } catch (\Throwable $e) {
+                        return false; // skip bad dates
+                    }
+                })
+                ->map(function ($row) {
+                    $d = CarbonImmutable::parse($row['saleDate']);
+                    return [
+                        'year'         => $d->year,
+                        'month'        => $d->month, // 1..12
+                        'vendorAmount' => (float) $row['vendorAmount'],
+                    ];
+                });
+
+            // --- Aggregate by month ---
+            $byMonth = $merged
+                ->groupBy('month')
+                ->map(function (Collection $items) {
+                    return $items->sum('vendorAmount');
+                });
+
+            $yearTotal = (float) $byMonth->sum();
+
+            // --- Build 12 rows, zero-fill, add label & percentage ---
+            $months = collect(range(1, 12))->map(function ($m) use ($byMonth, $yearTotal) {
+                $total = (float) ($byMonth[$m] ?? 0);
+                return [
+                    'month'            => $m,
+                    'label'            => CarbonImmutable::create(null, $m, 1)->format('M'),
+                    'totalIncome'      => round($total, 2),
+                    'incomePercentage' => $yearTotal > 0 ? round(($total / $yearTotal) * 100, 2) : 0.0,
+                ];
+            });
+
+            return response()->json([
+                'status'    => 'success',
+                'year'      => $year,
+                'source'    => $source,
+                'yearTotal' => round($yearTotal, 2),
+                'root'      => $months->values(), // 12 items Jan..Dec
+            ], 200);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Failed to fetch merged monthly income.',
+                'error'   => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -389,6 +486,171 @@ class AtlassianSalesController extends Controller
             return response()->json(['root' => $cumulativeData]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+        /**
+     * GET /api/reports/income-by-month-all-years?source=all
+     * source: 'all' | 'atlassian' | 'kela' | 'hourly' | 'grandparents'
+     *
+     * Response:
+     * {
+     *   status: "success",
+     *   source: "all",
+     *   years: [2019, 2020, 2021, ...],
+     *   root: [
+     *     {"label":"Jan","2019":123.45,"2020":0,...},
+     *     ... (12 rows) ...
+     *     {"label":"Dec","2019":10.00,"2020":5.25,...}
+     *   ]
+     * }
+     */
+    public function getIncomeByMonthAllYears(Request $request)
+    {
+        try {
+            $year   = (int) $request->query('year', now()->year);
+            $source = $request->query('source', 'all');
+
+            // --- Atlassian (if requested) ---
+            $atlRows = [];
+            if ($source === 'all' || $source === 'atlassian') {
+                // Must return: ['root' => [ ['saleDate' => 'YYYY-MM-DD', 'vendorAmount' => 123.45], ... ]]
+                $atl = $this->fetchTransactions();
+                foreach (($atl['root'] ?? []) as $tx) {
+                    $atlRows[] = [
+                        'saleDate'     => $tx['saleDate'] ?? null,
+                        'vendorAmount' => (float) ($tx['vendorAmount'] ?? 0),
+                    ];
+                }
+            }
+
+            // --- Local invoices (if requested) ---
+            $localRows = collect();
+            if (in_array($source, ['all','kela','hourly','grandparents'], true)) {
+                $q = Invoice::query()->orderBy('due_date');
+                if ($source === 'kela') {
+                    $q->whereIn('customer_id', [1, 7]);
+                } elseif ($source === 'hourly') {
+                    $q->whereNotIn('customer_id', [1, 7, 8]);
+                } elseif ($source === 'grandparents') {
+                    $q->where('customer_id', 8);
+                }
+
+                $localRows = $q->get()->map(fn($inv) => [
+                    'saleDate'     => $inv->due_date,
+                    'vendorAmount' => (float) $inv->total_including_vat,
+                ]);
+            }
+
+            // --- Merge + keep only requested year ---
+            $merged = collect($atlRows)->merge($localRows)
+                ->filter(function ($r) use ($year) {
+                    try { return CarbonImmutable::parse($r['saleDate'])->year === $year; }
+                    catch (\Throwable $e) { return false; }
+                });
+
+            // --- Sum per month (1..12) ---
+            $perMonth = array_fill(1, 12, 0.0);
+            foreach ($merged as $r) {
+                $d = CarbonImmutable::parse($r['saleDate']);
+                $perMonth[(int)$d->month] += (float) ($r['vendorAmount'] ?? 0);
+            }
+
+            // --- Build 12 rows (Jan..Dec), zero-filled, + totals ---
+            $labels = [];
+            for ($m=1;$m<=12;$m++) $labels[$m] = CarbonImmutable::create($year, $m, 1)->format('M');
+
+            $root = [];
+            $yearTotal = 0.0;
+            for ($m=1;$m<=12;$m++) {
+                $total = round($perMonth[$m], 2);
+                $yearTotal += $total;
+                $root[] = ['label' => $labels[$m], 'total' => $total];
+            }
+
+            return response()->json([
+                'status'    => 'success',
+                'year'      => $year,
+                'source'    => $source,
+                'yearTotal' => round($yearTotal, 2),
+                'root'      => $root, // 12 items
+            ], 200);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Failed to fetch merged monthly sums.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+     /**
+     * GET /api/reports/income-years?source=all
+     * source: 'all' | 'atlassian' | 'kela' | 'hourly' | 'grandparents'
+     *
+     * Response:
+     * { "status":"success", "source":"all", "years":[2003,2004,...,2025] }
+     */
+    public function getIncomeYears(Request $request)
+    {
+        try {
+            $source = $request->query('source', 'all');
+
+            // ---- Invoices (local DB) ----
+            $invoiceQuery = Invoice::query();
+            if ($source === 'kela') {
+                $invoiceQuery->whereIn('customer_id', [1, 7]);
+            } elseif ($source === 'hourly') {
+                $invoiceQuery->whereNotIn('customer_id', [1, 7, 8]);
+            } elseif ($source === 'grandparents') {
+                $invoiceQuery->where('customer_id', 8);
+            }
+            // DISTINCT years from due_date
+            $invoiceYears = $invoiceQuery
+                ->selectRaw('DISTINCT YEAR(due_date) as y')
+                ->orderBy('y')
+                ->pluck('y')
+                ->map(fn ($y) => (int) $y)
+                ->all();
+
+            // ---- Atlassian (optional) ----
+            $atlassianYears = [];
+            if ($source === 'all' || $source === 'atlassian') {
+                // Expected: ['root' => [ ['saleDate' => 'YYYY-MM-DD...', 'vendorAmount' => ...], ... ]]
+                $atl = $this->fetchTransactions();
+                foreach (($atl['root'] ?? []) as $tx) {
+                    if (!empty($tx['saleDate'])) {
+                        try {
+                            $y = CarbonImmutable::parse($tx['saleDate'])->year;
+                            $atlassianYears[] = (int) $y;
+                        } catch (\Throwable $e) {
+                            // skip bad dates
+                        }
+                    }
+                }
+            }
+
+            // ---- Merge, unique, sort ----
+            $years = collect($invoiceYears)
+                ->merge($atlassianYears)
+                ->unique()
+                ->sort()
+                ->values()
+                ->all();
+
+            return response()->json([
+                'status' => 'success',
+                'source' => $source,
+                'years'  => $years, // e.g. [2003, 2004, ..., 2025]
+            ], 200);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Failed to fetch years.',
+                'error'   => $e->getMessage(),
+            ], 500);
         }
     }
 

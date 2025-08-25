@@ -23,5 +23,6 @@ Route::group(['prefix' => 'reports', 'middleware' => 'CORS'], function ($router)
 	Route::get('/combined-sales', [AtlassianSalesController::class, 'getCombinedSales']);
 	Route::get('/merged-sales', [AtlassianSalesController::class, 'getMergedSales']);
 	Route::get('/sales-distribution', [AtlassianSalesController::class, 'getYearlySalesDistribution']);
-	Route::get('/solvency-data', [AtlassianSalesController::class, 'getSolvencyData']);
+	Route::get('/merged-monthly-sums', [AtlassianSalesController::class, 'getIncomeByMonthAllYears']);
+	Route::get('/income-years', [AtlassianSalesController::class, 'getIncomeYears']);
 });
