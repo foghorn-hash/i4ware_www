@@ -349,4 +349,167 @@ function i4waresoftware_widgets_init() {
     ) );
 }
 add_action( 'widgets_init', 'i4waresoftware_widgets_init' );
+
+// === [ Shortcode: i4ware_pricing ] — Polylang-ready =================================
+if (!function_exists('i4w_t')) {
+  function i4w_t($text, $context = 'i4ware_pricing') {
+    if (function_exists('pll__')) return pll__($text);
+    return __($text, 'i4ware'); // fallback
+  }
+}
+
+add_action('init', function () {
+  if (!function_exists('pll_register_string')) return;
+
+  // Otsikot & peruskuvaukset
+  $strings = [
+    'Basic','Premium','Vaativampi kokonaisuus',
+    'Kaikki, mitä pienempi yritys tai aloitteleva yritys tarvitsee menestyäkseen.',
+    'Kaikki, mitä kasvuhaluiset pk-yritykset ja startupit tarvitsevat menestyäkseen.',
+    'Kerro meille lisää projektistasi niin annamme tarjouksen vaativastakin projektista.',
+    'Ota yhteyttä','Kysy tarjous','Kysy tarjous',
+    '+ alv 25,5%','Kysy tarjous'
+  ];
+
+  // Featuret (pidä listojen kirjaimet identtisinä shortcode-oletuksiin)
+  $features = [
+    'Visuaalisen ilmeen suunnittelu',
+    'Sivuston rakennus (WordPress)',
+    '1 viikon toimitus','1–5 sivua','Lisäosat ja analytiikka',
+    '1–2 viikon toimitus','6–20 sivua',
+    '2–4 viikon toimitus','Rajaton määrä sivuja',
+  ];
+
+  foreach (array_merge($strings, $features) as $s) {
+    pll_register_string('i4ware_pricing', $s, 'i4ware_pricing');
+  }
+});
+
+if (!function_exists('i4ware_pricing_shortcode')) {
+  function i4ware_pricing_shortcode($atts) {
+    // Normalisoi attribuutit: nollaa oudot välit ja lainausmerkit
+    $atts = is_array($atts) ? $atts : [];
+    $norm_keys = [];
+    $norm_vals = [];
+    foreach ($atts as $k => $v) {
+    $k = trim( wp_strip_all_tags( (string)$k ) );
+    $v = trim( wp_strip_all_tags( (string)$v ) );
+    // Muunna “älykkäät” lainausmerkit tavallisiksi
+    $v = str_replace(['“','”','„','‟','’','‘'], '"', $v);
+    $norm_keys[] = $k;
+    $norm_vals[] = $v;
+    }
+    $atts = array_combine($norm_keys, $norm_vals);
+
+    // Tee avaimista varmuuden vuoksi pienaakkoset
+    $atts = array_change_key_case($atts, CASE_LOWER);
+
+    $a = shortcode_atts([
+      'currency'       => '€',
+      'vat_note'       => i4w_t('+ alv 25,5%'),
+      // Linkitys: suositus käyttää contact_page_id:tä (WP-sivun ID)
+      'contact_page_id'=> '',
+      'contact_url'    => '/ota-yhteytta/',
+
+      // Hinnat
+      'basic_price'    => '950',
+      'premium_min'    => '1250',
+      'premium_max'    => '6500',
+
+      // Napit
+      'basic_btn'      => i4w_t('Ota yhteyttä'),
+      'premium_btn'    => i4w_t('Kysy tarjous'),
+      'enterprise_btn' => i4w_t('Kysy tarjous'),
+
+      // Otsikot & kuvaukset
+      'basic_title'    => i4w_t('Basic'),
+      'basic_desc'     => i4w_t('Kaikki, mitä pienempi yritys tai aloitteleva yritys tarvitsee menestyäkseen.'),
+      'premium_title'  => i4w_t('Premium'),
+      'premium_desc'   => i4w_t('Kaikki, mitä kasvuhaluiset pk-yritykset ja startupit tarvitsevat menestyäkseen.'),
+      'enterprise_title'=> i4w_t('Vaativampi kokonaisuus'),
+      'enterprise_desc' => i4w_t('Kerro meille lisää projektistasi niin annamme tarjouksen vaativastakin projektista.'),
+
+      // Feature-listat
+      'features_basic' =>
+        'Visuaalisen ilmeen suunnittelu,Sivuston rakennus (WordPress),1 viikon toimitus,1–5 sivua,Lisäosatä',
+      'features_premium' =>
+        'Visuaalisen ilmeen suunnittelu,Sivuston rakennus (WordPress),1–2 viikon toimitus,6–20 sivua,Lisäosatä',
+      'features_enterprise' =>
+        'Visuaalisen ilmeen suunnittelu,Sivuston rakennus (WordPress),2–4 viikon toimitus,Rajaton määrä sivuja,Lisäosat',
+    ], $atts, 'i4ware_pricing');
+
+    // Yritä käyttää contact_page_id:tä ja kielen mukaista käännösversiota
+    $url = '';
+    if (!empty($a['contact_page_id'])) {
+      $page_id = intval($a['contact_page_id']);
+      if (function_exists('pll_get_post')) {
+        $tr_id = pll_get_post($page_id);
+        if ($tr_id) $page_id = $tr_id;
+      }
+      $url = get_permalink($page_id);
+    }
+    if (!$url) $url = esc_url($a['contact_url']);
+
+    // Featuret -> käännä jokainen yksitellen (jos rekisteröity)
+    $mk = function ($csv) {
+      $arr = array_map('trim', explode(',', $csv));
+      return array_map(function($s){ return i4w_t($s); }, $arr);
+    };
+    $feat = [
+      'basic'      => $mk($a['features_basic']),
+      'premium'    => $mk($a['features_premium']),
+      'enterprise' => $mk($a['features_enterprise']),
+    ];
+
+    $currency = esc_html($a['currency']);
+    $vat      = esc_html($a['vat_note']);
+
+    ob_start(); ?>
+    <div class="i4w-pricing">
+      <!-- Basic -->
+      <div class="i4w-card">
+        <div class="i4w-badge"><?php echo esc_html($a['basic_title']); ?></div>
+        <div class="i4w-price">
+          <span class="i4w-num"><?php echo esc_html($a['basic_price']); ?></span> <span class="i4w-cur"><?php echo $currency; ?></span>
+        </div>
+        <div class="i4w-vat"><?php echo $vat; ?></div>
+        <p class="i4w-desc"><?php echo esc_html($a['basic_desc']); ?></p>
+        <a class="i4w-button" href="<?php echo esc_url($url); ?>"><?php echo esc_html($a['basic_btn']); ?></a>
+        <ul class="i4w-features">
+          <?php foreach ($feat['basic'] as $f): ?><li><?php echo esc_html($f); ?></li><?php endforeach; ?>
+        </ul>
+      </div>
+
+      <!-- Premium -->
+      <div class="i4w-card i4w-featured">
+        <div class="i4w-badge"><?php echo esc_html($a['premium_title']); ?></div>
+        <div class="i4w-price">
+          <span class="i4w-num"><?php echo esc_html($a['premium_min']); ?> <?php echo $currency; ?>–<?php echo esc_html($a['premium_max']); ?> <?php echo $currency; ?></span>
+        </div>
+        <div class="i4w-vat"><?php echo $vat; ?></div>
+        <p class="i4w-desc"><?php echo esc_html($a['premium_desc']); ?></p>
+        <a class="i4w-button" href="<?php echo esc_url($url); ?>"><?php echo esc_html($a['premium_btn']); ?></a>
+        <ul class="i4w-features">
+          <?php foreach ($feat['premium'] as $f): ?><li><?php echo esc_html($f); ?></li><?php endforeach; ?>
+        </ul>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="i4w-card">
+        <div class="i4w-badge"><?php echo esc_html($a['enterprise_title']); ?></div>
+        <div class="i4w-price"><span class="i4w-num i4w-ask"><?php echo esc_html(i4w_t('Kysy tarjous')); ?></span></div>
+        <div class="i4w-vat"><?php echo $vat; ?></div>
+        <p class="i4w-desc"><?php echo esc_html($a['enterprise_desc']); ?></p>
+        <a class="i4w-button" href="<?php echo esc_url($url); ?>"><?php echo esc_html($a['enterprise_btn']); ?></a>
+        <ul class="i4w-features">
+          <?php foreach ($feat['enterprise'] as $f): ?><li><?php echo esc_html($f); ?></li><?php endforeach; ?>
+        </ul>
+      </div>
+    </div>
+    <?php
+    return ob_get_clean();
+  }
+  add_shortcode('i4ware_pricing', 'i4ware_pricing_shortcode');
+}
+
 ?>
