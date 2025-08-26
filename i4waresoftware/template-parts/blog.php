@@ -68,6 +68,11 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
     </div>
 </div>
 <div class="footer-social">
+    <?php
+    echo ($lang === 'fi')
+        ? esc_html__('YouTube', 'i4waresoftware')
+        : esc_html__('YouTube', 'i4waresoftware');
+    ?>
     <!-- Social Media Links -->
     <a href="https://www.youtube.com/@i4wareSoftware-ot5jk" target="_blank" rel="noopener" title="YouTube" style="margin-right:10px;">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-youtube" viewBox="0 0 16 16">

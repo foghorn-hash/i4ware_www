@@ -1461,7 +1461,7 @@ h2.wp-block-heading {
     flex-direction: column; /* Stack h3 above the link */
     align-items: center; /* Align items to the left */
     gap: 0; /* Remove extra gap between h3 and link */
-    float: left;
+    float: right;
     margin-bottom: 12px;
 }
 
@@ -1487,6 +1487,6 @@ h2.wp-block-heading {
 .footer-social svg {
     vertical-align: middle;
     fill: currentColor;
-    width: 24px;
-    height: 24px;
+    width: 60px;
+    height: 60px;
 }
