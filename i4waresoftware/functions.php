@@ -375,7 +375,7 @@ add_action('init', function () {
   $features = [
     'Visuaalisen ilmeen suunnittelu',
     'Sivuston rakennus (WordPress)',
-    '1 viikon toimitus','1–5 sivua','Lisäosat ja analytiikka',
+    '1 viikon toimitus','1–5 sivua','Lisäosat',
     '1–2 viikon toimitus','6–20 sivua',
     '2–4 viikon toimitus','Rajaton määrä sivuja',
   ];
@@ -431,9 +431,9 @@ if (!function_exists('i4ware_pricing_shortcode')) {
 
       // Feature-listat
       'features_basic' =>
-        'Visuaalisen ilmeen suunnittelu,Sivuston rakennus (WordPress),1 viikon toimitus,1–5 sivua,Lisäosatä',
+        'Visuaalisen ilmeen suunnittelu,Sivuston rakennus (WordPress),1 viikon toimitus,1–5 sivua,Lisäosat',
       'features_premium' =>
-        'Visuaalisen ilmeen suunnittelu,Sivuston rakennus (WordPress),1–2 viikon toimitus,6–20 sivua,Lisäosatä',
+        'Visuaalisen ilmeen suunnittelu,Sivuston rakennus (WordPress),1–2 viikon toimitus,6–20 sivua,Lisäosat',
       'features_enterprise' =>
         'Visuaalisen ilmeen suunnittelu,Sivuston rakennus (WordPress),2–4 viikon toimitus,Rajaton määrä sivuja,Lisäosat',
     ], $atts, 'i4ware_pricing');
