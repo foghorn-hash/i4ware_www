@@ -3,6 +3,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import InvoicingCalculator from './components/InvoicingCalculator/InvoicingCalculator';
 import LegalFeeCalculator from './components/LegalFeeCalculator/LegalFeeCalculator';
+import YELCalculator from './components/YelCalculator/YelCalculator';
 import Charts from './components/RevenueCharts/Charts.js';
 import { API_DEFAULT_LANGUAGE } from "./constants/apiConstants";
 // ES6 module syntax
@@ -41,6 +42,7 @@ function App() {
     <div className="App">
       <InvoicingCalculator />
       <LegalFeeCalculator />
+      <YELCalculator />
       <Charts />
     </div>
   );
