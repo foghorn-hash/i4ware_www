@@ -242,6 +242,8 @@ export default function YelCalculator() {
                 </Row>
               </Form>
         </Col>
+
+        {/* Right: results */}
         <Col lg={6}>
 
               <div className="fw-medium text-primary mb-2">{strings.newEntrepreneur}</div>
