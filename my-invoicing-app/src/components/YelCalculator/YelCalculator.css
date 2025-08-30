@@ -1,0 +1,187 @@
+/* YelCalculator.css — toimii sellaisenaan nykyisen React-Bootstrap koodisi kanssa */
+
+/* ---------- Layout & otsikko ---------- */
+.yelb { max-width: 1160px; }
+.yelb .display-6.fw-bold{
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin-bottom: .75rem;
+  color: #0f172a;
+}
+@media (prefers-color-scheme: dark){
+  .yelb .display-6.fw-bold{ color:#e5e7eb; }
+}
+
+/* ---------- Kortit yleisesti ---------- */
+.yelb .card.shadow-sm{
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(2,6,23,.06);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.yelb .card.shadow-sm:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(2,6,23,.10);
+  border-color: #dbe2f1;
+}
+.yelb .card.shadow-sm .card-body{ padding: 18px 22px; }
+
+@media (prefers-color-scheme: dark){
+  .yelb .card.shadow-sm{
+    background:#0f172a;
+    border-color:#1f2937;
+    box-shadow: 0 8px 28px rgba(0,0,0,.35);
+  }
+}
+
+/* ---------- Vasen paneeli (ensimmäinen card) ---------- */
+.yelb .row.g-4 > .col-lg-6:first-child .card.shadow-sm{
+  background:#fff;
+}
+.yelb .row.g-4 > .col-lg-6:first-child .form-label{
+  font-size:11px; text-transform:uppercase; letter-spacing:.06em;
+  color:#64748b; margin-bottom:.25rem; font-weight:600;
+}
+@media (prefers-color-scheme: dark){
+  .yelb .row.g-4 > .col-lg-6:first-child .card.shadow-sm{ background:#0f172a; }
+  .yelb .row.g-4 > .col-lg-6:first-child .form-label{ color:#94a3b8; }
+}
+
+/* Inputs & selects */
+.yelb .form-control,
+.yelb .form-select{
+  border-radius: 10px;
+  border:1px solid #e5e7eb;
+  padding:.6rem .75rem;
+}
+.yelb .form-control:focus,
+.yelb .form-select:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 .2rem rgba(37,99,235,.18);
+}
+
+/* Checkbox linjaan labelin kanssa */
+.yelb .form-check-input{ cursor:pointer; }
+
+/* Reset-nappi */
+.yelb .btn-outline-primary{
+  border-radius:10px; font-weight:600;
+  padding:.5rem 1rem;
+}
+
+/* Pieni lisätila rivien väliin */
+.yelb .row.gy-3 > [class^="col"]{ margin-top:.15rem; }
+
+/* ---------- Oikean puolen tuloskortit ---------- */
+/* “Linkkityylinen” alaotsikko korttien sisällä */
+.yelb .fw-medium.text-primary{ color:#2563eb !important; font-weight:600; }
+
+/* Rivit korttien sisällä – erotinviiva */
+.yelb .d-flex.justify-content-between.align-items-center.py-2 + 
+.yelb .d-flex.justify-content-between.align-items-center.py-2{
+  border-top:1px dashed rgba(100,116,139,.25);
+}
+
+/* Vasemman puolen teksti */
+.yelb .small{ color:#374151; }
+@media (prefers-color-scheme: dark){
+  .yelb .small{ color:#cbd5e1; }
+}
+
+/* Oikean puolen arvot isolla ja lihavoituna */
+.yelb .fs-5.fw-bold,
+.yelb .fs-4.fw-bold{
+  letter-spacing:-.01em;
+  color:#111827;
+}
+@media (prefers-color-scheme: dark){
+  .yelb .fs-5.fw-bold,
+  .yelb .fs-4.fw-bold{ color:#e5e7eb; }
+}
+
+/* “/mo, /kk” hieman vaaleammaksi */
+.yelb .fw-normal{ color:#6b7280; }
+@media (prefers-color-scheme: dark){
+  .yelb .fw-normal{ color:#9ca3af; }
+}
+
+/* ---------- Pieni sisääntuloanimaatio ---------- */
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(6px);}
+  to{opacity:1; transform:translateY(0);}
+}
+.yelb .card.shadow-sm, .yelb .display-6.fw-bold{ animation:fadeUp .25s ease both; }
+
+.yelb .row.gy-3 {
+  align-items: flex-end;   /* kentät linjaan alareunasta */
+}
+
+.yelb .row.gy-3 > .col-md-3 {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0 !important; /* estetään ylimääräinen väli */
+}
+
+@media (min-width: 768px) {
+  .yelb .row.gy-3 {
+    flex-wrap: nowrap;
+  }
+  .yelb .row.gy-3 > .col-md-3 {
+    flex: 1;
+    max-width: 100%; /* neljä vierekkäin */
+  }
+}
+
+/* --- Container täysleveäksi --- */
+.yelb.container,
+.yelb .row,
+.yelb .col,
+.yelb .card,
+.yelb .card-body,
+.yelb form {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Input-kontrollit myös koko leveyteen */
+.yelb .form-control,
+.yelb .form-select {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Rivitetään neljä syötekenttää samalle riville >= md */
+@media (min-width: 768px) {
+  .yelb .row.inputs-inline {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .yelb .row.inputs-inline > [class*="col"] {
+    flex: 1 1 0;
+    max-width: 100%;
+  }
+}
+
+/* Yhtenäinen korkeus kentille */
+.yelb .form-control,
+.yelb .form-select {
+  height: 40px;
+}
+
+.reset {
+  margin-top: 24px;
+}
+
+.align-items-center {
+  margin-bottom: 6px;
+}
+
+.yelb .form-control {
+  margin-bottom: 0 !important;
+}
+
+.yelb .form-label {
+  margin-bottom: 4 !important;
+}
