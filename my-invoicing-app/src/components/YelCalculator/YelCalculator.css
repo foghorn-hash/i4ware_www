@@ -2,6 +2,7 @@
 
 /* ---------- Layout & otsikko ---------- */
 .yelb { max-width: 1160px; }
+.yelb .card { background: #1a1a1a; }
 .yelb .display-6.fw-bold{
   letter-spacing: -0.02em;
   text-align: center;
@@ -12,6 +13,15 @@
   .yelb .display-6.fw-bold{ color:#e5e7eb; }
 }
 
+.yel-title { 
+  color: white !important; 
+}
+.new-entrepreneur {
+  color: white !important; 
+}
+.text-white {
+  color: white !important; 
+}
 /* ---------- Kortit yleisesti ---------- */
 .yelb .card.shadow-sm{
   border-radius: 16px;
@@ -184,4 +194,5 @@
 
 .yelb .form-label {
   margin-bottom: 4 !important;
+  color: white !important;
 }

@@ -1516,9 +1516,9 @@ h2.wp-block-heading {
 }
 .i4w-badge{font-weight:700;color:#ff6a3d;margin-bottom:6px}
 .i4w-price{font-size:28px;font-weight:800;line-height:1.1;margin:2px 0}
-.i4w-num{font-size:40px}
-.i4w-cur{font-size:40px;margin-left:3px}
-.i4w-ask{font-size:32px}
+.i4w-num{font-size:25px}
+.i4w-cur{font-size:25px;margin-left:3px}
+.i4w-ask{font-size:25px}
 .i4w-vat{opacity:.65;font-size:13px;margin-bottom:10px}
 .i4w-desc{margin:8px 0 16px 0;color:#333}
 .i4w-button{
@@ -1529,9 +1529,9 @@ h2.wp-block-heading {
 }
 .i4w-button:hover{transform:translateY(-1px);opacity:.95}
 .i4w-features{margin:0;padding:0;list-style:none;display:grid;gap:8px}
-.i4w-features li{padding-left:22px;position:relative}
+.i4w-features li{font-size:smaller;padding-left:22px;position:relative}
 .i4w-features li:before{
-  content:"✓";position:absolute;left:0;top:0;opacity:.9;
+  content:"✓";position:absolute;left:0;top:0;opacity:.9;color:#00db00;
 }
 @media (prefers-color-scheme: dark){
   .i4w-card{background:#0f0f10;border-color:#222;color:#ececec}

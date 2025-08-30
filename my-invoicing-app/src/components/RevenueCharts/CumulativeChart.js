@@ -70,6 +70,7 @@ const CumulativeChart = ({ revenueSource }) => {
   useEffect(() => {
     strings.setLanguage(lang);
   }, [lang]);
+  
     useEffect(() => {
       fetchCumulativeData();
     }, [revenueSource]); // Add revenueSource as dependency

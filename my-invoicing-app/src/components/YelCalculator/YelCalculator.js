@@ -87,7 +87,6 @@ let strings = new LocalizedStrings({
 });
 
 export default function YelCalculator() {
-  const [lang, setLang] = useState(document.documentElement.lang || API_DEFAULT_LANGUAGE);
   const [income, setIncome] = useState(25000);
   const [birthMonth, setBirthMonth] = useState(1);
   const [birthYear, setBirthYear] = useState(1980);
@@ -95,15 +94,19 @@ export default function YelCalculator() {
   const [firstInstallmentMonth, setFirstInstallmentMonth] = useState(1);
   const [isNewEntrepreneur, setIsNewEntrepreneur] = useState(true);
 
-  // keep localization synced with <html lang="">
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setLang(document.documentElement.lang || API_DEFAULT_LANGUAGE);
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
-    return () => observer.disconnect();
-  }, []);
-  useEffect(() => strings.setLanguage(lang), [lang]);
+  const [lang, setLang] = useState(document.documentElement.lang || API_DEFAULT_LANGUAGE);
+  
+    useEffect(() => {
+      const observer = new MutationObserver(() => {
+        setLang(document.documentElement.lang || API_DEFAULT_LANGUAGE);
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+      return () => observer.disconnect();
+    }, []);
+  
+    useEffect(() => {
+      strings.setLanguage(lang);
+    }, [lang]);
 
   // --- Assumptions ---------------------------------------------------------
   const AGE_BAND_A_RATE = 0.241; // <53 or 63+
@@ -155,13 +158,13 @@ export default function YelCalculator() {
         <Card.Body>
       <Row className="mb-3">
         <Col>
-          <h1 className="display-6 fw-bold">{strings.appTitle}</h1>
+          <h1 className="yel-title display-6 fw-bold">{strings.appTitle}</h1>
         </Col>
       </Row>
 
-      <Row className="g-4">
+      <Row className="mb-3">
         {/* Left: inputs */}
-        <Col lg={6}>
+        <div lg={6}>
           
               <Form>
                 <Row className="gy-3 mt-1">
@@ -176,7 +179,7 @@ export default function YelCalculator() {
                     />
                   </Col>
 
-                  <Col md={4} className="d-flex align-items-center">
+                  <Col md={4} className="new-entrepreneur d-flex align-items-center">
                     <Form.Check
                       type="checkbox"
                       id="new-entrepreneur"
@@ -241,18 +244,18 @@ export default function YelCalculator() {
                   </Col>
                 </Row>
               </Form>
-        </Col>
+        </div>
 
         {/* Right: results */}
-        <Col lg={6}>
+        <div className="text-white" lg={6}>
 
-              <div className="fw-medium text-primary mb-2">{strings.newEntrepreneur}</div>
-              <CardRow label={strings.discountedPerInstallment} value={money(discountedPerInstallment)} />
-              <CardRow label={strings.discountedPerYear} value={money(discountedAnnual)} subtle />
+              <div className="text-white fw-medium mb-2">{strings.newEntrepreneur}</div>
+              <CardRow className="text-white" label={strings.discountedPerInstallment} value={money(discountedPerInstallment)} />
+              <CardRow className="text-white" label={strings.discountedPerYear} value={money(discountedAnnual)} subtle />
 
-              <div className="fw-medium text-primary mb-2">{strings.assumptionsTitle}</div>
-              <p className="small text-secondary mb-0">{strings.assumptionsText}</p>
-        </Col>
+              <div className="text-white fw-medium mb-2">{strings.assumptionsTitle}</div>
+              <p className="text-white small text-secondary mb-0">{strings.assumptionsText}</p>
+        </div>
       </Row>
       </Card.Body>
      </Card>
@@ -262,9 +265,9 @@ export default function YelCalculator() {
 
 function CardRow({ label, value, subtle }) {
   return (
-    <div className={`d-flex justify-content-between align-items-center py-2 ${subtle ? "text-secondary" : ""}`}>
-      <div className="small">{label}</div>
-      <div className="fs-5 fw-bold">{value}</div>
+    <div className={`d-flex justify-content-between align-items-center py-2`}>
+      <div className="small text-white">{label}</div>
+      <div className="fs-5 fw-bold text-white">{value}</div>
     </div>
   );
 }
