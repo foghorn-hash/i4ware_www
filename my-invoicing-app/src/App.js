@@ -42,7 +42,6 @@ function App() {
     <div className="App">
       <InvoicingCalculator />
       <LegalFeeCalculator />
-      <YELCalculator />
       <Charts />
     </div>
   );

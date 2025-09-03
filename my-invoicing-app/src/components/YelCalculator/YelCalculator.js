@@ -93,6 +93,7 @@ export default function YelCalculator() {
   const [installments, setInstallments] = useState(12);
   const [firstInstallmentMonth, setFirstInstallmentMonth] = useState(1);
   const [isNewEntrepreneur, setIsNewEntrepreneur] = useState(true);
+  const YEL_MAX_INCOME = 209125;
 
   const [lang, setLang] = useState(document.documentElement.lang || API_DEFAULT_LANGUAGE);
   
@@ -113,6 +114,11 @@ export default function YelCalculator() {
   const AGE_BAND_B_RATE = 0.256; // 53–62
   const NEW_ENTREPRENEUR_DISCOUNT = 0.22; // 22%
 
+  const incomeCapped = useMemo(
+    () => Math.min(Math.max(income, 0), YEL_MAX_INCOME),
+    [income]
+  );
+
   const age = useMemo(() => {
     const today = new Date();
     const m = today.getMonth() + 1;
@@ -122,9 +128,9 @@ export default function YelCalculator() {
   }, [birthMonth, birthYear]);
 
   const rate = age >= 53 && age <= 62 ? AGE_BAND_B_RATE : AGE_BAND_A_RATE;
-  const annualPremium = useMemo(() => income * rate, [income, rate]);
+  const annualPremium = useMemo(() => incomeCapped * rate, [incomeCapped, rate]);
   const perInstallment = useMemo(
-    () => (annualPremium / Math.max(installments, 1)),
+    () => annualPremium / Math.max(installments, 1),
     [annualPremium, installments]
   );
   const discountedAnnual = useMemo(
@@ -132,12 +138,9 @@ export default function YelCalculator() {
     [annualPremium, isNewEntrepreneur]
   );
   const discountedPerInstallment = useMemo(
-    () => (discountedAnnual / Math.max(installments, 1)),
+    () => discountedAnnual / Math.max(installments, 1),
     [discountedAnnual, installments]
   );
-
-  // rough feeler for pension
-  const roughMonthlyPension = useMemo(() => (income * 0.015) / 12, [income]);
 
   const months = ["1","2","3","4","5","6","7","8","9","10","11","12"];
   const numberFmt = new Intl.NumberFormat(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
@@ -176,68 +179,21 @@ export default function YelCalculator() {
                       min={1000}
                       step={500}
                       onChange={(e) => setIncome(parseFloat(e.target.value || "0"))}
+                      className="text-black"
                     />
-                  </Col>
-
-                  <Col md={4} className="new-entrepreneur d-flex align-items-center">
+                    <br />
                     <Form.Check
                       type="checkbox"
                       id="new-entrepreneur"
+                      className="text-white"
                       label={strings.newEntrepreneur}
                       checked={isNewEntrepreneur}
                       onChange={(e) => setIsNewEntrepreneur(e.target.checked)}
                     />
                   </Col>
                 </Row>
-                <Row className="gy-3 mt-1">  
-                  <Col xs={6} md={3}>
-                    <Form.Label className="text-uppercase small fw-semibold">{strings.birthMonth}</Form.Label>
-                    <Form.Select
-                      value={birthMonth}
-                      onChange={(e) => setBirthMonth(parseInt(e.target.value))}
-                    >
-                      {months.map((m, i) => (
-                        <option key={m} value={i + 1}>{m}</option>
-                      ))}
-                    </Form.Select>
-                  </Col>
-
-                  <Col xs={6} md={3}>
-                    <Form.Label className="text-uppercase small fw-semibold">{strings.birthYear}</Form.Label>
-                    <Form.Control
-                      type="number"
-                      value={birthYear}
-                      min={1920}
-                      max={new Date().getFullYear()}
-                      onChange={(e) => setBirthYear(parseInt(e.target.value || "0"))}
-                    />
-                  </Col>
-                </Row>
                 <Row className="gy-3 mt-1"> 
-                  <Col xs={6} md={3}>
-                    <Form.Label className="text-uppercase small fw-semibold">{strings.installments}</Form.Label>
-                    <Form.Select
-                      value={installments}
-                      onChange={(e) => setInstallments(parseInt(e.target.value))}
-                    >
-                      {[1,2,3,4,6,7,8,9,10,11,12].map(n => <option key={n} value={n}>{n}</option>)}
-                    </Form.Select>
-                  </Col>
-                  
-                  <Col xs={6} md={3}>
-                    <Form.Label className="text-uppercase small fw-semibold">{strings.firstInstallmentMonth}</Form.Label>
-                    <Form.Select
-                      value={firstInstallmentMonth}
-                      onChange={(e) => setFirstInstallmentMonth(parseInt(e.target.value))}
-                    >
-                      {months.map((m, i) => (
-                        <option key={m} value={i + 1}>{m}</option>
-                      ))}
-                    </Form.Select>
-                  </Col>
-                </Row>
-                <Row className="gy-3 mt-1"> 
-                  <Col xs="auto">
+                  <Col>
                     <Button variant="outline-primary" className="reset px-4" onClick={reset}>
                       {strings.reset}
                     </Button>
@@ -250,8 +206,8 @@ export default function YelCalculator() {
         <div className="text-white" lg={6}>
 
               <div className="text-white fw-medium mb-2">{strings.newEntrepreneur}</div>
-              <CardRow className="text-white" label={strings.discountedPerInstallment} value={money(discountedPerInstallment)} />
-              <CardRow className="text-white" label={strings.discountedPerYear} value={money(discountedAnnual)} subtle />
+              <CardRow className="text-white mb-0" label={strings.discountedPerInstallment} value={money(discountedPerInstallment)} />
+              <CardRow className="text-white mb-0" label={strings.discountedPerYear} value={money(discountedAnnual)} subtle />
 
               <div className="text-white fw-medium mb-2">{strings.assumptionsTitle}</div>
               <p className="text-white small text-secondary mb-0">{strings.assumptionsText}</p>
@@ -265,9 +221,9 @@ export default function YelCalculator() {
 
 function CardRow({ label, value, subtle }) {
   return (
-    <div className={`d-flex justify-content-between align-items-center py-2`}>
-      <div className="small text-white">{label}</div>
-      <div className="fs-5 fw-bold text-white">{value}</div>
+    <div className={`d-flex`}>
+      <div className="text-white-left">{label}</div>
+      <div className="text-space text-white-left">{value}</div>
     </div>
   );
 }

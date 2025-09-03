@@ -182,10 +182,11 @@
 
 .reset {
   margin-top: 24px;
+  margin-bottom: 24px;
 }
 
 .align-items-center {
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .yelb .form-control {
@@ -196,3 +197,37 @@
   margin-bottom: 4 !important;
   color: white !important;
 }
+
+.text-space {
+  white-space: nowrap;
+  margin-left: 10px;
+}
+
+/* Ensure all card content aligns left */
+.yelb .card-body {
+  text-align: left;
+  display: block; 
+}
+
+/* Make sure CardRow items stick to left */
+.yelb .card-body .d-flex {
+  justify-content: flex-start !important;
+}
+
+/* Labels and values: put some gap instead of space-between */
+.yelb .card-body .d-flex > .small,
+.yelb .card-body .d-flex > .fs-5 {
+  margin-right: 16px; /* space between label and value */
+}
+
+.text-white-left {
+  color: white !important;
+  text-align: left !important;
+}
+
+.text-black-left {
+  color: black !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+
