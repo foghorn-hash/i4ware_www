@@ -274,6 +274,7 @@ nav {
   padding: 4rem 0 6rem;
   position: relative;
   background: url('../dreamstime_xl_153709197.jpg') no-repeat center center/cover;
+  opacity: 0.8;
 }
 
 .hero::before {
@@ -1538,3 +1539,20 @@ h2.wp-block-heading {
   .i4w-desc{color:#ddd}
   .i4w-button{background:#fff;color:#111}
 }
+
+/* Taustavideo */
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+.video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+

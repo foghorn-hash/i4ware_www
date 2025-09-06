@@ -53,3 +53,5 @@
         burger.addEventListener('click', openMenu);
         closeBtn.addEventListener('click', closeMenu);
     </script>
+    <script src="/wp-content/themes/i4waresoftware/assets/js/scripts.js"></script>
+    <script src="https://vjs.zencdn.net/8.16.1/video.min.js"></script>
