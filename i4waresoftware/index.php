@@ -11,16 +11,7 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
           <img src="<?php echo get_template_directory_uri(); ?>/assets/i4ware-software.png" alt="i4ware Software Logo" />
         </a>
       </div>
-      <ul class="nav-links" id="navLinks">
-        <?php
-        wp_nav_menu(array(
-          'theme_location' => 'primary',
-          'menu_class'     => 'nav-links',
-          'container'      => false,
-          'fallback_cb'    => false
-        ));
-        ?>
-      </ul>
+      <?php if ( function_exists('tk_render_mega_menu') ) tk_render_mega_menu(); ?>
       <div class="burger" id="burger"><span></span><span></span><span></span></div>
     </nav>
   </div>
@@ -41,24 +32,24 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
 </div>
 <div class="top-container">
   <div class="container">
-  <?php if ( is_active_sidebar( 'sidebar-2-'.$lang ) ) : ?>
-      <?php dynamic_sidebar( 'sidebar-2-'.$lang ); ?>
-  <?php endif; ?>
-  <?php if ( function_exists( 'pll_the_languages' ) ) : ?>
-      <div class="language-switcher">
-        <?php
-          pll_the_languages( array(
-            'show_flags' => 1,
-            'show_names' => 1,
-            'hide_if_no_translation' => 0,
-            'display_names_as' => 'name',
-            'dropdown' => 0,
-          ) );
-        ?>
-      </div>
+    <?php if ( is_active_sidebar( 'sidebar-2-'.$lang ) ) : ?>
+        <?php dynamic_sidebar( 'sidebar-2-'.$lang ); ?>
     <?php endif; ?>
+    <?php if ( function_exists( 'pll_the_languages' ) ) : ?>
+        <div class="language-switcher">
+          <?php
+            pll_the_languages( array(
+              'show_flags' => 1,
+              'show_names' => 1,
+              'hide_if_no_translation' => 0,
+              'display_names_as' => 'name',
+              'dropdown' => 0,
+            ) );
+          ?>
+        </div>
+      <?php endif; ?>
+    </div>
   </div>
-</div>
 <?php if ( is_front_page() ) : ?>
 <?php
 $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';

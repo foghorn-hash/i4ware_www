@@ -35,10 +35,21 @@
         scrollToTopBtn.onclick = function () {
             window.scrollTo({ top: 0, behavior: "smooth" });
         };
-        const burger=document.getElementById('burger');
-        const overlay=document.getElementById('overlay');
-        const closeBtn=document.getElementById('closeBtn');
-        function openMenu(){overlay.classList.add('open')}
-        function closeMenu(){overlay.classList.remove('open')}
-        burger.addEventListener('click',openMenu);closeBtn.addEventListener('click',closeMenu);
+        const burger   = document.getElementById('burger');
+        const overlay  = document.getElementById('overlay');
+        const closeBtn = document.getElementById('closeBtn');
+        const tkNav    = document.querySelector('.tk-nav'); // mega menu container
+
+        function openMenu() {
+        overlay.classList.add('open');
+        if (tkNav) tkNav.style.display = 'none'; // hide mega menu
+        }
+
+        function closeMenu() {
+        overlay.classList.remove('open');
+        if (tkNav) tkNav.style.display = ''; // restore mega menu (CSS default)
+        }
+
+        burger.addEventListener('click', openMenu);
+        closeBtn.addEventListener('click', closeMenu);
     </script>

@@ -107,7 +107,7 @@ header {
   flex-direction: column;
   justify-content: flex-start;  /* Align items to the top (for column) */
   align-items: flex-start;      /* Align items to the right */
-  background: linear-gradient(135deg, rgba(255,0,91,0.1), rgba(255,0,91,0.05));
+  background: transparent;
 }
 
 .top-container .container {
@@ -1222,7 +1222,7 @@ p.comment-form-cookies-consent label{
 }
 
 .widget_search form label {
-  display: block;
+  display: none;
   margin-top: 1em;
   margin-bottom: 0.5em;
   font-size: 1.08rem;
