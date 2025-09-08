@@ -74,17 +74,16 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
         id="background-video" 
         class="video-js"
         preload="auto"
-        autoplay="false"
+        autoplay="true"
         loop="true"
         responsive="true"
         fill="true"
         disableProgress="true"
         controls=""
-        data-setup='{}'
-        controlslist="nofullscreen"
+        controlslist="nodownload nofullscreen noremoteplayback"
         disablePictureInPicture
-        data-setup="{}">
-        <source src="/wp-content/themes/i4waresoftware/assets/Front.mp4" type="video/mp4">
+        data-setup='{"controls": false, "autoplay": true, "muted": true, "loop": true}'>
+        <source id="video-source" src="/wp-content/themes/i4waresoftware/assets/front1.mp4" type="video/mp4">
         <p class="vjs-no-js">
             To view this video please enable JavaScript, and consider upgrading to a
             web browser that

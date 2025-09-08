@@ -1555,4 +1555,35 @@ h2.wp-block-heading {
     height: 100%;
     object-fit: cover;
 }
+.controlsContainer
+{
+    display: none !important; /* Hide controls by default */
+}
 
+.videocontrols {
+    display: none !important; /* Hide controls by default */
+}
+
+.controlBar {
+    display: none !important; /* Hide controls by default */
+}
+
+.playButton {
+    display: none !important; /* Hide controls by default */
+}
+
+.controlsOverlay {
+    display: none !important; /* Hide controls by default */
+}
+
+.vjs-live-control .vjs-control {
+    display: none !important; /* Hide controls by default */
+}
+
+.vjs-control-bar {
+    display: none !important; /* Hide controls by default */
+}
+
+.vjs-text-track-display {
+    display: none !important; /* Hide controls by default */
+}
