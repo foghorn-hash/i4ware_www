@@ -5,27 +5,6 @@
    - Responsive two-column grid
 */
 
-/* Basic reset and box-sizing */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html, body, #root {
-  height: 100%;
-  margin: 0;
-}
-
-body {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(180deg, #07101b 0%, #0b1622 55%, #08101a 100%);
-  color: #e7eefc;
-  padding: 28px;
-}
-
 /* App wrapper */
 .app-container {
   max-width: 1300px;
@@ -53,15 +32,16 @@ body {
   }
 }
 
-/* Each form column */
-.form-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.ats-form-section {
+	box-sizing: border-box;
+	margin: 0 !important;
+	padding: 10px;
+	font-family: 'Montserrat', sans-serif;
+	scroll-behavior: smooth;
 }
 
 /* Labels */
-.form-section label {
+.ats-form-section label {
   display: block;
   font-size: 0.92rem;
   font-weight: 600;
@@ -70,13 +50,13 @@ body {
 }
 
 /* Inputs / textareas — make full width so they stack correctly */
-.form-section input[type="text"],
-.form-section input[type="email"],
-.form-section input[type="tel"],
-.form-section input[type="url"],
-.form-section select,
-.form-section textarea,
-.form-section input[type="file"] {
+.ats-form-section input[type="text"],
+.ats-form-section input[type="email"],
+.ats-form-section input[type="tel"],
+.ats-form-section input[type="url"],
+.ats-form-section select,
+.ats-form-section textarea,
+.ats-form-section input[type="file"] {
   display: block;            /* prevents inline layout */
   width: 100%;               /* fill column */
   padding: 12px 14px;
@@ -90,11 +70,11 @@ body {
 }
 
 /* Make sure file inputs are comfortable to use */
-.form-section input[type="file"] {
+.ats-form-section input[type="file"] {
   padding: 10px 12px;
   min-height: 44px;
 }
-.form-section input[type="file"]::file-selector-button {
+.ats-form-section input[type="file"]::file-selector-button {
   margin-right: 10px;
   padding: 8px 12px;
   border-radius: 9px;
@@ -106,16 +86,16 @@ body {
 }
 
 /* Textarea sizing */
-.form-section textarea {
+.ats-form-section textarea {
   min-height: 120px;
   resize: vertical;
 }
 
 /* Focus state */
-.form-section input:focus,
-.form-section textarea:focus,
-.form-section select:focus,
-.form-section input[type="file"]:focus {
+.ats-form-section input:focus,
+.ats-form-section textarea:focus,
+.ats-form-section select:focus,
+.ats-form-section input[type="file"]:focus {
   box-shadow: 0 8px 20px rgba(67, 98, 255, 0.08), 0 0 0 3px rgba(108,99,255,0.06);
   border-color: rgba(108,99,255,0.35);
   background: rgba(255,255,255,0.032);
@@ -180,10 +160,11 @@ details pre { background: rgba(255,255,255,0.02); padding: 12px; border-radius: 
 .app-card { animation: floatIn .35s ease both; }
 
 /* Ensure inputs do not shrink inside flex containers */
-.form-section > * { min-width: 0; }
+.ats-form-section > * { min-width: 0; }
 
 /* Final responsiveness */
 @media (max-width: 520px) {
   .app-card { padding: 18px; }
   .form-actions { flex-direction: column; align-items: stretch; }
 }
+

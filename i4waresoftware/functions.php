@@ -699,4 +699,42 @@ function tk_render_mega_menu( $args = [] ) {
     echo '</nav>';
 }
 
+add_action('rest_api_init', function () {
+  register_rest_route('jaf/v1', '/submit', [
+    'methods'  => 'POST',
+    'callback' => 'jaf_handle_submit',
+    'permission_callback' => '__return_true',
+  ]);
+});
+
+function jaf_handle_submit( WP_REST_Request $req ) {
+  $token  = sanitize_text_field( $req->get_param('recaptcha') );
+  if ( empty($token) ) {
+    return new WP_Error('missing_token', 'Missing reCAPTCHA token', ['status' => 400]);
+  }
+
+  $secret = '6Ldw-1ArAAAAAK2fVIjizyeobp3Ki0c0iVYBug-m'; // keep secret on server only
+
+  $resp = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', [
+    'body' => [
+      'secret'   => $secret,
+      'response' => $token,
+      'remoteip' => $_SERVER['REMOTE_ADDR'] ?? '',
+    ],
+    'timeout' => 10,
+  ]);
+
+  if ( is_wp_error($resp) ) {
+    return new WP_Error('recaptcha_http', $resp->get_error_message(), ['status' => 500]);
+  }
+
+  $data = json_decode( wp_remote_retrieve_body($resp), true );
+  if ( empty($data['success']) ) {
+    return new WP_Error('recaptcha_failed', 'reCAPTCHA failed', ['status' => 403, 'details' => $data]);
+  }
+
+  // TODO: handle and persist $req->get_json_params() (form data)
+  return [ 'ok' => true ];
+}
+
 ?>

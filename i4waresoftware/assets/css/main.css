@@ -1587,3 +1587,7 @@ h2.wp-block-heading {
 .vjs-text-track-display {
     display: none !important; /* Hide controls by default */
 }
+
+.video-play {
+    display: none !important; /* Hide controls by default */
+}
