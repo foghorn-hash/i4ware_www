@@ -69,30 +69,6 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
   </div>
 </section>
 <?php endif; ?>
-<div class="video-container">
-    <video 
-        id="background-video" 
-        class="video-js"
-        preload="auto"
-        autoplay="true"
-        loop="true"
-        responsive="true"
-        fill="true"
-        disableProgress="true"
-        controls=""
-        controlslist="nodownload nofullscreen noremoteplayback"
-        disablePictureInPicture
-        data-setup='{"controls": false, "autoplay": true, "muted": true, "loop": true}'>
-        <source id="video-source" src="/wp-content/themes/i4waresoftware/assets/front1.mp4" type="video/mp4">
-        <p class="vjs-no-js">
-            To view this video please enable JavaScript, and consider upgrading to a
-            web browser that
-            <a href="https://videojs.com/html5-video-support/" target="_blank"
-                >supports HTML5 video</a
-            >
-        </p>
-    </video>
-  </div>
 <section class="main">
   <div class="container">
      <?php if ( ! is_home() && ! is_archive() && ! is_single() ) : ?>
