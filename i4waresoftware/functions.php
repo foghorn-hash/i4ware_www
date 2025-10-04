@@ -144,6 +144,38 @@ function i4ware_customize_register($wp_customize) {
             'type'     => 'textarea',
         ));
     }
+
+     $wp_customize->add_section( 'i4ware_cta_section', [
+        'title'    => __( 'CTA Painike', 'i4ware' ),
+        'priority' => 30,
+    ] );
+
+    foreach ($languages as $lang_code => $lang_label) {
+        $wp_customize->add_setting( "i4ware_cta_url_$lang_code", [
+            'default'   => '#',
+            'transport' => 'refresh',
+            'sanitize_callback' => 'esc_url_raw',
+        ] );
+        $wp_customize->add_control( "i4ware_cta_url_control_$lang_code", [
+            'label'    => __( 'CTA Painikkeen URL', 'i4ware' ) . " ($lang_label)",
+            'section'  => 'i4ware_cta_section',
+            'settings' => "i4ware_cta_url_$lang_code",
+            'type'     => 'url',
+        ] );
+    }
+
+    foreach ($languages as $lang_code => $lang_label) {
+        $wp_customize->add_setting( "i4ware_cta_text_$lang_code", [
+            'default'   => ($lang_code === 'fi') ? __( 'Pyydä tarjous', 'i4ware' ) : __( 'Request a quote', 'i4ware' ),
+            'transport' => 'refresh',
+        ] );
+        $wp_customize->add_control( "i4ware_cta_text_control_$lang_code", [
+            'label'    => __( 'CTA Button Text', 'i4ware' ) . " ($lang_label)",
+            'section'  => 'i4ware_cta_section',
+            'settings' => "i4ware_cta_text_$lang_code",
+            'type'     => 'text',
+        ] );
+}
 }
 add_action('customize_register', 'i4ware_customize_register');
 
@@ -636,7 +668,14 @@ function tk_render_mega_menu( $args = [] ) {
         'show_search'=> true,
     ];
     $args = wp_parse_args( $args, $defaults );
-
+    // Haetaan CTA arvot Customizerista
+    if (function_exists('pll_current_language')) {
+        $lang = pll_current_language();
+    } else {
+        $lang = 'fi';
+    }
+    $cta_text = get_theme_mod( "i4ware_cta_text_$lang", __( 'Pyydä tarjous', 'i4ware' ) );
+    $cta_url  = get_theme_mod( 'i4ware_cta_url_'.$lang, '#' );
     $locations = get_nav_menu_locations();
     if ( empty($locations[ $args['location'] ]) ) {
         // Ei valikkoa määritelty – voidaan silti tulostaa kehyksenä
@@ -666,8 +705,12 @@ function tk_render_mega_menu( $args = [] ) {
     // Renderöinti
     echo '<nav class="tk-nav" aria-label="Main">';
     echo '  <div class="tk-bar">';
-
-    echo '    <button class="tk-menu-btn" aria-expanded="false" aria-controls="tk-mega" id="tkMenuBtn"><span class="tk-menu-btn__label">'.esc_html__('Menu','your-textdomain').'</span><span class="tk-menu-btn__icon" aria-hidden="true"></span></button>';
+    echo '    <div class="tk-bar-right">';
+    echo '    <div class="menu-left">';
+    echo '      <a href="' . esc_url( $cta_url ) . '" class="cta-button">' . esc_html( $cta_text ) . '</a>';
+    echo '    </div>';
+    echo '    <button class="tk-menu-btn" aria-expanded="false" aria-controls="tk-mega" id="tkMenuBtn"><span class="tk-menu-btn__label">'.esc_html__('Menu','i4ware').'</span><span class="tk-menu-btn__icon" aria-hidden="true"></span></button>';
+    echo '    </div>';
     echo '  </div>';
 
     echo '  <div class="tk-mega" id="tk-mega" hidden>';
@@ -736,5 +779,28 @@ function jaf_handle_submit( WP_REST_Request $req ) {
   // TODO: handle and persist $req->get_json_params() (form data)
   return [ 'ok' => true ];
 }
+
+// functions.php
+
+function i4ware_add_cta_button() {
+    $cta_text = get_theme_mod( 'i4ware_cta_text', __( 'Pyydä tarjous', 'i4ware' ) );
+    $cta_url  = get_theme_mod( 'i4ware_cta_url', '#' );
+
+    echo '<div class="header-cta"><a class="cta-button" href="' . esc_url( $cta_url ) . '">' . esc_html( $cta_text ) . '</a></div>';
+}
+
+// Lisää CTA painike wp_nav_menu() -funktion eteen
+add_action( 'wp_nav_menu_items', function( $items, $args ) {
+    if ( $args->theme_location == 'primary' ) {
+        $cta_text = get_theme_mod( 'i4ware_cta_text', __( 'Pyydä tarjous', 'i4ware' ) );
+        $cta_url  = get_theme_mod( 'i4ware_cta_url', '#' );
+
+        $cta_html = '<li class="menu-item cta-button"><a href="' . esc_url( $cta_url ) . '">' . esc_html( $cta_text ) . '</a></li>';
+
+        // Lisää CTA linkki vasemmalle
+        return $cta_html . $items;
+    }
+    return $items;
+}, 10, 2 );
 
 ?>

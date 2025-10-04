@@ -1590,3 +1590,48 @@ h2.wp-block-heading {
 .video-play {
     display: none !important; /* Hide controls by default */
 }
+
+.tk-nav .menu-left {
+  margin-right: 0;
+}
+
+/* Make the bar content align right */
+.tk-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.tk-bar-right {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  margin-left: auto;
+  gap: 20px; /* 20px space between CTA and Menu */
+}
+
+/* Remove margin-left from .tk-menu-btn and .menu-left if present */
+.tk-bar .menu-left,
+.tk-bar .tk-menu-btn {
+  margin-left: auto;
+}
+
+.cta-button {
+  background: #6a00f4;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.cta-button:hover {
+  background: #5200c9;
+}
+
+.overlay .cta-button {
+  display: none !important;
+}
+
