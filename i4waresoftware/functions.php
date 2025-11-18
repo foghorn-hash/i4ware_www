@@ -505,7 +505,6 @@ if (!function_exists('i4ware_pricing_shortcode')) {
           <span class="i4w-num"><?php echo esc_html($a['basic_price']); ?></span> <span class="i4w-cur"><?php echo $currency; ?></span>
         </div>
         <div class="i4w-vat"><?php echo $vat; ?></div>
-        <p class="i4w-desc"><?php echo esc_html($a['basic_desc']); ?></p>
         <a class="i4w-button" href="<?php echo esc_url($url); ?>"><?php echo esc_html($a['basic_btn']); ?></a>
         <ul class="i4w-features">
           <?php foreach ($feat['basic'] as $f): ?><li><?php echo esc_html($f); ?></li><?php endforeach; ?>
@@ -519,7 +518,6 @@ if (!function_exists('i4ware_pricing_shortcode')) {
           <span class="i4w-num"><?php echo esc_html($a['premium_min']); ?> <?php echo $currency; ?>–<?php echo esc_html($a['premium_max']); ?> <?php echo $currency; ?></span>
         </div>
         <div class="i4w-vat"><?php echo $vat; ?></div>
-        <p class="i4w-desc"><?php echo esc_html($a['premium_desc']); ?></p>
         <a class="i4w-button" href="<?php echo esc_url($url); ?>"><?php echo esc_html($a['premium_btn']); ?></a>
         <ul class="i4w-features">
           <?php foreach ($feat['premium'] as $f): ?><li><?php echo esc_html($f); ?></li><?php endforeach; ?>
@@ -531,7 +529,6 @@ if (!function_exists('i4ware_pricing_shortcode')) {
         <div class="i4w-badge"><?php echo esc_html($a['enterprise_title']); ?></div>
         <div class="i4w-price"><span class="i4w-num i4w-ask"><?php echo esc_html(i4w_t('Kysy tarjous')); ?></span></div>
         <div class="i4w-vat"><?php echo $vat; ?></div>
-        <p class="i4w-desc"><?php echo esc_html($a['enterprise_desc']); ?></p>
         <a class="i4w-button" href="<?php echo esc_url($url); ?>"><?php echo esc_html($a['enterprise_btn']); ?></a>
         <ul class="i4w-features">
           <?php foreach ($feat['enterprise'] as $f): ?><li><?php echo esc_html($f); ?></li><?php endforeach; ?>

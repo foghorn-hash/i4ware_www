@@ -295,6 +295,10 @@ nav {
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: 700;
+  opacity: 0;
+  transform: translateX(40px);
+  animation: slideInFromRight 900ms cubic-bezier(.16,.84,.44,1) 300ms both;
+  will-change: transform, opacity;
 }
 
 .hero p {
@@ -302,6 +306,35 @@ nav {
   margin-bottom: 2rem;
   padding: 2rem;
   color: var(--light);
+  transform: translateX(40px);
+  animation: slideInFromRight 900ms cubic-bezier(.16,.84,.44,1) 300ms both;
+  will-change: transform, opacity;
+}
+
+/* subtle floating after entrance */
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(40px) translateZ(0) skewX(2deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-6px) translateZ(0) skewX(-1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateZ(0) skewX(0);
+  }
+}
+
+/* optional gentle idle motion */
+@keyframes floatSlight {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+.hero h1.idle {
+  animation: floatSlight 6s ease-in-out infinite;
 }
 
 h1 {
@@ -1496,6 +1529,7 @@ h2.wp-block-heading {
   gap:24px;
   grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
   align-items:stretch;
+  perspective: 1000px;
 }
 .i4w-card{
   background:#313131;
@@ -1505,7 +1539,58 @@ h2.wp-block-heading {
   box-shadow:0 6px 24px rgba(0,0,0,.06);
   display:flex;flex-direction:column;
   transition: transform .3s, box-shadow .3s;
+  transform: translateY(24px) scale(.98);
+  animation: i4w-popIn .6s cubic-bezier(.22,.9,.3,1) both;
+  overflow: hidden;
 }
+/* staggered delays for nice cascade */
+.i4w-pricing .i4w-card:nth-child(1) { animation-delay: 0.05s; }
+.i4w-pricing .i4w-card:nth-child(2) { animation-delay: 0.15s; }
+.i4w-pricing .i4w-card:nth-child(3) { animation-delay: 0.25s; }
+/* if you have more cards, continue increasing delay slightly */
+
+/* entrance keyframes */
+@keyframes i4w-popIn {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(.98) rotateX(3deg);
+    filter: blur(.6px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-8px) scale(1.02) rotateX(0);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0);
+    filter: none;
+  }
+}
+
+/* hover / focus interaction */
+.i4w-card:hover,
+.i4w-card:focus-within {
+  transform: translateY(-12px) scale(1.04);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+  transition: transform .35s cubic-bezier(.16,.84,.44,1), box-shadow .35s;
+  z-index: 2;
+}
+
+/* subtle shine sweep on hover */
+.i4w-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.0) 40%, rgba(255,255,255,0.03) 60%, rgba(255,255,255,0.0) 100%);
+  transform: translateX(-120%);
+  transition: transform .9s cubic-bezier(.2,.8,.2,1);
+}
+.i4w-card:hover::after { transform: translateX(120%); }
+
+/* subtle scale for inner content so text doesn't shift too much */
+.i4w-card > * { transform-origin: center; transition: transform .35s; }
 .i4w-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, .5);
