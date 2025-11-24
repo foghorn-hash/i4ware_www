@@ -577,7 +577,7 @@ add_action('wp_enqueue_scripts', function () {
   top: 100%;        /* suoraan nav-barin alapuolelle */
   left: 50%;        /* keskitys */
   transform: translateX(-50%); 
-  width: 80vw;      /* 70 % viewportista */
+  width: 60vw;      /* 70 % viewportista */
   margin-top: 8px;  /* pieni rako */
   padding: 0;       /* gridin padding hoitaa sisätilan */
   perspective: 1200px;

@@ -61,11 +61,6 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
     <a href="<?php echo esc_url( get_theme_mod('hero_button_link', 'https://marketplace.atlassian.com/search?query=i4ware' ) ); ?>" class="btn" target="_blank">
       <?php echo esc_html( get_theme_mod("hero_button_text_$lang", 'Learn More') ); ?>
     </a>
-    <div class="top-logo-container">
-      <a href="https://marketplace.atlassian.com/" target="_blank">
-        <img decoding="async" src="https://www.i4ware.fi/wp-content/uploads/partners/marketplace_partner_wht_nobg.png" class="partner-logo" alt="<?php echo ($lang === 'fi') ? 'Atlassian Marketplace -kumppani' : 'Atlassian Marketplace Partner'; ?>" />
-      </a>
-    </div>
   </div>
 </section>
 <?php endif; ?>
