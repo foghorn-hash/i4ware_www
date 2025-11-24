@@ -136,23 +136,22 @@ class AtlassianSalesController extends Controller
             }
 
             // --- Merge and keep only the requested year ---
+            // Map first: parse/normalize dates into a consistent structure, drop invalids,
+            // then filter by the requested year.
             $merged = collect($normalizedAtlassianSales)
                 ->merge($localSales)
-                ->filter(function ($row) use ($year) {
-                    try {
-                        $d = CarbonImmutable::parse($row['saleDate']);
-                        return $d->year === $year;
-                    } catch (\Throwable $e) {
-                        return false; // skip bad dates
-                    }
-                })
                 ->map(function ($row) {
-                    $d = CarbonImmutable::parse($row['saleDate']);
+                    $d = $this->parseDateToImmutable($row['saleDate'] ?? null);
+                    if (!$d) return null; // invalid/unknown date
                     return [
                         'year'         => $d->year,
-                        'month'        => $d->month, // 1..12
+                        'month'        => (int) $d->month,
                         'vendorAmount' => (float) $row['vendorAmount'],
                     ];
+                })
+                ->filter() // remove nulls
+                ->filter(function ($row) use ($year) {
+                    return ($row['year'] ?? null) === $year;
                 });
 
             // --- Aggregate by month ---
@@ -189,6 +188,55 @@ class AtlassianSalesController extends Controller
                 'message' => 'Failed to fetch merged monthly income.',
                 'error'   => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    /**
+     * Parse various date representations into a CarbonImmutable or return null.
+     * Accepts DateTime, timestamps, ISO strings and common formats like d.m.Y.
+     */
+    private function parseDateToImmutable($date): ?CarbonImmutable
+    {
+        if (empty($date) && $date !== '0') {
+            return null;
+        }
+
+        try {
+            // If already a DateTime instance
+            if ($date instanceof \DateTimeInterface) {
+                return CarbonImmutable::instance($date);
+            }
+
+            // If numeric timestamp
+            if (is_numeric($date)) {
+                return CarbonImmutable::createFromTimestamp((int) $date);
+            }
+
+            // Normalize string
+            $s = trim((string) $date);
+
+            // Try common formats first when dots are present (e.g., 21.11.2025)
+            if (strpos($s, '.') !== false) {
+                $formats = ['d.m.Y H:i:s', 'd.m.Y'];
+                foreach ($formats as $fmt) {
+                    $c = CarbonImmutable::createFromFormat($fmt, $s);
+                    if ($c !== false) return $c;
+                }
+            }
+
+            // Try slashed dates
+            if (strpos($s, '/') !== false) {
+                $formats = ['d/m/Y H:i:s', 'd/m/Y', 'm/d/Y H:i:s', 'm/d/Y'];
+                foreach ($formats as $fmt) {
+                    $c = CarbonImmutable::createFromFormat($fmt, $s);
+                    if ($c !== false) return $c;
+                }
+            }
+
+            // Fallback to Carbon parse (ISO, RFC, etc.)
+            return CarbonImmutable::parse($s);
+        } catch (\Throwable $e) {
+            return null;
         }
     }
 
