@@ -22,4 +22,7 @@
     <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/a1eed8ea8ae24b05c992cf15/script.js"></script>
     <!-- End cookieyes banner -->
      <link href="https://vjs.zencdn.net/8.23.3/video-js.css" rel="stylesheet" />
+     <meta property="og:image" content="<?php echo get_template_directory_uri(); ?>/assets/i4ware-software-og.png" />
+     <meta property="og:image:width" content="890" />
+     <meta property="og:image:height" content="890" />
 </head>    
