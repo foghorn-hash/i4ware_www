@@ -1676,6 +1676,12 @@ h2.wp-block-heading {
     display: none !important; /* Hide controls by default */
 }
 
+/* i4ware embedded video: blur + overlay support */
+.i4ware-video-wrap{position:relative;border-radius:8px;overflow:hidden}
+.i4ware-video-wrap.blur iframe{filter:blur(6px) saturate(.95);transform:scale(1.02)}
+.i4ware-video-overlay{position:absolute;left:16px;top:16px;color:#fff;font-weight:700;z-index:3;text-shadow:0 2px 10px rgba(0,0,0,0.6)}
+
+
 .tk-nav .menu-left {
   margin-right: 0;
 }
@@ -1720,3 +1726,120 @@ h2.wp-block-heading {
   display: none !important;
 }
 
+/* === i4ware CTA (refined for dark pages) === */ 
+.i4ware-cta-box {
+  width: 100%;
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  box-sizing:border-box;
+  padding:16px;
+  margin-bottom: 40px !important;
+  border-radius:10px;
+  background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.04);
+  color:#f7fbfb;margin:8px 0 8px 24px;
+  box-shadow:0 8px 30px rgba(2,6,12,0.55);
+  transition:transform .12s ease,box-shadow .12s ease;
+  clear:both;
+}
+
+/* Allow sticky positioning on wide viewports (nice visual result at the right side of long content) */
+@media (min-width: 920px) {
+  .i4ware-cta-box {
+    display: block;
+    float: right;
+    position: static; /* static positioning so CTA does not follow scrolling */
+    margin-left: 32px;
+    margin-top: 0; /* avoid unexpected offset */
+  }
+}
+
+/* Typography */
+.i4ware-cta-box h3 {
+  margin: 0 0 8px;
+  font-size: 1.02rem;
+  line-height: 1.22;
+  color: #ffffff;
+  font-weight: 600;
+}
+.i4ware-cta-box p {
+  margin: 0 0 14px;
+  color: #d7e6e6;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+/* Button - use theme accent if defined, fallback to purple-ish match of header CTA */
+.i4ware-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #000000; /* try to reuse theme variable, fallback to purple */
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(124,44,255,0.12);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+.i4ware-cta-btn:hover,
+.i4ware-cta-btn:focus {
+  transform: translateY(-2px);
+  filter: brightness(1.06);
+  box-shadow: 0 12px 30px rgba(124,44,255,0.14);
+}
+.i4ware-cta-btn:focus {
+  outline: 3px solid rgba(124,44,255,0.16);
+  outline-offset: 3px;
+}
+
+/* Mobile: full width, centered, and stacked under content */
+@media (max-width: 920px) {
+  .i4ware-cta-box {
+    float: none;
+    position: static;
+    margin: 18px auto;
+    width: calc(100% - 32px);
+    box-shadow: 0 6px 18px rgba(2,6,12,0.5);
+    display: block; /* ensure block layout on small screens */
+  }
+
+  .i4ware-cta-box h3,
+  .i4ware-cta-box p {
+    display: block;
+    width: 100%;
+    margin: 0 0 0.75rem 0;
+  }
+
+  .i4ware-cta-box h3 {
+    font-size: 1.02rem;
+    line-height: 1.2;
+  }
+
+  .i4ware-cta-btn {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 10px 14px;
+    min-width: 140px;
+  }
+}
+
+/* Very small screens: make CTA button full width */
+@media (max-width: 480px) {
+  .i4ware-cta-btn {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .i4ware-cta-box {
+    padding: 12px;
+    margin: 12px auto;
+    width: calc(100% - 24px);
+  }
+
+  .i4ware-cta-box h3 { font-size: 1rem; }
+}

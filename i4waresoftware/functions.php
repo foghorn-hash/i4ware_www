@@ -176,6 +176,74 @@ function i4ware_customize_register($wp_customize) {
             'type'     => 'text',
         ] );
 }
+
+// CTA: headline & description per language
+foreach ($languages as $lang_code => $lang_label) {
+    $wp_customize->add_setting( "i4ware_cta_headline_$lang_code", [
+        'default'   => ($lang_code === 'fi') ? 'SaaS-tuoteideasi tuotantoon i4ware SDK:lla kustannustehokkaasti' : 'Get your SaaS product to market cost-effectively with i4ware SDK',
+        'transport' => 'refresh',
+    ] );
+    $wp_customize->add_control( "i4ware_cta_headline_control_$lang_code", [
+        'label'    => __( 'CTA Headline', 'i4ware' ) . " ($lang_label)",
+        'section'  => 'i4ware_cta_section',
+        'settings' => "i4ware_cta_headline_$lang_code",
+        'type'     => 'text',
+    ] );
+
+    $wp_customize->add_setting( "i4ware_cta_desc_$lang_code", [
+        'default'   => ($lang_code === 'fi') ? 'Rakennamme MVP- ja SaaS-ratkaisut puolestasi. Low-code i4ware SDK ja AI-avusteinen kehitys mahdollistavat nopean ja kustannustehokkaan toteutuksen.' : 'We build MVP and SaaS solutions for you. Low-code i4ware SDK and AI-assisted development enable fast and cost-effective delivery.',
+        'transport' => 'refresh',
+    ] );
+    $wp_customize->add_control( "i4ware_cta_desc_control_$lang_code", [
+        'label'    => __( 'CTA Description', 'i4ware' ) . " ($lang_label)",
+        'section'  => 'i4ware_cta_section',
+        'settings' => "i4ware_cta_desc_$lang_code",
+        'type'     => 'textarea',
+    ] );
+}
+
+// Video settings
+$wp_customize->add_section( 'i4ware_video_section', [
+    'title'    => __( 'Embedded Video', 'i4ware' ),
+    'priority' => 35,
+] );
+
+$wp_customize->add_setting( 'i4ware_video_url', [
+    'default' => '',
+    'transport' => 'refresh',
+    'sanitize_callback' => 'esc_url_raw',
+] );
+$wp_customize->add_control( 'i4ware_video_url_control', [
+    'label' => __( 'YouTube URL (watch or share link or embed URL)', 'i4ware' ),
+    'section' => 'i4ware_video_section',
+    'settings' => 'i4ware_video_url',
+    'type' => 'url',
+] );
+
+$wp_customize->add_setting( 'i4ware_video_blur', [
+    'default' => false,
+    'transport' => 'refresh',
+    'sanitize_callback' => 'sanitize_text_field',
+] );
+$wp_customize->add_control( 'i4ware_video_blur_control', [
+    'label' => __( 'Enable blur overlay on video', 'i4ware' ),
+    'section' => 'i4ware_video_section',
+    'settings' => 'i4ware_video_blur',
+    'type' => 'checkbox',
+] );
+
+foreach ($languages as $lang_code => $lang_label) {
+    $wp_customize->add_setting( "i4ware_video_overlay_text_$lang_code", [
+        'default' => '',
+        'transport' => 'refresh',
+    ] );
+    $wp_customize->add_control( "i4ware_video_overlay_text_control_$lang_code", [
+        'label' => __( 'Video overlay text', 'i4ware' ) . " ($lang_label)",
+        'section' => 'i4ware_video_section',
+        'settings' => "i4ware_video_overlay_text_$lang_code",
+        'type' => 'text',
+    ] );
+}
 }
 add_action('customize_register', 'i4ware_customize_register');
 
@@ -799,5 +867,96 @@ add_action( 'wp_nav_menu_items', function( $items, $args ) {
     }
     return $items;
 }, 10, 2 );
+
+// i4ware CTA shortcode — supports Polylang
+function i4ware_cta_shortcode( $atts ) {
+    $atts = shortcode_atts( array(
+        'url'    => '#',     // default fallback URL
+        'url_en' => '',      // optional language specific URL for English
+        'url_fi' => '',      // optional language specific URL for Finnish
+        'class'  => '',      // extra classes
+    ), $atts, 'i4ware_cta' );
+
+    // detect language (Polylang if present, fallback to WP locale)
+    if ( function_exists( 'pll_current_language' ) ) {
+        $lang = pll_current_language();
+    } else {
+        $lang = substr( get_locale(), 0, 2 );
+    }
+
+    // copy translations — read from Customizer when available (fallback to defaults)
+    $defaults = array(
+      'en' => array(
+        'headline' => 'Get your SaaS product to market cost-effectively with i4ware SDK',
+        'desc' => 'We build MVP and SaaS solutions for you. Low-code i4ware SDK and AI-assisted development enable fast and cost-effective delivery.',
+        'button' => 'Start your project',
+      ),
+      'fi' => array(
+        'headline' => 'SaaS-tuoteideasi tuotantoon i4ware SDK:lla kustannustehokkaasti',
+        'desc' => 'Rakennamme MVP- ja SaaS-ratkaisut puolestasi. Low-code i4ware SDK ja AI-avusteinen kehitys mahdollistavat nopean ja kustannustehokkaan toteutuksen.',
+        'button' => 'Aloita projekti',
+      ),
+    );
+
+    // Use language-specific Customizer values when available
+    $t = array(
+      'headline' => get_theme_mod( "i4ware_cta_headline_{$lang}", $defaults[$lang]['headline'] ?? $defaults['en']['headline'] ),
+      'desc'     => get_theme_mod( "i4ware_cta_desc_{$lang}", $defaults[$lang]['desc'] ?? $defaults['en']['desc'] ),
+      'button'   => get_theme_mod( "i4ware_cta_text_{$lang}", $defaults[$lang]['button'] ?? $defaults['en']['button'] ),
+    );
+
+    // choose best URL (language-specific > attribute url > fallback url)
+    $url = $atts['url'];
+    if ( $lang === 'en' && !empty( $atts['url_en'] ) ) $url = $atts['url_en'];
+    if ( $lang === 'fi' && !empty( $atts['url_fi'] ) ) $url = $atts['url_fi'];
+
+    // markup (keeps styling minimal and self-contained)
+    $html  = '<aside class="i4ware-cta-box ' . esc_attr( $atts['class'] ) . '" role="region" aria-label="' . esc_attr__( 'CTA', 'i4ware' ) . '">';
+    $html .= '<h3>' . esc_html( $t['headline'] ) . '</h3>';
+    $html .= '<p>' . esc_html( $t['desc'] ) . '</p>'; 
+    $html .= '<a href="' . esc_url( $url ) . '" class="i4ware-cta-btn" aria-label="' . esc_attr( $t['button'] ) . '">' . esc_html( $t['button'] ) . '</a>';
+    $html .= '</aside>';
+
+    return $html;
+}
+add_shortcode( 'i4ware_cta', 'i4ware_cta_shortcode' );
+
+// Shortcode to output embedded YouTube video with optional blur and per-language overlay text
+function i4ware_video_shortcode( $atts ) {
+    if ( function_exists( 'pll_current_language' ) ) {
+        $lang = pll_current_language();
+    } else {
+        $lang = substr( get_locale(), 0, 2 );
+    }
+
+    $video_url = get_theme_mod('i4ware_video_url', '');
+    if ( empty( $video_url ) ) return '';
+
+    // Normalize common YouTube URL formats to embed URL
+    if ( strpos( $video_url, 'watch?v=' ) !== false ) {
+        $embed = str_replace( 'watch?v=', 'embed/', $video_url );
+    } elseif ( strpos( $video_url, 'youtu.be/' ) !== false ) {
+        preg_match('#youtu\.be/([A-Za-z0-9_-]+)#', $video_url, $m);
+        $id = $m[1] ?? '';
+        $embed = $id ? 'https://www.youtube.com/embed/' . $id : esc_url( $video_url );
+    } else {
+        $embed = $video_url;
+    }
+
+    $blur = get_theme_mod('i4ware_video_blur', false);
+    $overlay_text = get_theme_mod("i4ware_video_overlay_text_{$lang}", '');
+
+    $wrap_classes = 'i4ware-video-wrap' . ( $blur ? ' blur' : '' );
+
+    $html = '<div class="' . esc_attr( $wrap_classes ) . '" style="position:relative;max-width:900px;margin:16px auto;border-radius:8px;overflow:hidden;">';
+    $html .= '<iframe src="' . esc_url( $embed ) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;height:420px;border:0;display:block;"></iframe>';
+    if ( $overlay_text ) {
+        $html .= '<div class="i4ware-video-overlay" style="position:absolute;left:16px;top:16px;color:#fff;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,0.6);">' . esc_html( $overlay_text ) . '</div>';
+    }
+    $html .= '</div>';
+
+    return $html;
+}
+add_shortcode( 'i4ware_video', 'i4ware_video_shortcode' );
 
 ?>
