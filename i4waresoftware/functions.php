@@ -145,7 +145,7 @@ function i4ware_customize_register($wp_customize) {
         ));
     }
 
-     $wp_customize->add_section( 'i4ware_cta_section', [
+    $wp_customize->add_section( 'i4ware_cta_section', [
         'title'    => __( 'CTA Painike', 'i4ware' ),
         'priority' => 30,
     ] );
@@ -160,6 +160,20 @@ function i4ware_customize_register($wp_customize) {
             'label'    => __( 'CTA Painikkeen URL', 'i4ware' ) . " ($lang_label)",
             'section'  => 'i4ware_cta_section',
             'settings' => "i4ware_cta_url_$lang_code",
+            'type'     => 'url',
+        ] );
+    }
+
+    foreach ($languages as $lang_code => $lang_label) {
+        $wp_customize->add_setting( "i4ware_cta_saas_url_$lang_code", [
+            'default'   => '#',
+            'transport' => 'refresh',
+            'sanitize_callback' => 'esc_url_raw',
+        ] );
+        $wp_customize->add_control( "i4ware_cta_saas_url_control_$lang_code", [
+            'label'    => __( 'SaaS CTA Painikkeen URL', 'i4ware' ) . " ($lang_label)",
+            'section'  => 'i4ware_cta_section',
+            'settings' => "i4ware_cta_saas_url_$lang_code",
             'type'     => 'url',
         ] );
     }
@@ -889,12 +903,12 @@ function i4ware_cta_shortcode( $atts ) {
       'en' => array(
         'headline' => 'Get your SaaS product to market cost-effectively with i4ware SDK',
         'desc' => 'We build MVP and SaaS solutions for you. Low-code i4ware SDK and AI-assisted development enable fast and cost-effective delivery.',
-        'button' => 'Start your project',
+        'button' => 'Request a quote',
       ),
       'fi' => array(
         'headline' => 'SaaS-tuoteideasi tuotantoon i4ware SDK:lla kustannustehokkaasti',
         'desc' => 'Rakennamme MVP- ja SaaS-ratkaisut puolestasi. Low-code i4ware SDK ja AI-avusteinen kehitys mahdollistavat nopean ja kustannustehokkaan toteutuksen.',
-        'button' => 'Aloita projekti',
+        'button' => 'Pyydä tarjous',
       ),
     );
 
@@ -958,5 +972,396 @@ function i4ware_video_shortcode( $atts ) {
     return $html;
 }
 add_shortcode( 'i4ware_video', 'i4ware_video_shortcode' );
+
+add_action('init', function () {
+
+    pll_register_string('i4ware', 'Project starting phase');
+    pll_register_string('i4ware', 'Idea');
+    pll_register_string('i4ware', 'Prototype');
+    pll_register_string('i4ware', 'MVP');
+    pll_register_string('i4ware', 'Production enhancement');
+
+    pll_register_string('i4ware', 'Project details');
+    pll_register_string('i4ware', 'Describe your SaaS idea, goals and requirements');
+
+    pll_register_string('i4ware', 'SRS specification ready');
+    pll_register_string('i4ware', 'Mockups ready (e.g. Figma)');
+
+    pll_register_string('i4ware', 'Estimated hours');
+    pll_register_string('i4ware', 'Hourly rate');
+    pll_register_string('i4ware', 'Estimated total price');
+    pll_register_string('i4ware', 'Send order request');
+
+    pll_register_string('i4ware', 'Financing');
+    pll_register_string('i4ware', 'External funding available');
+    pll_register_string('i4ware', 'External funding details');
+    pll_register_string('i4ware', 'Describe funding source, amount and type');
+    pll_register_string('i4ware', 'Revenue funded');
+
+    pll_register_string('i4ware', 'Company founding year');
+    pll_register_string('i4ware', 'Orderer contact details');
+    pll_register_string('i4ware', 'Company name');
+    pll_register_string('i4ware', 'Contact person');
+    pll_register_string('i4ware', 'Email address');
+    pll_register_string('i4ware', 'Phone number');
+
+    // Email sending messages
+    pll_register_string('i4ware', 'New order request received');
+    pll_register_string('i4ware', 'You have received a new order request from your website.');
+    pll_register_string('i4ware', 'Order details:');
+    pll_register_string('i4ware', 'Please contact the orderer as soon as possible.');
+    pll_register_string('i4ware', 'Thank you for using our service.');
+    // JS lomakkeen tekstit
+    pll_register_string('i4ware', 'Send order request');
+    pll_register_string('i4ware', 'Sending...');
+    pll_register_string('i4ware', 'Order request sent successfully');
+    pll_register_string('i4ware', 'Submission failed');
+    pll_register_string('i4ware', 'Server error');
+});
+
+/**
+ * Plugin Name: i4ware SaaS Order Form
+ * Description: i4ware SDK low-code SaaS tilauslomake (FI/EN, Polylang)
+ */
+
+if (!defined('ABSPATH')) exit;
+
+function i4ware_saas_order_form_shortcode() {
+
+    // Oletustuntihinta (muokkaa tarvittaessa)
+    $hourly_rate = 95;
+
+    ob_start();
+    ?>
+    <form id="i4ware-saas-form" class="i4ware-saas-form">
+        <?php wp_nonce_field('i4ware_saas_order', 'i4ware_nonce'); ?>
+        <input type="hidden" name="action" value="i4ware_submit_order">
+
+        <label>
+            <?php pll_e('Project starting phase'); ?>
+        </label>
+        <select name="project_phase" required>
+            <option value="idea"><?php pll_e('Idea'); ?></option>
+            <option value="prototype"><?php pll_e('Prototype'); ?></option>
+            <option value="mvp"><?php pll_e('MVP'); ?></option>
+            <option value="production"><?php pll_e('Production enhancement'); ?></option>
+        </select>
+
+        <label>
+            <?php pll_e('Project details'); ?>
+        </label>
+        <textarea name="project_details" rows="5"
+            placeholder="<?php pll_e('Describe your SaaS idea, goals and requirements'); ?>"></textarea>
+
+        <div class="i4ware-checkbox-group">
+            <label>
+                <input type="checkbox" name="has_srs">
+                <?php pll_e('SRS specification ready'); ?>
+            </label>
+
+            <label>
+                <input type="checkbox" name="has_mockups">
+                <?php pll_e('Mockups ready (e.g. Figma)'); ?>
+            </label>
+        </div>
+
+        <label>
+            <?php pll_e('Estimated hours'); ?>
+        </label>
+        <input type="number" name="estimated_hours" min="1" required
+               oninput="i4wareCalcPrice(this.value)">
+
+        <div class="i4ware-pricing">
+            <p><?php pll_e('Hourly rate'); ?>:
+                <strong>95 €</strong>
+            </p>
+            <p><?php pll_e('Estimated total price'); ?>:
+                <strong><span id="i4ware-total-price">0</span> €</strong>
+            </p>
+        </div>
+
+        <!-- Financing -->
+        <label><?php pll_e('Financing'); ?></label>
+
+        <div class="i4ware-checkbox-group">
+            <label>
+                <input type="checkbox" id="external_funding_checkbox" name="external_funding_available">
+                <?php pll_e('External funding available'); ?>
+            </label>
+
+            <label>
+                <input type="checkbox" name="revenue_funded">
+                <?php pll_e('Revenue funded'); ?>
+            </label>
+        </div>
+
+        <div id="external_funding_details" style="display:none; margin-top:12px;">
+            <label>
+                <?php pll_e('External funding details'); ?>
+            </label>
+            <textarea name="external_funding_details"
+                placeholder="<?php pll_e('Describe funding source, amount and type'); ?>"></textarea>
+        </div>
+
+        <!-- Company info -->
+        <label><?php pll_e('Company founding year'); ?></label>
+        <input type="number" name="company_founding_year" min="1800" max="<?php echo date('Y'); ?>">
+
+        <!-- Contact details -->
+        <h3 style="margin-top:30px;"><?php pll_e('Orderer contact details'); ?></h3>
+
+        <label><?php pll_e('Company name'); ?></label>
+        <input type="text" name="company_name" required>
+
+        <label><?php pll_e('Contact person'); ?></label>
+        <input type="text" name="contact_person" required>
+
+        <label><?php pll_e('Email address'); ?></label>
+        <input type="email" name="email" required>
+
+        <label><?php pll_e('Phone number'); ?></label>
+        <input type="tel" name="phone">
+
+        <button type="submit">
+            <?php pll_e('Send order request'); ?>
+        </button>
+
+    </form>
+
+    <script>
+        function i4wareCalcPrice(hours) {
+            const rate = <?php echo (int)$hourly_rate; ?>;
+            document.getElementById('i4ware-total-price').innerText =
+                hours ? (hours * rate) : 0;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkbox = document.getElementById('external_funding_checkbox');
+            const details = document.getElementById('external_funding_details');
+
+            checkbox.addEventListener('change', function () {
+                details.style.display = this.checked ? 'block' : 'none';
+            });
+        });
+        jQuery(document).ready(function ($) {
+
+           $('#i4ware-saas-form').on('submit', function (e) { 
+                e.preventDefault();
+
+                const form = $(this);
+                const submitBtn = form.find('button');
+
+                // Polylang-kielimuuttujat
+                const textSending = '<?php echo esc_js(pll__("Sending...")); ?>';
+                const textSuccess = '<?php echo esc_js(pll__("Order request sent successfully")); ?>';
+                const textFailed = '<?php echo esc_js(pll__("Submission failed")); ?>';
+                const textServerError = '<?php echo esc_js(pll__("Server error")); ?>';
+                const textSendOrder = '<?php echo esc_js(pll__("Send order request")); ?>';
+
+                // Päivitetään nappi
+                submitBtn.prop('disabled', true).text(textSending);
+
+                $.ajax({
+                    url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                    type: 'POST',
+                    data: form.serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            form.html('<h3>' + textSuccess + '</h3>');
+                        } else {
+                            alert(response.data || textFailed);
+                        }
+                    },
+                    error: function () {
+                        alert(textServerError);
+                    },
+                    complete: function () {
+                        submitBtn.prop('disabled', false).text(textSendOrder);
+                    }
+                });
+            });
+
+        });
+    </script>
+
+    <style>
+        /* i4ware SaaS Order Form – Modern UI */
+
+        .i4ware-saas-form {
+            width: 100%;
+            margin: 40px auto;
+            padding: 32px;
+            background: #111;
+            border-radius: 14px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            color: #f1f1f1;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        .i4ware-saas-form label {
+            display: block;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ccc;
+        }
+
+        .i4ware-saas-form select,
+        .i4ware-saas-form input[type="number"],
+        .i4ware-saas-form input[type="text"],
+        .i4ware-saas-form input[type="email"],
+        .i4ware-saas-form input[type="tel"],
+        .i4ware-saas-form textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: #1c1c1c;
+            border: 1px solid #2c2c2c;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            transition: border 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .i4ware-saas-form textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .i4ware-saas-form select:focus,
+        .i4ware-saas-form input:focus,
+        .i4ware-saas-form textarea:focus {
+            outline: none;
+            border-color: #4da3ff;
+            box-shadow: 0 0 0 2px rgba(77,163,255,0.25);
+        }
+
+        /* Checkbox group */
+        .i4ware-checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .i4ware-checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: pointer;
+            background: #1a1a1a;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .i4ware-checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4da3ff;
+        }
+
+        /* Pricing section */
+        .i4ware-pricing {
+            margin-top: 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, #161616, #1f1f1f);
+            border-radius: 12px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .i4ware-pricing p {
+            margin: 6px 0;
+            font-size: 0.95rem;
+            color: #bbb;
+        }
+
+        .i4ware-pricing strong {
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        /* Submit button */
+        .i4ware-saas-form button {
+            width: 100%;
+            margin-top: 28px;
+            padding: 16px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            color: #000;
+            background: linear-gradient(135deg, #4da3ff, #6dd5fa);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .i4ware-saas-form button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(77,163,255,0.35);
+        }
+
+        .i4ware-saas-form button:active {
+            transform: translateY(0);
+        }
+    </style>
+
+    <?php
+    return ob_get_clean();
+}
+
+add_shortcode('i4ware_saas_order_form', 'i4ware_saas_order_form_shortcode');
+
+add_action('wp_ajax_i4ware_submit_order', 'i4ware_submit_order');
+add_action('wp_ajax_nopriv_i4ware_submit_order', 'i4ware_submit_order');
+
+function i4ware_submit_order() {
+
+    // Nonce check
+    if (
+        !isset($_POST['i4ware_nonce']) ||
+        !wp_verify_nonce($_POST['i4ware_nonce'], 'i4ware_saas_order')
+    ) {
+        wp_send_json_error('Invalid security token');
+    }
+
+    // Sanitize inputs
+    $data = [
+        'project_phase' => sanitize_text_field($_POST['project_phase'] ?? ''),
+        'project_details' => sanitize_textarea_field($_POST['project_details'] ?? ''),
+        'has_srs' => isset($_POST['has_srs']) ? 'Yes' : 'No',
+        'has_mockups' => isset($_POST['has_mockups']) ? 'Yes' : 'No',
+        'estimated_hours' => intval($_POST['estimated_hours'] ?? 0),
+        'external_funding' => isset($_POST['external_funding_available']) ? 'Yes' : 'No',
+        'external_funding_details' => sanitize_textarea_field($_POST['external_funding_details'] ?? ''),
+        'revenue_funded' => isset($_POST['revenue_funded']) ? 'Yes' : 'No',
+        'company_founding_year' => intval($_POST['company_founding_year'] ?? ''),
+        'company_name' => sanitize_text_field($_POST['company_name'] ?? ''),
+        'contact_person' => sanitize_text_field($_POST['contact_person'] ?? ''),
+        'email' => sanitize_email($_POST['email'] ?? ''),
+        'phone' => sanitize_text_field($_POST['phone'] ?? '')
+    ];
+
+    // Email content
+    $to = get_option('admin_email');
+    $subject = 'New i4ware SaaS Order Request';
+
+    $message = "";
+    foreach ($data as $key => $value) {
+        $message .= ucfirst(str_replace('_', ' ', $key)) . ": $value\n";
+    }
+
+    $headers = [
+        'Content-Type: text/plain; charset=UTF-8',
+        'Reply-To: ' . $data['email']
+    ];
+
+    wp_mail($to, $subject, $message, $headers);
+
+    // Response
+    wp_send_json_success('Order submitted');
+}
 
 ?>

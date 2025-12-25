@@ -273,7 +273,7 @@ nav {
   text-align: center;
   padding: 4rem 0 6rem;
   position: relative;
-  background: url('../dreamstime_xl_153709197.jpg') no-repeat center center/cover;
+  background: url('../businessman-working-on-tablet-using-ai.jpg') no-repeat center center/cover;
 }
 
 .hero::before {
@@ -291,7 +291,7 @@ nav {
   font-size: clamp(2rem, 5vw, 2rem);
   margin-bottom: 1rem;
   color: var(--light);
-  text-shadow: 0 2px 8px rgba(255,0,91,0.2);
+  text-shadow: 6px 2px 8px rgba(0, 0, 0, 0.8);
   text-transform: uppercase;
   letter-spacing: 2px;
   font-weight: 700;
@@ -1740,8 +1740,40 @@ h2.wp-block-heading {
   border:1px solid rgba(255,255,255,0.04);
   color:#f7fbfb;margin:8px 0 8px 24px;
   box-shadow:0 8px 30px rgba(2,6,12,0.55);
-  transition:transform .12s ease,box-shadow .12s ease;
+  transition: transform .3s, box-shadow .3s;
+  transform: translateY(24px) scale(.98);
+  animation: i4w-popIn .6s cubic-bezier(.22,.9,.3,1) both;
   clear:both;
+}
+
+.i4ware-cta-box:nth-child(1) { animation-delay: 0.05s; }
+
+/* hover / focus interaction */
+.i4ware-cta-box:hover,
+.i4ware-cta-box:focus-within {
+  transform: translateY(-12px) scale(1.04);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+  transition: transform .35s cubic-bezier(.16,.84,.44,1), box-shadow .35s;
+  z-index: 2;
+}
+
+/* subtle shine sweep on hover */
+.i4ware-cta-box::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.0) 40%, rgba(255,255,255,0.03) 60%, rgba(255,255,255,0.0) 100%);
+  transform: translateX(-120%);
+  transition: transform .9s cubic-bezier(.2,.8,.2,1);
+}
+.i4ware-cta-box:hover::after { transform: translateX(120%); }
+
+/* subtle scale for inner content so text doesn't shift too much */
+.i4ware-cta-box > * { transform-origin: center; transition: transform .35s; }
+.i4ware-cta-box:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, .5);
 }
 
 /* Allow sticky positioning on wide viewports (nice visual result at the right side of long content) */
