@@ -1017,6 +1017,47 @@ add_action('init', function () {
     pll_register_string('i4ware', 'Order request sent successfully');
     pll_register_string('i4ware', 'Submission failed');
     pll_register_string('i4ware', 'Server error');
+
+    pll_register_string('i4ware', 'Asiakas-/Projektityyppi');
+    pll_register_string('i4ware', 'Alihankinta');
+    pll_register_string('i4ware', 'Suora loppuasiakas');
+
+    pll_register_string('i4ware', 'Tietoa projektista');
+    pll_register_string('i4ware', 'Kuvaile projektia');
+
+    pll_register_string('i4ware', 'Tilauksen taso:');
+    pll_register_string('i4ware', 'Valitse');
+    pll_register_string('i4ware', 'Pronssi (Urakka)');
+    pll_register_string('i4ware', 'Hopea (Urakka)');
+    pll_register_string('i4ware', 'Kulta (Urakka)');
+    pll_register_string('i4ware', 'Tuntityö');
+
+    pll_register_string('i4ware', 'Materiaali');
+    pll_register_string('i4ware', 'PSD (Photoshop, layereilla)');
+    pll_register_string('i4ware', 'XD (Adobe XD, layereilla)');
+    pll_register_string('i4ware', 'Sketch (layereilla)');
+    pll_register_string('i4ware', 'Figma (komponentit, layereilla)');
+    pll_register_string('i4ware', 'InVision (komponentit, layereilla)');    
+    pll_register_string('i4ware', 'Staattinen HTML-kooste');
+    pll_register_string('i4ware', 'Tekstit valmiina');
+    pll_register_string('i4ware', 'Muu');
+    pll_register_string('i4ware', 'Muu materiaali (jos valittu)');
+
+    pll_register_string('i4ware', 'Tuntimäärä (vain Tuntityö)');
+    pll_register_string('i4ware', 'Tunnit');
+    pll_register_string('i4ware', 'Hinta');
+
+    pll_register_string('i4ware', 'Yhteystiedot');
+    pll_register_string('i4ware', 'Nimi');
+    pll_register_string('i4ware', 'Yritys / Organisaatio');
+    pll_register_string('i4ware', 'Sähköposti');
+    pll_register_string('i4ware', 'Puhelinnumero');
+    pll_register_string('i4ware', 'Lisätiedot / kommentit');
+    pll_register_string('i4ware', 'En osaa arvioida tuntimäärää itse - pyydän tuntiarvion toimittajalta');
+    pll_register_string('i4ware', 'Saat tarjouksen');
+
+    // Lähetä-painike
+    pll_register_string('i4ware', 'Lähetä tarjouspyyntö');
 });
 
 /**
@@ -1126,6 +1167,7 @@ function i4ware_saas_order_form_shortcode() {
             <?php pll_e('Send order request'); ?>
         </button>
 
+        <div id="i4ware-form-message"></div>
     </form>
 
     <script>
@@ -1135,52 +1177,50 @@ function i4ware_saas_order_form_shortcode() {
                 hours ? (hours * rate) : 0;
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const checkbox = document.getElementById('external_funding_checkbox');
-            const details = document.getElementById('external_funding_details');
-
-            checkbox.addEventListener('change', function () {
-                details.style.display = this.checked ? 'block' : 'none';
+        jQuery(document).ready(function($){
+            // Piilotetaan/ näytetään rahoitusdetails
+            $('#external_funding_checkbox').on('change', function(){
+                $('#external_funding_details').toggle(this.checked);
             });
-        });
-        jQuery(document).ready(function ($) {
 
-           $('#i4ware-saas-form').on('submit', function (e) { 
+            // AJAX-lähetys
+            $('#i4ware-saas-form').on('submit', function(e){
                 e.preventDefault();
-
                 const form = $(this);
                 const submitBtn = form.find('button');
+                const messageEl = $('#i4ware-form-message');
 
-                // Polylang-kielimuuttujat
                 const textSending = '<?php echo esc_js(pll__("Sending...")); ?>';
                 const textSuccess = '<?php echo esc_js(pll__("Order request sent successfully")); ?>';
                 const textFailed = '<?php echo esc_js(pll__("Submission failed")); ?>';
                 const textServerError = '<?php echo esc_js(pll__("Server error")); ?>';
                 const textSendOrder = '<?php echo esc_js(pll__("Send order request")); ?>';
 
-                // Päivitetään nappi
                 submitBtn.prop('disabled', true).text(textSending);
 
                 $.ajax({
                     url: '<?php echo admin_url("admin-ajax.php"); ?>',
                     type: 'POST',
                     data: form.serialize(),
-                    success: function (response) {
-                        if (response.success) {
-                            form.html('<h3>' + textSuccess + '</h3>');
+                    dataType: 'json',
+                    success: function(response){
+                        if(response.success){
+                            messageEl.text(textSuccess);
+                            form[0].reset();
+                            $('#external_funding_details').hide();
+                            i4wareCalcPrice(0);
                         } else {
-                            alert(response.data || textFailed);
+                            messageEl.text(response.data || textFailed);
                         }
                     },
-                    error: function () {
-                        alert(textServerError);
+                    error: function(){
+                        messageEl.text(textServerError);
                     },
-                    complete: function () {
+                    complete: function(){
                         submitBtn.prop('disabled', false).text(textSendOrder);
                     }
                 });
             });
-
         });
     </script>
 
@@ -1362,6 +1402,183 @@ function i4ware_submit_order() {
 
     // Response
     wp_send_json_success('Order submitted');
+}
+
+// Lyhytkoodi wp_quote AJAX-lähetyksellä
+function wp_quote_form_shortcode() {
+    ob_start();
+    ?>
+    <form id="wp_quote-form" method="post">
+        <h3><?php echo pll__('Asiakas-/Projektityyppi'); ?></h3>
+        <label><input type="radio" name="tilaaja" value="Alihankinta" required> <?php echo pll__('Alihankinta'); ?></label>
+        <label><input type="radio" name="tilaaja" value="Suora loppuasiakas" required> <?php echo pll__('Suora loppuasiakas'); ?></label>
+
+        <h3><?php echo pll__('Tietoa projektista'); ?></h3>
+        <textarea name="projektikuvaus" placeholder="<?php echo pll__('Kuvaile projektia'); ?>" required></textarea>
+
+        <label for="tilaus_taso"><?php echo pll__('Tilauksen taso:'); ?></label>
+        <select id="tilaus_taso" name="tilaus_taso" required>
+            <option value=""><?php echo pll__('Valitse'); ?></option>
+            <option value="Pronssi"><?php echo pll__('Pronssi (Urakka)'); ?></option>
+            <option value="Hopea"><?php echo pll__('Hopea (Urakka)'); ?></option>
+            <option value="Kulta"><?php echo pll__('Kulta (Urakka)'); ?></option>
+            <option value="Tuntityo"><?php echo pll__('Tuntityö'); ?></option>
+        </select>
+
+        <h3><?php echo pll__('Materiaali'); ?></h3>
+        <label><input type="checkbox" name="materiaali[]" value="PSD"> <?php echo pll__('PSD (Photoshop, layereilla)'); ?></label>
+        <label><input type="checkbox" name="materiaali[]" value="XD"> <?php echo pll__('XD (Adobe XD, layereilla)'); ?></label>
+        <label><input type="checkbox" name="materiaali[]" value="Sketch"> <?php echo pll__('Sketch (layereilla)'); ?></label>
+        <label><input type="checkbox" name="materiaali[]" value="Figma"> <?php echo pll__('Figma (komponentit, layereilla)'); ?></label>
+        <label><input type="checkbox" name="materiaali[]" value="InVision"> <?php echo pll__('InVision (komponentit, layereilla)'); ?></label>
+        <label><input type="checkbox" name="materiaali[]" value="HTML"> <?php echo pll__('Staattinen HTML-kooste'); ?></label>
+        <label><input type="checkbox" name="materiaali[]" value="Tekstit"> <?php echo pll__('Tekstit valmiina'); ?></label>
+        <label><input type="checkbox" name="materiaali[]" value="Muu"> <?php echo pll__('Muu'); ?></label>
+        <input type="text" name="materiaali_muu" placeholder="<?php echo pll__('Muu materiaali (jos valittu)'); ?>">
+
+        <div id="tuntimaara-wrapper" style="display:none;">
+            <h3><?php echo pll__('Tuntimäärä (vain Tuntityö)'); ?></h3>
+            <input type="number" id="tuntimaara" name="tuntimaara" min="1" placeholder="<?php echo pll__('Tunnit'); ?>">
+            <label style="margin-top:-10px; font-weight:500;">
+                <input type="checkbox" id="request_estimate" name="request_estimate">
+                <?php pll_e('En osaa arvioida tuntimäärää itse - pyydän tuntiarvion toimittajalta'); ?>
+            </label>
+        </div>
+
+        <h3><?php echo pll__('Hinta'); ?></h3>
+        <p id="hinta">0 €</p>
+
+        <h3><?php echo pll__('Yhteystiedot'); ?></h3>
+        <input type="text" name="nimi" placeholder="<?php echo pll__('Nimi'); ?>" required>
+        <input type="text" name="yritys" placeholder="<?php echo pll__('Yritys / Organisaatio'); ?>">
+        <input type="email" name="sahkoposti" placeholder="<?php echo pll__('Sähköposti'); ?>" required>
+        <input type="tel" name="puhelin" placeholder="<?php echo pll__('Puhelinnumero'); ?>">
+
+        <textarea name="lisatiedot" placeholder="<?php echo pll__('Lisätiedot / kommentit'); ?>"></textarea>
+
+        <input type="submit" name="tarjous_lähetä" value="<?php echo pll__('Lähetä tarjouspyyntö'); ?>">
+        <p id="form-message"></p>
+    </form>
+
+    <script>
+    jQuery(document).ready(function($){
+        const tilausTasoEl = $('#tilaus_taso');
+        const tuntimaaraWrapper = $('#tuntimaara-wrapper');
+        const tuntimaaraEl = $('#tuntimaara');
+        const hintaEl = $('#hinta');
+        const form = $('#wp_quote-form');
+        const messageEl = $('#form-message');
+        const estimateCheckbox = $('#request_estimate');
+
+        function naytaTaiPiilotaTuntimaara() {
+            if(tilausTasoEl.val() === 'Tuntityo') {
+                tuntimaaraWrapper.show();
+            } else {
+                tuntimaaraWrapper.hide();
+                tuntimaaraEl.val('');
+            }
+            laskeHinta();
+        }
+
+        // Tuntiarvion pyyntö
+        estimateCheckbox.on('change', function () {
+            if (this.checked) {
+                tuntimaaraEl.val(0);
+                tuntimaaraEl.prop('disabled', true);
+                laskeHinta();
+            } else {
+                tuntimaaraEl.prop('disabled', false);
+            }
+        });
+
+        function laskeHinta() {
+            let taso = tilausTasoEl.val();
+            let tunti = parseFloat(tuntimaaraEl.val()) || 0;
+            let hinta = 0;
+
+            if(taso === 'Pronssi') hinta = 500;
+            else if(taso === 'Hopea') hinta = "800-4000";
+            else if(taso === 'Kulta') hinta = "<?php echo pll__('Saat tarjouksen'); ?>";
+            else if (taso === 'Tuntityo') {
+            if (tunti === 0) {
+                hinta = '<?php echo pll__("Saat tarjouksen"); ?>';
+            } else if (tunti > 0) {
+                hinta = tunti * 95;
+            }
+        }
+
+            hintaEl.text(hinta + ' €');
+        }
+
+        naytaTaiPiilotaTuntimaara();
+        tilausTasoEl.change(naytaTaiPiilotaTuntimaara);
+        tuntimaaraEl.on('input', laskeHinta);
+
+        // AJAX-lähetys
+        form.submit(function(e){
+            e.preventDefault();
+            messageEl.text('<?php echo pll__('Sending...'); ?>');
+
+            $.ajax({
+                url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                type: 'POST',
+                data: form.serialize() + '&action=wp_quote_send',
+                success: function(response){
+                    messageEl.text(response);
+                    form[0].reset();
+                    naytaTaiPiilotaTuntimaara();
+                    laskeHinta();
+                },
+                error: function(){
+                    messageEl.text('<?php echo pll__('Submission failed'); ?>');
+                }
+            });
+        });
+    });
+    </script>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode('wp_quote', 'wp_quote_form_shortcode');
+
+// AJAX-handler
+add_action('wp_ajax_wp_quote_send', 'wp_quote_send_handler');
+add_action('wp_ajax_nopriv_wp_quote_send', 'wp_quote_send_handler');
+
+function wp_quote_send_handler() {
+    $nimi = sanitize_text_field($_POST['nimi']);
+    $yritys = sanitize_text_field($_POST['yritys']);
+    $sahkoposti = sanitize_email($_POST['sahkoposti']);
+    $puhelin = sanitize_text_field($_POST['puhelin']);
+    $tilaaja = sanitize_text_field($_POST['tilaaja']);
+    $tilaus_taso = sanitize_text_field($_POST['tilaus_taso']);
+    $projektikuvaus = sanitize_textarea_field($_POST['projektikuvaus']);
+    $materiaali = isset($_POST['materiaali']) ? implode(', ', array_map('sanitize_text_field', $_POST['materiaali'])) : '';
+    $materiaali_muu = sanitize_text_field($_POST['materiaali_muu']);
+    $tuntimaara = intval($_POST['tuntimaara']);
+    $estimate = isset($_POST['request_estimate']) ? sanitize_text_field($_POST['request_estimate']) : '';
+    $lisatiedot = sanitize_textarea_field($_POST['lisatiedot']);
+
+    $viesti = pll__('New order request received') . "\n\n"
+            . pll__('Order details:') . "\n"
+            . pll__('Tilaaja:') . " $tilaaja\n"
+            . pll__('Tilauksen taso:') . " $tilaus_taso\n"
+            . pll__('Projektikuvaus:') . " $projektikuvaus\n"
+            . pll__('Materiaali:') . " $materiaali $materiaali_muu\n"
+            . pll__('Tuntimäärä:') . " $tuntimaara\n\n"
+            . pll__('Tuntiarvio:') . " $estimate\n\n"
+            . pll__('Yhteystiedot:') . "\n" 
+            . pll__('Nimi:') . " $nimi\n"
+            . pll__('Yritys:') . " $yritys\n"
+            . pll__('Sähköposti:') . " $sahkoposti\n"
+            . pll__('Puhelin:') . " $puhelin\n\n"
+            . pll__('Lisätiedot:') . " $lisatiedot";
+
+    $admin_email = get_option('admin_email');
+    wp_mail($admin_email, pll__('New order request received'), $viesti);
+
+    echo pll__('Order request sent successfully');
+    wp_die();
 }
 
 ?>

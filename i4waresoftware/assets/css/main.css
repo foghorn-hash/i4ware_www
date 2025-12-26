@@ -509,6 +509,7 @@ img.partner-logo {
 
 .section-title {
   text-align: left;
+  margin-left: 0 !important;
   margin-bottom: 2rem;
   color: var(--accent);
 }
@@ -596,12 +597,6 @@ img.partner-logo {
 /* Nain & footer */
 .main {
   padding: 4rem 0;
-}
-
-.main div article div {
-  margin: 0 auto 2rem;
-  text-align: left;
-  font-size: 1.1rem;
 }
 
 .main div article div :where(p, h1, h2, h3, h4, h5, h6) {
@@ -912,21 +907,32 @@ article[class^="post-"]:hover {
   color: #3949ab;
 }
 
+.entry-header {
+  position: relative; 
+  z-index: 2;         
+  max-width: 1200px;
+  width: 90%;
+  padding: 0 !important;
+  box-sizing: border-box;
+  text-align: left !important;
+}
+
 .entry-header h1, .entry-header h2 {
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-weight: 700;
   line-height: 1.2;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  text-align: left !important;
 }
 
 .entry-header h2 a, .entry-header h1 a {
-  color: var(--accent);
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .entry-header h2 a:hover, .entry-header h1 a:hover {
-  color: var(--accent);
   text-decoration: underline;
 }
 
@@ -1874,4 +1880,193 @@ h2.wp-block-heading {
   }
 
   .i4ware-cta-box h3 { font-size: 1rem; }
+}
+
+/* -------------------------------
+   Child Pages List
+---------------------------------*/
+
+.child-pages {
+    list-style: none;           /* Poistaa bulletit */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;     /* Vertikaalinen lista */
+    gap: 1.2rem;                /* Väli listaelementtien välillä */
+}
+
+.child-pages li {
+    padding: 0.8rem 1rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: background-color 0.3s, transform 0.3s;
+    background-color: #fafafa;
+}
+
+.child-pages li:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+}
+
+.child-pages li a {
+    display: block;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #222;
+    text-decoration: none;
+    margin-bottom: 0.4rem;
+}
+
+.child-pages li a:hover {
+    text-decoration: underline;
+}
+
+.child-pages li p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #555;
+}
+
+/* Responsiivisuus: tiivis mobiililistaus */
+@media (max-width: 768px) {
+    .child-pages li {
+        padding: 0.6rem 0.8rem;
+    }
+
+    .child-pages li a {
+        font-size: 1rem;
+    }
+
+    .child-pages li p {
+        font-size: 0.9rem;
+    }
+}
+
+nav.breadcrumbs {
+  display: flex;
+  gap: 0.5rem; /* hallittu väli linkkien välille */
+  align-items: center;
+  justify-content: flex-start; /* ei työntöä reunoille */
+}
+
+.breadcrumbs {
+    white-space: nowrap; 
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    color: #ccc;
+    text-align: left;
+}
+.breadcrumbs a {
+    color: var(--accent);
+    display: inline;      /* tai inline-block tarvittaessa */
+    margin: 0;            /* poistaa linkkien välistä marginaalit */
+    padding: 0;           /* poistaa linkkien välistä paddingit */
+    text-decoration: none;
+}
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}
+.breadcrumbs .current {
+    color: #fff;
+    margin: 0;
+    padding: 0
+}
+
+/* Tarjouspyyntölomake – tumma teema */
+#wp_quote-form {
+    background-color: #1e1e1e; /* tumma tausta */
+    color: #f1f1f1;           /* vaalea teksti */
+    padding: 30px;
+    border-radius: 12px;
+    width: 100%;
+    margin: 20px auto;
+    font-family: 'Arial', sans-serif;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+#wp_quote-form h3 {
+    color: #ffffff;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+#wp_quote-form input[type="text"],
+#wp_quote-form input[type="email"],
+#wp_quote-form input[type="tel"],
+#wp_quote-form input[type="number"],
+#wp_quote-form textarea,
+#wp_quote-form select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    background-color: #2b2b2b;
+    color: #f1f1f1;
+    font-size: 1em;
+}
+
+#wp_quote-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+#wp_quote-form input[type="radio"],
+#wp_quote-form input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+#wp_quote-form label {
+    display: block;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-weight: normal;
+}
+
+#wp_quote-form select {
+    background-color: #2b2b2b;
+    color: #f1f1f1;
+}
+
+#wp_quote-form input[type="submit"] {
+    background-color: #ff9800;
+    color: #1e1e1e;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+#wp_quote-form input[type="submit"]:hover {
+    background-color: #e68900;
+}
+
+#wp_quote-form #hinta {
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: #ffcc00;
+}
+
+p#form-message {
+    margin-top: 15px;
+    font-size: 1em;
+    color: #63ff44; /* punainen virheviesteille */
+}
+
+#i4ware-form-message {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 1em;
+    color: #63ff44; /* vihreä onnistumisviesteille */
+}
+
+/* Responsiivisuus */
+@media (max-width: 768px) {
+    #wp_quote-form {
+        padding: 20px;
+    }
 }

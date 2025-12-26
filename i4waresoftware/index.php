@@ -50,6 +50,7 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
       <?php endif; ?>
     </div>
   </div>
+  <div class="container"><?php i4ware_breadcrumbs(); ?></div>
 <?php if ( is_front_page() ) : ?>
 <?php
 $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
@@ -63,6 +64,22 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
     </a>
   </div>
 </section>
+<script>
+jQuery(document).ready(function($){
+    $(window).on('scroll', function() {
+    const h1 = $('.hero h1');
+    const windowBottom = $(window).scrollTop() + $(window).height();
+    const elementTop = h1.offset().top;
+
+    // Kun elementti on 90% näkyvissä, lisätään animaatio
+    if (windowBottom > elementTop + h1.height() * 0.1) {
+        if (!h1.hasClass('animate-slide')) {
+            h1.addClass('animate-slide');
+        }
+    }
+  });
+});
+</script>
 <?php endif; ?>
 <section class="main">
   <div class="container">

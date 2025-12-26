@@ -3,6 +3,7 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
 ?>
 <div class="main-row">
     <div class="main-content">
+        <h1 class="section-title"><?php echo get_the_title(get_option('page_for_posts')); ?></h1>
         <aside class="sidebar">
             <?php if ( is_active_sidebar( 'sidebar-1-' . $lang ) ) : ?>
                 <?php dynamic_sidebar( 'sidebar-1-' . $lang ); ?>
