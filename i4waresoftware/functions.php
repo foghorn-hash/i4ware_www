@@ -1065,8 +1065,6 @@ add_action('init', function () {
  * Description: i4ware SDK low-code SaaS tilauslomake (FI/EN, Polylang)
  */
 
-if (!defined('ABSPATH')) exit;
-
 function i4ware_saas_order_form_shortcode() {
 
     // Oletustuntihinta (muokkaa tarvittaessa)
