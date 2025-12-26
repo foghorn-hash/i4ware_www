@@ -851,7 +851,6 @@ article[class^="post-"] {
   margin-bottom: 1.5rem; /* Reduced space at bottom */
   padding: 2rem;
   background-color: #222;
-  align-items: stretch;
   gap: 1.5rem;
 }
 
@@ -871,7 +870,7 @@ article[class^="post-"]:hover {
   height: 320px;
   display: flex;
   align-items: stretch;
-  margin-bottom: 0; /* Remove extra space */
+  margin: 0; /* Remove extra space */
   position: relative;
 }
 
@@ -881,7 +880,8 @@ article[class^="post-"]:hover {
   object-fit: cover;
   display: block;
   border-radius: 8px;
-  margin-bottom: 0;
+  padding: 0;
+  margin: 0;
   position: absolute;
   left: 0;
   top: 0;
