@@ -68,7 +68,7 @@ const LegalFeeCalculator = () => {
     <div className="p-4 max-w-xl mx-auto">
       <Card className="shadow-sm">
         <Card.Body>
-          <h2 className="text-center mb-4 calculator-title">{strings.title}</h2>
+          <h2 className="mb-4 calculator-title">{strings.title}</h2>
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>{strings.hourlyRate}</Form.Label>
@@ -103,7 +103,7 @@ const LegalFeeCalculator = () => {
           </Form>
 
           <div className="mt-4 calculator-container">
-            <h2 className="text-center calculator-title">{strings.results}</h2>
+            <h2 className="calculator-title">{strings.results}</h2>
             <p>{strings.baseAmount} €{result.baseAmount}</p>
             <p>{strings.vatAmount} €{result.vatAmount}</p>
             <p>{strings.totalWithVat} €{result.totalWithVat}</p>

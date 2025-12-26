@@ -348,6 +348,7 @@ class AtlassianSalesController extends Controller
         $password = env('ATLASSIAN_PASSWORD');
 
         $json = ['root' => []];
+        $totalSales = 0; // Initialize total sales
 
         // Fetch Atlassian sales data if needed
         if ($source === 'all' || $source === 'atlassian') {
@@ -373,6 +374,7 @@ class AtlassianSalesController extends Controller
                             ];
                         }
                         $json['root'][$saleYear]['balanceVendor'] += $vendorAmount;
+                        $totalSales += $vendorAmount; // Add to total
                     }
                 }
             }
@@ -405,6 +407,7 @@ class AtlassianSalesController extends Controller
                     ];
                 }
                 $json['root'][$saleYear]['balanceVendor'] += $amount;
+                $totalSales += $amount; // Add to total
             }
         }
 
@@ -417,6 +420,7 @@ class AtlassianSalesController extends Controller
             $i++;
         }
 
+        $yearData['total'] = $totalSales;
         return response()->json($yearData);
     }
 

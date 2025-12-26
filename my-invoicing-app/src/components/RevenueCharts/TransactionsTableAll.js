@@ -118,7 +118,7 @@ const TransactionsTableAll = ({ revenueSource }) => {
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div>
+    <div className="chart-container">
       <h2 className="calculator-title">{strings.title}</h2>
       {/* Bar Chart */}
       <ResponsiveContainer width="100%" height={620}>

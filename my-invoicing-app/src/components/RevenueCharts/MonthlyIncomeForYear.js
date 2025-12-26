@@ -66,11 +66,11 @@ const MonthlyIncomeForYear = ({ revenueSource = "all", year = new Date().getFull
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div>
+    <div className="chart-container">
       <h2 className="calculator-title">
         {strings.title} — {year} ({keyToSourceLabel(revenueSource)})
       </h2>
-      <div style={{ marginBottom: 8 }}>
+      <div className="total-container" style={{ marginBottom: 8 }}>
         <strong>{strings.total}:</strong> {yearTotal.toFixed(2)} €
       </div>
 
