@@ -1056,6 +1056,19 @@ add_action('init', function () {
     pll_register_string('i4ware', 'En osaa arvioida tuntimäärää itse - pyydän tuntiarvion toimittajalta');
     pll_register_string('i4ware', 'Saat tarjouksen');
 
+    // Uudet – checkbox-tekstit
+    pll_register_string('i4ware', 'Olen hyväksynyt Toimitusehdot:');
+    pll_register_string('i4ware', 'Lue Toimitusehdot');
+
+    pll_register_string('i4ware', 'Olen lukenut ja hyväksynyt Yksityisyydensuojaselosteen:');
+    pll_register_string('i4ware', 'Lue Yksityisyydensuojaseloste');
+
+    // Uusi – AJAX-validoinnin virheilmoitus
+    pll_register_string(
+        'i4ware',
+        'Sinun tulee hyväksyä Toimitusehdot ja Yksityisyydensuojaseloste ennen lähettämistä.'
+    );
+
     // Lähetä-painike
     pll_register_string('i4ware', 'Lähetä tarjouspyyntö');
 });
@@ -1161,6 +1174,18 @@ function i4ware_saas_order_form_shortcode() {
         <label><?php pll_e('Phone number'); ?></label>
         <input type="tel" name="phone">
 
+        <label>
+            <input type="checkbox" id="terms" name="terms" required> 
+            <?php pll_e('Olen hyväksynyt Toimitusehdot:'); ?> 
+            <a href="<?php echo esc_url($terms_link); ?>" target="_blank"><?php pll_e('Lue Toimitusehdot'); ?></a>
+        </label>
+
+        <label>
+            <input type="checkbox" id="privacy" name="privacy" required> 
+            <?php pll_e('Olen lukenut ja hyväksynyt Yksityisyydensuojaselosteen:'); ?> 
+            <a href="<?php echo esc_url($privacy_link); ?>" target="_blank"><?php pll_e('Lue Yksityisyydensuojaseloste'); ?></a>
+        </label>
+
         <button type="submit">
             <?php pll_e('Send order request'); ?>
         </button>
@@ -1187,6 +1212,12 @@ function i4ware_saas_order_form_shortcode() {
                 const form = $(this);
                 const submitBtn = form.find('button');
                 const messageEl = $('#i4ware-form-message');
+
+                // Tarkistetaan, että checkboxit on valittu
+                if(!$('#terms').is(':checked') || !$('#privacy').is(':checked')) {
+                    messageEl.text('<?php echo pll__("Sinun tulee hyväksyä Toimitusehdot ja Yksityisyydensuojaseloste ennen lähettämistä."); ?>');
+                    return;
+                }
 
                 const textSending = '<?php echo esc_js(pll__("Sending...")); ?>';
                 const textSuccess = '<?php echo esc_js(pll__("Order request sent successfully")); ?>';
@@ -1365,6 +1396,12 @@ function i4ware_submit_order() {
         wp_send_json_error('Invalid security token');
     }
 
+    // Tarkistetaan, että checkboxit on valittu
+    if ( empty($_POST['terms']) || empty($_POST['privacy']) ) {
+        echo pll__('Sinun tulee hyväksyä Toimitusehdot ja Yksityisyydensuojaseloste ennen lähettämistä.');
+        wp_die();
+    }
+
     // Sanitize inputs
     $data = [
         'project_phase' => sanitize_text_field($_POST['project_phase'] ?? ''),
@@ -1454,6 +1491,25 @@ function wp_quote_form_shortcode() {
 
         <textarea name="lisatiedot" placeholder="<?php echo pll__('Lisätiedot / kommentit'); ?>"></textarea>
 
+        <?php
+        // Hae kielikohtaiset linkit Polylangin nykyisen kielen mukaan
+        $current_lang = pll_current_language(); // 'fi' tai 'en'
+        $terms_link = get_theme_mod("wp_quote_terms_link_$current_lang", '#');
+        $privacy_link = get_theme_mod("wp_quote_privacy_link_$current_lang", '#');
+        ?>
+
+        <label>
+            <input type="checkbox" id="terms" name="terms" required> 
+            <?php pll_e('Olen hyväksynyt Toimitusehdot:'); ?> 
+            <a href="<?php echo esc_url($terms_link); ?>" target="_blank"><?php pll_e('Lue Toimitusehdot'); ?></a>
+        </label>
+
+        <label>
+            <input type="checkbox" id="privacy" name="privacy" required> 
+            <?php pll_e('Olen lukenut ja hyväksynyt Yksityisyydensuojaselosteen:'); ?> 
+            <a href="<?php echo esc_url($privacy_link); ?>" target="_blank"><?php pll_e('Lue Yksityisyydensuojaseloste'); ?></a>
+        </label>
+
         <input type="submit" name="tarjous_lähetä" value="<?php echo pll__('Lähetä tarjouspyyntö'); ?>">
         <p id="form-message"></p>
     </form>
@@ -1515,6 +1571,12 @@ function wp_quote_form_shortcode() {
         // AJAX-lähetys
         form.submit(function(e){
             e.preventDefault();
+            // Tarkistetaan, että checkboxit on valittu
+            if(!$('#terms').is(':checked') || !$('#privacy').is(':checked')) {
+                messageEl.text('<?php echo pll__("Sinun tulee hyväksyä Toimitusehdot ja Yksityisyydensuojaseloste ennen lähettämistä."); ?>');
+                return;
+            }
+
             messageEl.text('<?php echo pll__('Sending...'); ?>');
 
             $.ajax({
@@ -1544,6 +1606,11 @@ add_action('wp_ajax_wp_quote_send', 'wp_quote_send_handler');
 add_action('wp_ajax_nopriv_wp_quote_send', 'wp_quote_send_handler');
 
 function wp_quote_send_handler() {
+    // Tarkistetaan, että checkboxit on valittu
+    if ( empty($_POST['terms']) || empty($_POST['privacy']) ) {
+        echo pll__('Sinun tulee hyväksyä Toimitusehdot ja Yksityisyydensuojaseloste ennen lähettämistä.');
+        wp_die();
+    }
     $nimi = sanitize_text_field($_POST['nimi']);
     $yritys = sanitize_text_field($_POST['yritys']);
     $sahkoposti = sanitize_email($_POST['sahkoposti']);
@@ -1578,5 +1645,39 @@ function wp_quote_send_handler() {
     echo pll__('Order request sent successfully');
     wp_die();
 }
+
+function wp_quote_customizer_settings($wp_customize) {
+    $languages = array('fi' => 'Suomi', 'en' => 'English');
+
+    foreach($languages as $lang_code => $lang_name) {
+        $wp_customize->add_section("wp_quote_links_section_$lang_code", array(
+            'title' => __("WP Quote Links ($lang_name)", 'textdomain'),
+            'priority' => 30,
+        ));
+
+        // Toimitusehdot
+        $wp_customize->add_setting("wp_quote_terms_link_$lang_code", array(
+            'default' => '#',
+            'sanitize_callback' => 'esc_url_raw',
+        ));
+        $wp_customize->add_control("wp_quote_terms_link_$lang_code", array(
+            'label' => __("Toimitusehdot linkki ($lang_name)", 'textdomain'),
+            'section' => "wp_quote_links_section_$lang_code",
+            'type' => 'url',
+        ));
+
+        // Yksityisyydensuojakäytäntö
+        $wp_customize->add_setting("wp_quote_privacy_link_$lang_code", array(
+            'default' => '#',
+            'sanitize_callback' => 'esc_url_raw',
+        ));
+        $wp_customize->add_control("wp_quote_privacy_link_$lang_code", array(
+            'label' => __("Yksityisyydensuojakäytännön linkki ($lang_name)", 'textdomain'),
+            'section' => "wp_quote_links_section_$lang_code",
+            'type' => 'url',
+        ));
+    }
+}
+add_action('customize_register', 'wp_quote_customizer_settings');
 
 ?>
