@@ -1212,6 +1212,7 @@ function i4ware_saas_order_form_shortcode() {
                 const form = $(this);
                 const submitBtn = form.find('button');
                 const messageEl = $('#i4ware-form-message');
+                
 
                 // Tarkistetaan, että checkboxit on valittu
                 if(!$('#terms').is(':checked') || !$('#privacy').is(':checked')) {
