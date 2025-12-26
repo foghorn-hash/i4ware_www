@@ -3,7 +3,7 @@
     $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
 
 function i4ware_breadcrumbs() {
-    $home_text = 'Home';
+    $home_text = '#';
     $delimiter = ' &raquo; '; // voit vaihtaa vaikka '›' tai '>'
     $before = '<span class="current">';
     $after = '</span>';
