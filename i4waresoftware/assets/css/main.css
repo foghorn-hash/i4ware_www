@@ -304,6 +304,7 @@ nav {
   transform: translateX(40px);
   animation: slideInFromRight 900ms cubic-bezier(.16,.84,.44,1) 300ms both;
   will-change: transform, opacity;
+  text-align: center !important;
 }
 
 .hero p {
@@ -314,6 +315,7 @@ nav {
   transform: translateX(40px);
   animation: slideInFromRight 900ms cubic-bezier(.16,.84,.44,1) 300ms both;
   will-change: transform, opacity;
+  text-align: center !important;
 }
 
 /* subtle floating after entrance */
