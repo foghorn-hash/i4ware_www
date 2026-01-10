@@ -1,10 +1,6 @@
-import React, {useState, useContext} from "react";
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import InvoicingCalculator from './components/InvoicingCalculator/InvoicingCalculator';
-import LegalFeeCalculator from './components/LegalFeeCalculator/LegalFeeCalculator';
-import YELCalculator from './components/YelCalculator/YelCalculator';
-import Charts from './components/RevenueCharts/Charts.js';
+import AttorneyFeeCalculator from './components/AttorneyFeeCalculator/AttorneyFeeCalculator.js';
 import { API_DEFAULT_LANGUAGE } from "./constants/apiConstants";
 // ES6 module syntax
 import LocalizedStrings from 'react-localization';
@@ -40,9 +36,7 @@ function App() {
 
   return (
     <div className="App">
-      <InvoicingCalculator />
-      <LegalFeeCalculator />
-      <Charts />
+      <AttorneyFeeCalculator />
     </div>
   );
 }

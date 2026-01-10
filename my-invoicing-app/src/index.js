@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 // Get the root DOM element
-const rootElement = document.getElementById("root");
+const rootElement = document.getElementById("legal-root");
 
 // Create a root and render your React app
 const root = ReactDOM.createRoot(rootElement);
