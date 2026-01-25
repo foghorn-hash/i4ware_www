@@ -285,6 +285,60 @@ function i4ware_register_partner_logo_cpt() {
 }
 add_action('init', 'i4ware_register_partner_logo_cpt');
 
+// ACF-kentät partner logoille
+function i4ware_add_partner_logo_fields() {
+    if( function_exists('acf_add_local_field_group') ):
+        acf_add_local_field_group(array(
+            'key' => 'group_partner_logo',
+            'title' => 'Partner Logo Asetukset',
+            'fields' => array(
+                array(
+                    'key' => 'field_logo_group',
+                    'label' => 'Logo Ryhmä',
+                    'name' => 'logo_group',
+                    'type' => 'select',
+                    'required' => 1,
+                    'choices' => array(
+                        'top' => 'Top (Yläosa)',
+                        'main' => 'Main (Keskiosa)',
+                        'bottom' => 'Bottom (Alaosa)',
+                    ),
+                    'default_value' => 'main',
+                ),
+                array(
+                    'key' => 'field_logo_url',
+                    'label' => 'Logo URL',
+                    'name' => 'logo_url',
+                    'type' => 'url',
+                    'required' => 1,
+                ),
+                array(
+                    'key' => 'field_logo_alt_fi',
+                    'label' => 'Alt-teksti (FI)',
+                    'name' => 'logo_alt_fi',
+                    'type' => 'text',
+                ),
+                array(
+                    'key' => 'field_logo_alt_en',
+                    'label' => 'Alt-teksti (EN)',
+                    'name' => 'logo_alt_en',
+                    'type' => 'text',
+                ),
+            ),
+            'location' => array(
+                array(
+                    array(
+                        'param' => 'post_type',
+                        'operator' => '==',
+                        'value' => 'partner_logo',
+                    ),
+                ),
+            ),
+        ));
+    endif;
+}
+add_action('acf/init', 'i4ware_add_partner_logo_fields');
+
 function i4ware_partnerships_shortcode() {
     $groups = array(
         'top' => array('container' => 'top-logo-container', 'img_class' => 'top-partner-logo'),
