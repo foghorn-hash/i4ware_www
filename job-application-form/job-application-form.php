@@ -19,15 +19,16 @@ class JAF_Plugin {
   const OPTION_GROUP = 'mh_ats_settings';
   const OPTION_API_KEY = 'mh_ats_openai_api_key';
   const REST_NS = 'mh-ats/v1';
-  const NONCE_ACTION = 'mh_ats_submit';
+  const NONCE_ACTION = 'wp_rest';
 
   public function __construct() {
     register_activation_hook( __FILE__, [ $this, 'on_activate' ] );
     add_action( 'admin_init', [ $this, 'register_settings' ] );
-    add_action( 'admin_menu', [ $this, 'settings_page' ] );
+    add_action( 'admin_menu', [ $this, 'admin_menu' ] );
     add_action( 'init', [ $this, 'register_shortcode' ] );
     add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
     add_action( 'rest_api_init', [ $this, 'register_routes' ] );
+    add_filter( 'rest_authentication_errors', [ $this, 'allow_public_rest' ], 20 );
   }
 
   /**
@@ -35,23 +36,14 @@ class JAF_Plugin {
    */
   public function register_assets() {
     // Päivitä polut vastaamaan buildiasi
-    $google  = 'https://www.google.com/recaptcha/api.js?render=explicit';
-    $css_rel = 'css/main.2a240728.css';
-    $js_rel  = 'js/main.364a50a4.js';
+    $css_rel = 'css/main.1d366fb0.css';
+    $js_rel  = 'js/main.dcd359f5.js';
     $plugin_url = plugin_dir_url( __FILE__ ) . 'static/';
     $css_path = JAF_PLUGIN_PATH . $css_rel;
     $js_path  = JAF_PLUGIN_PATH . $js_rel;
 
     $css_ver = file_exists( $css_path ) ? filemtime( $css_path ) : JAF_PLUGIN_VER;
     $js_ver  = file_exists( $js_path ) ? filemtime( $js_path )  : JAF_PLUGIN_VER;
-
-     wp_register_script(
-      'google-recaptcha',
-      $google,
-      [],
-      $js_ver,
-      true
-    );
 
     wp_register_style(
       'jaf-app',
@@ -85,7 +77,6 @@ class JAF_Plugin {
     // Enqueue assets
     wp_enqueue_style( 'jaf-app' );
     wp_enqueue_script( 'jaf-app' );
-    wp_enqueue_script( 'google-recaptcha' );
 
     $id = 'jafroot';
     $nonce = wp_create_nonce( self::NONCE_ACTION );
@@ -158,14 +149,184 @@ class JAF_Plugin {
     }, self::OPTION_GROUP, 'mh_ats_sec');
   }
 
-  public function settings_page() {
-    add_options_page('ATS', 'ATS', 'manage_options', 'mh-ats', function(){
-      echo '<div class="wrap"><h1>ATS</h1><form method="post" action="options.php">';
-      settings_fields(self::OPTION_GROUP);
-      do_settings_sections(self::OPTION_GROUP);
-      submit_button();
-      echo '</form></div>';
-    });
+  public function admin_menu() {
+    add_menu_page(
+      'Job Applications',
+      'Job Applications',
+      'manage_options',
+      'jaf-applications',
+      [ $this, 'render_applications_page' ],
+      'dashicons-id',
+      26
+    );
+
+    add_submenu_page(
+      'jaf-applications',
+      'Job Applications',
+      'Applications',
+      'manage_options',
+      'jaf-applications',
+      [ $this, 'render_applications_page' ]
+    );
+
+    add_submenu_page(
+      'jaf-applications',
+      'ATS Settings',
+      'Settings',
+      'manage_options',
+      'mh-ats',
+      [ $this, 'render_settings_page' ]
+    );
+  }
+
+  public function render_settings_page() {
+    echo '<div class="wrap"><h1>ATS</h1><form method="post" action="options.php">';
+    settings_fields(self::OPTION_GROUP);
+    do_settings_sections(self::OPTION_GROUP);
+    submit_button();
+    echo '</form></div>';
+  }
+
+  public function render_applications_page() {
+    global $wpdb;
+    $applicants = $wpdb->prefix . 'mh_ats_applicants';
+    $scores = $wpdb->prefix . 'mh_ats_scores';
+    $docs = $wpdb->prefix . 'mh_ats_documents';
+
+    $applicant_id = isset($_GET['applicant_id']) ? absint($_GET['applicant_id']) : 0;
+
+    echo '<div class="wrap"><h1>Job Applications</h1>';
+
+    if ($applicant_id) {
+      $row = $wpdb->get_row($wpdb->prepare(
+        "SELECT a.*, s.score, s.status, s.reason FROM $applicants a LEFT JOIN $scores s ON a.id = s.applicant_id WHERE a.id = %d",
+        $applicant_id
+      ));
+
+      if (!$row) {
+        echo '<p>Application not found.</p></div>';
+        return;
+      }
+
+      $doc_rows = $wpdb->get_results($wpdb->prepare(
+        "SELECT type, attachment_id FROM $docs WHERE applicant_id = %d",
+        $applicant_id
+      ));
+
+      $docs_by_type = [];
+      foreach ($doc_rows as $doc_row) {
+        $docs_by_type[$doc_row->type] = $doc_row->attachment_id;
+      }
+
+      $back_url = admin_url('admin.php?page=jaf-applications');
+      echo '<p><a class="button" href="' . esc_url($back_url) . '">Back to list</a></p>';
+
+      echo '<table class="widefat striped" style="max-width: 980px">';
+      echo '<tbody>';
+      echo '<tr><th>Name</th><td>' . esc_html($row->firstname . ' ' . $row->lastname) . '</td></tr>';
+      echo '<tr><th>Email</th><td>' . esc_html($row->email) . '</td></tr>';
+      echo '<tr><th>Country</th><td>' . esc_html($row->country) . '</td></tr>';
+      echo '<tr><th>Address</th><td>' . esc_html($row->address1 . ' ' . $row->address2) . '</td></tr>';
+      echo '<tr><th>Zip / City</th><td>' . esc_html($row->zip . ' ' . $row->city) . '</td></tr>';
+      echo '<tr><th>Phone</th><td>' . esc_html($row->phone) . '</td></tr>';
+      echo '<tr><th>Mobile</th><td>' . esc_html($row->mobile) . '</td></tr>';
+      echo '<tr><th>Website</th><td>' . esc_html($row->www) . '</td></tr>';
+      echo '<tr><th>Additional</th><td>' . wp_kses_post($row->additional) . '</td></tr>';
+      echo '<tr><th>Education</th><td>' . wp_kses_post($row->education) . '</td></tr>';
+      echo '<tr><th>Qualifications</th><td>' . wp_kses_post($row->qualifications) . '</td></tr>';
+      echo '<tr><th>Skills</th><td>' . wp_kses_post($row->skills) . '</td></tr>';
+      $workexp_text = trim((string)$row->workexp);
+      $workexp_lines = preg_split("/\r\n|\r|\n/", $workexp_text);
+      if (count($workexp_lines) <= 1) {
+        if (strpos($workexp_text, ';') !== false) {
+          $workexp_lines = explode(';', $workexp_text);
+        } else {
+          $workexp_lines = preg_split('/(?<=\.)\s+/', $workexp_text);
+        }
+      }
+      $workexp_lines = array_values(array_filter(array_map('trim', $workexp_lines), 'strlen'));
+      if ($workexp_lines) {
+        $workexp_html = '<div>' . implode('<br>', array_map('esc_html', $workexp_lines)) . '</div>';
+      } else {
+        $workexp_html = esc_html($workexp_text);
+      }
+      echo '<tr><th>Work Experience</th><td>' . $workexp_html . '</td></tr>';
+      echo '<tr><th>Score</th><td>' . esc_html($row->score) . '</td></tr>';
+      echo '<tr><th>Status</th><td>' . esc_html($row->status) . '</td></tr>';
+      $reason_items = [];
+      if (!empty($row->reason)) {
+        foreach (explode(';', $row->reason) as $reason_part) {
+          $reason_part = trim($reason_part);
+          if ($reason_part !== '') {
+            $reason_items[] = $reason_part;
+          }
+        }
+      }
+      if ($reason_items) {
+        $reason_html = '<ul style="margin:0; padding-left: 18px;">';
+        foreach ($reason_items as $reason_item) {
+          $reason_html .= '<li>' . esc_html($reason_item) . '</li>';
+        }
+        $reason_html .= '</ul>';
+      } else {
+        $reason_html = esc_html($row->reason);
+      }
+      echo '<tr><th>Reason</th><td>' . $reason_html . '</td></tr>';
+
+      echo '<tr><th>Documents</th><td>';
+      $doc_labels = [
+        'cv' => 'CV',
+        'motivation' => 'Motivation Letter',
+        'application' => 'Application'
+      ];
+      $doc_links = [];
+      foreach ($doc_labels as $type => $label) {
+        if (!empty($docs_by_type[$type])) {
+          $url = wp_get_attachment_url($docs_by_type[$type]);
+          if ($url) {
+            $doc_links[] = '<a href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer">' . esc_html($label) . '</a>';
+          }
+        }
+      }
+      echo $doc_links ? implode(' | ', $doc_links) : 'No documents';
+      echo '</td></tr>';
+
+      echo '</tbody></table>';
+      echo '</div>';
+      return;
+    }
+
+    $rows = $wpdb->get_results(
+      "SELECT a.id, a.created_at, a.firstname, a.lastname, a.email, s.score, s.status
+       FROM $applicants a
+       LEFT JOIN $scores s ON a.id = s.applicant_id
+       ORDER BY a.created_at DESC
+       LIMIT 100"
+    );
+
+    echo '<table class="widefat striped">';
+    echo '<thead><tr>';
+    echo '<th>Date</th><th>Name</th><th>Email</th><th>Score</th><th>Status</th><th>Actions</th>';
+    echo '</tr></thead><tbody>';
+
+    if (!$rows) {
+      echo '<tr><td colspan="6">No applications found.</td></tr>';
+    } else {
+      foreach ($rows as $row) {
+        $view_url = admin_url('admin.php?page=jaf-applications&applicant_id=' . (int)$row->id);
+        echo '<tr>';
+        echo '<td>' . esc_html($row->created_at) . '</td>';
+        echo '<td>' . esc_html($row->firstname . ' ' . $row->lastname) . '</td>';
+        echo '<td>' . esc_html($row->email) . '</td>';
+        echo '<td>' . esc_html($row->score) . '</td>';
+        echo '<td>' . esc_html($row->status) . '</td>';
+        echo '<td><a class="button" href="' . esc_url($view_url) . '">View</a></td>';
+        echo '</tr>';
+      }
+    }
+
+    echo '</tbody></table>';
+    echo '</div>';
   }
 
   public function register_routes() {
@@ -174,6 +335,33 @@ class JAF_Plugin {
       'callback' => [ $this, 'handle_submit' ],
       'permission_callback' => '__return_true',
     ]);
+  }
+
+  public function allow_public_rest( $result ) {
+    if ( is_wp_error( $result ) && $result->get_error_code() === 'rest_cookie_invalid_nonce' ) {
+      $uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+      $prefix = '/' . rest_get_url_prefix() . '/' . self::REST_NS . '/applications';
+      if ( $uri && strpos( $uri, $prefix ) !== false ) {
+        return null;
+      }
+
+      // Support non-pretty permalinks: /?rest_route=/mh-ats/v1/applications
+      $rest_route = '';
+      if ( isset( $_GET['rest_route'] ) ) {
+        $rest_route = wp_unslash( $_GET['rest_route'] );
+      } elseif ( $uri ) {
+        $parts = wp_parse_url( $uri );
+        if ( ! empty( $parts['query'] ) ) {
+          parse_str( $parts['query'], $query );
+          $rest_route = isset( $query['rest_route'] ) ? $query['rest_route'] : '';
+        }
+      }
+
+      if ( $rest_route && strpos( $rest_route, '/' . self::REST_NS . '/applications' ) !== false ) {
+        return null;
+      }
+    }
+    return $result;
   }
 
   private function handle_upload($file_array) {
@@ -197,9 +385,9 @@ class JAF_Plugin {
 
   public function handle_submit(WP_REST_Request $req) {
     try {
-      // CSRF
+      // CSRF (optional for public form)
       $nonce = $req->get_header('x-wp-nonce');
-      if (!$nonce || !wp_verify_nonce($nonce, self::NONCE_ACTION)) {
+      if ($nonce && !wp_verify_nonce($nonce, self::NONCE_ACTION)) {
         return new WP_REST_Response(['message' => 'Invalid nonce'], 403);
       }
 

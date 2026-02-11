@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
-import ReCAPTCHA from "react-google-recaptcha";
+import React, { useEffect, useState, useRef } from "react";
 import "./App.css";
 import { API_BASE_URL, API_DEFAULT_LANGUAGE } from "./constants/apiConstants";
 import LocalizedStrings from "react-localization";
@@ -194,8 +193,8 @@ let strings = new LocalizedStrings({
 export default function App() {
   const [formData, setFormData] = useState({});
   const [fileError, setFileError] = useState("");
-  const [recaptchaToken, setRecaptchaToken] = useState("");
-  const recaptchaRef = useRef(null);
+  const [submitStatus, setSubmitStatus] = useState({ type: "idle", message: "" });
+  const formRef = useRef(null);
 
   // Determine initial language from <html lang> or API default
   const [lang, setLang] = useState(API_DEFAULT_LANGUAGE);
@@ -205,22 +204,45 @@ export default function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!recaptchaToken) return; // block if no token
+    setSubmitStatus({ type: "idle", message: "" });
 
-    // send token with your payload
-    const res = await fetch(window.JAF_REC.verifyUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...formData, recaptcha: recaptchaToken }),
-    });
-    const data = await res.json();
+    const rootEl = document.getElementById("jafroot");
+    const baseUrl = API_BASE_URL ? API_BASE_URL.replace(/\/+$/, "") : "";
+    const defaultEndpoint = baseUrl ? `${baseUrl}/wp-json/mh-ats/v1/applications` : "";
+    const endpoint = rootEl?.dataset?.endpoint || defaultEndpoint;
+    const nonce = rootEl?.dataset?.nonce || "";
 
-    if (data?.ok) {
-      alert("Form submitted!");      // your localized message
-      recaptchaRef.current?.reset(); // reset captcha
-      setRecaptchaToken("");
-    } else {
-      alert("reCAPTCHA failed.");
+    if (!endpoint) {
+      setSubmitStatus({ type: "error", message: "Missing API endpoint." });
+      return;
+    }
+
+    if (fileError) {
+      setSubmitStatus({ type: "error", message: fileError });
+      return;
+    }
+
+    const payload = new FormData(formRef.current);
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: nonce ? { "X-WP-Nonce": nonce } : {},
+        body: payload,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        const msg = data?.message || "Submission failed.";
+        setSubmitStatus({ type: "error", message: msg });
+        return;
+      }
+
+      setSubmitStatus({ type: "success", message: strings.formSubmitted });
+      formRef.current?.reset();
+      setFormData({});
+    } catch (err) {
+      setSubmitStatus({ type: "error", message: "Network error." });
     }
   };
 
@@ -241,15 +263,21 @@ export default function App() {
         return;
       }
       setFileError("");
-      setFormData({ ...formData, [name]: file });
+      setFormData((prev) => ({ ...prev, [name]: file }));
     } else {
-      setFormData({ ...formData, [name]: type === "checkbox" ? checked : value });
+      setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
     }
+  };
+
+  const handleReset = () => {
+    setFormData({});
+    setFileError("");
+    setSubmitStatus({ type: "idle", message: "" });
   };
 
   return (
     <div className="app-container">
-      <form className="app-card" onSubmit={handleSubmit}>
+      <form className="app-card" onSubmit={handleSubmit} onReset={handleReset} ref={formRef}>
         <div className="two-col">
           <div className="ats-form-section">
             <h2>{strings.personalInfo}</h2>
@@ -464,6 +492,12 @@ export default function App() {
             />
           </div>
         </div>
+
+        {submitStatus.message && (
+          <p className={submitStatus.type === "success" ? "success-text" : "error-text"}>
+            {submitStatus.message}
+          </p>
+        )}
 
         <div className="form-actions">
           <button type="submit" className="btn btn-primary">{strings.submit}</button>
