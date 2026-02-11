@@ -12,6 +12,15 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
         </a>
       </div>
       <?php if ( function_exists('tk_render_mega_menu') ) tk_render_mega_menu(); ?>
+      <div class="header-actions">
+        <?php if ( function_exists( 'WC' ) ) : ?>
+          <?php $cart_count = WC()->cart ? WC()->cart->get_cart_contents_count() : 0; ?>
+          <a class="header-cart" href="<?php echo esc_url( wc_get_cart_url() ); ?>" aria-label="<?php echo esc_attr__( 'Cart', 'i4waresoftware' ); ?>">
+            <span class="header-cart-label"><?php echo esc_html__( 'Ostoskori', 'i4waresoftware' ); ?></span>
+            <span class="header-cart-count" aria-live="polite"><?php echo esc_html( $cart_count ); ?></span>
+          </a>
+        <?php endif; ?>
+      </div>
       <div class="burger" id="burger"><span></span><span></span><span></span></div>
     </nav>
   </div>
