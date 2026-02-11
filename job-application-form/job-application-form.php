@@ -29,6 +29,10 @@ class JAF_Plugin {
     add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
     add_action( 'rest_api_init', [ $this, 'register_routes' ] );
     add_filter( 'rest_authentication_errors', [ $this, 'allow_public_rest' ], 20 );
+    add_action( 'admin_post_jaf_download', [ $this, 'download_document' ] );
+    add_action( 'admin_post_jaf_delete_all', [ $this, 'delete_all_applications' ] );
+    add_action( 'admin_post_jaf_delete_old', [ $this, 'delete_old_applications' ] );
+    add_action( 'admin_post_jaf_export', [ $this, 'export_applicant_data' ] );
   }
 
   /**
@@ -123,7 +127,9 @@ class JAF_Plugin {
       id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
       applicant_id BIGINT UNSIGNED NOT NULL,
       type ENUM('cv','motivation','application') NOT NULL,
-      attachment_id BIGINT UNSIGNED NOT NULL,
+      attachment_id BIGINT UNSIGNED NULL,
+      file_path VARCHAR(255) NULL,
+      file_name VARCHAR(190) NULL,
       FOREIGN KEY (applicant_id) REFERENCES $applicants(id) ON DELETE CASCADE
     ) $charset;
 
@@ -136,6 +142,8 @@ class JAF_Plugin {
       FOREIGN KEY (applicant_id) REFERENCES $applicants(id) ON DELETE CASCADE
     ) $charset;";
     dbDelta($sql);
+
+    $this->ensure_private_upload_dir();
   }
 
   public function register_settings() {
@@ -197,6 +205,18 @@ class JAF_Plugin {
 
     echo '<div class="wrap"><h1>Job Applications</h1>';
 
+    if ( isset( $_GET['jaf_notice'] ) ) {
+      $notice = sanitize_key( $_GET['jaf_notice'] );
+      if ( $notice === 'deleted_all' ) {
+        echo '<div class="notice notice-success"><p>All applications deleted.</p></div>';
+      } elseif ( $notice === 'deleted_old' ) {
+        $count = isset( $_GET['count'] ) ? absint( $_GET['count'] ) : 0;
+        echo '<div class="notice notice-success"><p>Deleted ' . esc_html( $count ) . ' old applications.</p></div>';
+      } elseif ( $notice === 'export_failed' ) {
+        echo '<div class="notice notice-error"><p>Export failed.</p></div>';
+      }
+    }
+
     if ($applicant_id) {
       $row = $wpdb->get_row($wpdb->prepare(
         "SELECT a.*, s.score, s.status, s.reason FROM $applicants a LEFT JOIN $scores s ON a.id = s.applicant_id WHERE a.id = %d",
@@ -221,6 +241,11 @@ class JAF_Plugin {
       $back_url = admin_url('admin.php?page=jaf-applications');
       echo '<p><a class="button" href="' . esc_url($back_url) . '">Back to list</a></p>';
 
+      $export_url = wp_nonce_url(
+        admin_url('admin-post.php?action=jaf_export&applicant_id=' . (int)$applicant_id),
+        'jaf_export_' . $applicant_id
+      );
+
       echo '<table class="widefat striped" style="max-width: 980px">';
       echo '<tbody>';
       echo '<tr><th>Name</th><td>' . esc_html($row->firstname . ' ' . $row->lastname) . '</td></tr>';
@@ -232,24 +257,12 @@ class JAF_Plugin {
       echo '<tr><th>Mobile</th><td>' . esc_html($row->mobile) . '</td></tr>';
       echo '<tr><th>Website</th><td>' . esc_html($row->www) . '</td></tr>';
       echo '<tr><th>Additional</th><td>' . wp_kses_post($row->additional) . '</td></tr>';
-      echo '<tr><th>Education</th><td>' . wp_kses_post($row->education) . '</td></tr>';
-      echo '<tr><th>Qualifications</th><td>' . wp_kses_post($row->qualifications) . '</td></tr>';
+      $education_html = $this->format_multiline_field($row->education);
+      $qualifications_html = $this->format_multiline_field($row->qualifications);
+      echo '<tr><th>Education</th><td>' . $education_html . '</td></tr>';
+      echo '<tr><th>Qualifications</th><td>' . $qualifications_html . '</td></tr>';
       echo '<tr><th>Skills</th><td>' . wp_kses_post($row->skills) . '</td></tr>';
-      $workexp_text = trim((string)$row->workexp);
-      $workexp_lines = preg_split("/\r\n|\r|\n/", $workexp_text);
-      if (count($workexp_lines) <= 1) {
-        if (strpos($workexp_text, ';') !== false) {
-          $workexp_lines = explode(';', $workexp_text);
-        } else {
-          $workexp_lines = preg_split('/(?<=\.)\s+/', $workexp_text);
-        }
-      }
-      $workexp_lines = array_values(array_filter(array_map('trim', $workexp_lines), 'strlen'));
-      if ($workexp_lines) {
-        $workexp_html = '<div>' . implode('<br>', array_map('esc_html', $workexp_lines)) . '</div>';
-      } else {
-        $workexp_html = esc_html($workexp_text);
-      }
+      $workexp_html = $this->format_multiline_field($row->workexp);
       echo '<tr><th>Work Experience</th><td>' . $workexp_html . '</td></tr>';
       echo '<tr><th>Score</th><td>' . esc_html($row->score) . '</td></tr>';
       echo '<tr><th>Status</th><td>' . esc_html($row->status) . '</td></tr>';
@@ -282,14 +295,17 @@ class JAF_Plugin {
       $doc_links = [];
       foreach ($doc_labels as $type => $label) {
         if (!empty($docs_by_type[$type])) {
-          $url = wp_get_attachment_url($docs_by_type[$type]);
-          if ($url) {
-            $doc_links[] = '<a href="' . esc_url($url) . '" target="_blank" rel="noopener noreferrer">' . esc_html($label) . '</a>';
-          }
+          $download_url = wp_nonce_url(
+            admin_url('admin-post.php?action=jaf_download&applicant_id=' . (int)$applicant_id . '&type=' . urlencode($type)),
+            'jaf_download_' . $applicant_id . '_' . $type
+          );
+          $doc_links[] = '<a href="' . esc_url($download_url) . '">' . esc_html($label) . '</a>';
         }
       }
       echo $doc_links ? implode(' | ', $doc_links) : 'No documents';
       echo '</td></tr>';
+
+      echo '<tr><th>GDPR Export</th><td><a class="button" href="' . esc_url( $export_url ) . '">Export applicant data</a></td></tr>';
 
       echo '</tbody></table>';
       echo '</div>';
@@ -304,6 +320,24 @@ class JAF_Plugin {
        LIMIT 100"
     );
 
+    $delete_all_url = wp_nonce_url(
+      admin_url('admin-post.php?action=jaf_delete_all'),
+      'jaf_delete_all'
+    );
+    $delete_old_url = wp_nonce_url(
+      admin_url('admin-post.php?action=jaf_delete_old'),
+      'jaf_delete_old'
+    );
+
+    echo '<div style="margin: 12px 0 18px; display: flex; gap: 10px;">';
+    echo '<form method="post" action="' . esc_url( $delete_all_url ) . '" onsubmit="return confirm(\'Delete ALL applications? This cannot be undone.\');">';
+    echo '<button type="submit" class="button button-secondary">Delete all applications</button>';
+    echo '</form>';
+    echo '<form method="post" action="' . esc_url( $delete_old_url ) . '" onsubmit="return confirm(\'Delete applications older than 6 months?\');">';
+    echo '<button type="submit" class="button">Delete old applications (6 months)</button>';
+    echo '</form>';
+    echo '</div>';
+
     echo '<table class="widefat striped">';
     echo '<thead><tr>';
     echo '<th>Date</th><th>Name</th><th>Email</th><th>Score</th><th>Status</th><th>Actions</th>';
@@ -314,13 +348,17 @@ class JAF_Plugin {
     } else {
       foreach ($rows as $row) {
         $view_url = admin_url('admin.php?page=jaf-applications&applicant_id=' . (int)$row->id);
+        $export_url = wp_nonce_url(
+          admin_url('admin-post.php?action=jaf_export&applicant_id=' . (int)$row->id),
+          'jaf_export_' . (int)$row->id
+        );
         echo '<tr>';
         echo '<td>' . esc_html($row->created_at) . '</td>';
         echo '<td>' . esc_html($row->firstname . ' ' . $row->lastname) . '</td>';
         echo '<td>' . esc_html($row->email) . '</td>';
         echo '<td>' . esc_html($row->score) . '</td>';
         echo '<td>' . esc_html($row->status) . '</td>';
-        echo '<td><a class="button" href="' . esc_url($view_url) . '">View</a></td>';
+        echo '<td><a class="button" href="' . esc_url($view_url) . '">View</a> <a class="button" href="' . esc_url($export_url) . '">Export</a></td>';
         echo '</tr>';
       }
     }
@@ -335,6 +373,26 @@ class JAF_Plugin {
       'callback' => [ $this, 'handle_submit' ],
       'permission_callback' => '__return_true',
     ]);
+  }
+
+  private function format_multiline_field( $text ) {
+    $value = trim( (string) $text );
+    $lines = preg_split( "/\r\n|\r|\n/", $value );
+
+    if ( count( $lines ) <= 1 ) {
+      if ( strpos( $value, ';' ) !== false ) {
+        $lines = explode( ';', $value );
+      } else {
+        $lines = preg_split( '/(?<=\.)\s+/', $value );
+      }
+    }
+
+    $lines = array_values( array_filter( array_map( 'trim', $lines ), 'strlen' ) );
+    if ( $lines ) {
+      return '<div>' . implode( '<br>', array_map( 'esc_html', $lines ) ) . '</div>';
+    }
+
+    return esc_html( $value );
   }
 
   public function allow_public_rest( $result ) {
@@ -364,21 +422,264 @@ class JAF_Plugin {
     return $result;
   }
 
+  public function delete_all_applications() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+      wp_die( 'Forbidden', 403 );
+    }
+    if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'jaf_delete_all' ) ) {
+      wp_die( 'Invalid nonce', 403 );
+    }
+
+    global $wpdb;
+    $applicants = $wpdb->prefix . 'mh_ats_applicants';
+    $ids = $wpdb->get_col( "SELECT id FROM $applicants" );
+    foreach ( $ids as $id ) {
+      $this->delete_applicant_and_files( (int) $id );
+    }
+
+    wp_safe_redirect( admin_url( 'admin.php?page=jaf-applications&jaf_notice=deleted_all' ) );
+    exit;
+  }
+
+  public function delete_old_applications() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+      wp_die( 'Forbidden', 403 );
+    }
+    if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'jaf_delete_old' ) ) {
+      wp_die( 'Invalid nonce', 403 );
+    }
+
+    $cutoff = gmdate( 'Y-m-d H:i:s', strtotime( '-6 months' ) );
+
+    global $wpdb;
+    $applicants = $wpdb->prefix . 'mh_ats_applicants';
+    $ids = $wpdb->get_col( $wpdb->prepare(
+      "SELECT id FROM $applicants WHERE created_at < %s",
+      $cutoff
+    ) );
+
+    $count = 0;
+    foreach ( $ids as $id ) {
+      $this->delete_applicant_and_files( (int) $id );
+      $count++;
+    }
+
+    wp_safe_redirect( admin_url( 'admin.php?page=jaf-applications&jaf_notice=deleted_old&count=' . (int) $count ) );
+    exit;
+  }
+
+  public function export_applicant_data() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+      wp_die( 'Forbidden', 403 );
+    }
+
+    $applicant_id = isset( $_GET['applicant_id'] ) ? absint( $_GET['applicant_id'] ) : 0;
+    if ( ! $applicant_id ) {
+      wp_die( 'Not found', 404 );
+    }
+
+    $nonce_action = 'jaf_export_' . $applicant_id;
+    if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], $nonce_action ) ) {
+      wp_die( 'Invalid nonce', 403 );
+    }
+
+    global $wpdb;
+    $applicants = $wpdb->prefix . 'mh_ats_applicants';
+    $scores = $wpdb->prefix . 'mh_ats_scores';
+    $docs = $wpdb->prefix . 'mh_ats_documents';
+
+    $applicant = $wpdb->get_row( $wpdb->prepare(
+      "SELECT * FROM $applicants WHERE id = %d",
+      $applicant_id
+    ), ARRAY_A );
+
+    if ( ! $applicant ) {
+      wp_die( 'Not found', 404 );
+    }
+
+    $score = $wpdb->get_row( $wpdb->prepare(
+      "SELECT score, status, reason FROM $scores WHERE applicant_id = %d",
+      $applicant_id
+    ), ARRAY_A );
+
+    $doc_rows = $wpdb->get_results( $wpdb->prepare(
+      "SELECT type, attachment_id, file_path, file_name FROM $docs WHERE applicant_id = %d",
+      $applicant_id
+    ), ARRAY_A );
+
+    $export = [
+      'applicant' => $applicant,
+      'score' => $score,
+      'documents' => []
+    ];
+
+    foreach ( $doc_rows as $doc_row ) {
+      $export['documents'][] = [
+        'type' => $doc_row['type'],
+        'file_name' => $doc_row['file_name'],
+        'file_path' => $doc_row['file_path'],
+        'attachment_id' => $doc_row['attachment_id']
+      ];
+    }
+
+    if ( ! class_exists( 'ZipArchive' ) ) {
+      wp_safe_redirect( admin_url( 'admin.php?page=jaf-applications&jaf_notice=export_failed' ) );
+      exit;
+    }
+
+    $zip_path = wp_tempnam( 'jaf-export' );
+    $zip = new ZipArchive();
+    if ( $zip->open( $zip_path, ZipArchive::OVERWRITE ) !== true ) {
+      wp_safe_redirect( admin_url( 'admin.php?page=jaf-applications&jaf_notice=export_failed' ) );
+      exit;
+    }
+
+    $json = wp_json_encode( $export, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+    $zip->addFromString( 'applicant.json', $json );
+
+    foreach ( $doc_rows as $doc_row ) {
+      $file_path = $doc_row['file_path'];
+      if ( ! $file_path && ! empty( $doc_row['attachment_id'] ) ) {
+        $file_path = get_attached_file( (int) $doc_row['attachment_id'] );
+      }
+
+      if ( $file_path && file_exists( $file_path ) ) {
+        $safe_name = $doc_row['file_name'] ? $doc_row['file_name'] : basename( $file_path );
+        $safe_name = sanitize_file_name( $safe_name );
+        $zip->addFile( $file_path, $doc_row['type'] . '-' . $safe_name );
+      }
+    }
+
+    $zip->close();
+
+    $download_name = 'applicant-' . $applicant_id . '-export.zip';
+    header( 'Content-Type: application/zip' );
+    header( 'Content-Disposition: attachment; filename="' . $download_name . '"' );
+    header( 'Content-Length: ' . filesize( $zip_path ) );
+    readfile( $zip_path );
+    @unlink( $zip_path );
+    exit;
+  }
+
+  private function delete_applicant_and_files( $applicant_id ) {
+    global $wpdb;
+    $docs_table = $wpdb->prefix . 'mh_ats_documents';
+    $applicants = $wpdb->prefix . 'mh_ats_applicants';
+
+    $doc_rows = $wpdb->get_results( $wpdb->prepare(
+      "SELECT attachment_id, file_path FROM $docs_table WHERE applicant_id = %d",
+      $applicant_id
+    ) );
+
+    foreach ( $doc_rows as $doc_row ) {
+      if ( ! empty( $doc_row->file_path ) && file_exists( $doc_row->file_path ) ) {
+        @unlink( $doc_row->file_path );
+      }
+      if ( ! empty( $doc_row->attachment_id ) ) {
+        wp_delete_attachment( (int) $doc_row->attachment_id, true );
+      }
+    }
+
+    $wpdb->delete( $applicants, [ 'id' => $applicant_id ], [ '%d' ] );
+  }
+
+  public function download_document() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+      wp_die( 'Forbidden', 403 );
+    }
+
+    $applicant_id = isset( $_GET['applicant_id'] ) ? absint( $_GET['applicant_id'] ) : 0;
+    $type = isset( $_GET['type'] ) ? sanitize_key( $_GET['type'] ) : '';
+
+    if ( ! $applicant_id || ! in_array( $type, [ 'cv', 'motivation', 'application' ], true ) ) {
+      wp_die( 'Not found', 404 );
+    }
+
+    $nonce_action = 'jaf_download_' . $applicant_id . '_' . $type;
+    if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], $nonce_action ) ) {
+      wp_die( 'Invalid nonce', 403 );
+    }
+
+    global $wpdb;
+    $docs_table = $wpdb->prefix . 'mh_ats_documents';
+    $row = $wpdb->get_row( $wpdb->prepare(
+      "SELECT attachment_id, file_path, file_name FROM $docs_table WHERE applicant_id = %d AND type = %s",
+      $applicant_id,
+      $type
+    ) );
+
+    if ( ! $row ) {
+      wp_die( 'Not found', 404 );
+    }
+
+    $file_path = $row->file_path;
+    if ( ! $file_path && ! empty( $row->attachment_id ) ) {
+      $file_path = get_attached_file( (int) $row->attachment_id );
+    }
+
+    if ( ! $file_path || ! file_exists( $file_path ) ) {
+      wp_die( 'Not found', 404 );
+    }
+
+    $uploads = wp_upload_dir();
+    $private_dir = trailingslashit( $uploads['basedir'] ) . 'jaf-private';
+    $real_private = realpath( $private_dir );
+    $real_file = realpath( $file_path );
+
+    if ( ! $real_private || ! $real_file || strpos( $real_file, $real_private ) !== 0 ) {
+      wp_die( 'Forbidden', 403 );
+    }
+
+    $filename = $row->file_name ? $row->file_name : basename( $file_path );
+    $filename = sanitize_file_name( $filename );
+
+    header( 'Content-Type: application/pdf' );
+    header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+    header( 'Content-Length: ' . filesize( $file_path ) );
+    readfile( $file_path );
+    exit;
+  }
+
+  private function ensure_private_upload_dir() {
+    $uploads = wp_upload_dir();
+    $private_dir = trailingslashit( $uploads['basedir'] ) . 'jaf-private';
+
+    if ( ! file_exists( $private_dir ) ) {
+      wp_mkdir_p( $private_dir );
+    }
+
+    $htaccess = $private_dir . '/.htaccess';
+    if ( ! file_exists( $htaccess ) ) {
+      file_put_contents( $htaccess, "Deny from all\n" );
+    }
+
+    $index = $private_dir . '/index.php';
+    if ( ! file_exists( $index ) ) {
+      file_put_contents( $index, "<?php\n// Silence is golden.\n" );
+    }
+  }
+
   private function handle_upload($file_array) {
     require_once ABSPATH.'wp-admin/includes/file.php';
+    $this->ensure_private_upload_dir();
+
+    $upload_filter = function( $dirs ) {
+      $private_dir = trailingslashit( $dirs['basedir'] ) . 'jaf-private';
+      $dirs['path'] = $private_dir;
+      $dirs['url'] = $dirs['baseurl'] . '/jaf-private';
+      $dirs['subdir'] = '';
+      return $dirs;
+    };
+
+    add_filter( 'upload_dir', $upload_filter );
     $overrides = [ 'test_form' => false, 'mimes' => ['pdf' => 'application/pdf'] ];
     $movefile = wp_handle_upload($file_array, $overrides);
+    remove_filter( 'upload_dir', $upload_filter );
     if ($movefile && !isset($movefile['error'])) {
-      $attachment = [
-        'post_mime_type' => 'application/pdf',
-        'post_title' => sanitize_file_name($file_array['name']),
-        'post_content' => '',
-        'post_status' => 'private'
+      return [
+        'file_path' => $movefile['file'],
+        'file_name' => sanitize_file_name($file_array['name'])
       ];
-      $attach_id = wp_insert_attachment($attachment, $movefile['file']);
-      require_once ABSPATH.'wp-admin/includes/image.php';
-      wp_update_attachment_metadata($attach_id, wp_generate_attachment_metadata($attach_id, $movefile['file']));
-      return $attach_id;
     }
     return new WP_Error('upload_error', $movefile['error'] ?? 'Upload failed');
   }
@@ -433,12 +734,14 @@ class JAF_Plugin {
       $docs_table = $wpdb->prefix.'mh_ats_documents';
       foreach (['cv','motivation','application'] as $type) {
         if (!empty($_FILES[$type]['name'])) {
-          $attach_id = $this->handle_upload($_FILES[$type]);
-          if (is_wp_error($attach_id)) return new WP_REST_Response(['message'=> $attach_id->get_error_message()], 400);
+          $upload = $this->handle_upload($_FILES[$type]);
+          if (is_wp_error($upload)) return new WP_REST_Response(['message'=> $upload->get_error_message()], 400);
           $wpdb->insert($docs_table, [
             'applicant_id' => $applicant_id,
             'type' => $type,
-            'attachment_id' => $attach_id,
+            'attachment_id' => null,
+            'file_path' => $upload['file_path'],
+            'file_name' => $upload['file_name'],
           ]);
         }
       }
