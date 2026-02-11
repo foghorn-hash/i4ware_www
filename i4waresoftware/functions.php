@@ -1541,6 +1541,7 @@ function wp_quote_form_shortcode() {
         <input type="text" name="nimi" placeholder="<?php echo pll__('Nimi'); ?>" required>
         <input type="text" name="yritys" placeholder="<?php echo pll__('Yritys / Organisaatio'); ?>">
         <input type="email" name="sahkoposti" placeholder="<?php echo pll__('Sähköposti'); ?>" required>
+        <?php echo do_shortcode('[newsletters_subscribe form=1]'); ?>
         <input type="tel" name="puhelin" placeholder="<?php echo pll__('Puhelinnumero'); ?>">
 
         <textarea name="lisatiedot" placeholder="<?php echo pll__('Lisätiedot / kommentit'); ?>"></textarea>

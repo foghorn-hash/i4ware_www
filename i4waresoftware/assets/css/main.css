@@ -120,6 +120,146 @@ header {
   justify-content: space-between;
   align-items: center;
   gap: 24px;
+  flex-wrap: wrap;
+}
+
+.top-newsletter,
+.tk-newsletter {
+  flex-basis: 100%;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.newsletters-fieldholder {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  row-gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+}  
+
+.newsletters-fieldholder > * {
+  flex: 0 0 auto;
+  width: auto;
+} 
+
+.newsletters-fieldholder label,
+.newsletters-fieldholder input,
+.newsletters-fieldholder select,
+.newsletters-fieldholder .newsletters-field {
+  order: 1;
+}
+
+.newsletters-fieldholder .newsletters-error,
+.newsletters-fieldholder .newsletters-errors,
+.newsletters-fieldholder .newsletters-message,
+.newsletters-fieldholder .error,
+.newsletters-fieldholder [role="alert"] {
+  order: 2;
+  flex: 1 1 auto;
+  min-width: 200px;
+  margin: 0;
+}
+
+.newsletters-fieldholder .newsletters-submit {
+  order: 3;
+  margin-left: auto;
+}
+
+.newsletters-fieldholder label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.newsletters-fieldholder input[type="checkbox"] {
+  margin: 0;
+}
+
+.top-newsletter form,
+.tk-newsletter form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  width: 100%;
+  background: #0f1420;
+  border: 1px solid #ffffff1f;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.top-newsletter .newsletters-submit,
+.tk-newsletter .newsletters-submit {
+  margin-left: auto;
+}
+
+.top-newsletter .newsletters-submit button,
+.tk-newsletter .newsletters-submit button,
+.top-newsletter .newsletters-submit input[type="submit"],
+.tk-newsletter .newsletters-submit input[type="submit"] {
+  margin-left: auto;
+}
+
+.top-newsletter input[type="email"],
+.tk-newsletter input[type="email"],
+.top-newsletter input[type="text"],
+.tk-newsletter input[type="text"] {
+  flex: 1 1 260px;
+  min-width: 200px;
+  background: #0b0f18;
+  color: #eaf0ff;
+  border: 1px solid #2b3246;
+  border-radius: 999px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.top-newsletter input[type="email"]:focus,
+.tk-newsletter input[type="email"]:focus,
+.top-newsletter input[type="text"]:focus,
+.tk-newsletter input[type="text"]:focus {
+  border-color: #4da3ff;
+  box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.2);
+}
+
+.top-newsletter button,
+.tk-newsletter button,
+.top-newsletter input[type="submit"],
+.tk-newsletter input[type="submit"] {
+  margin-left: auto !important;
+  margin-right: 20px !important;
+  background: linear-gradient(135deg, #ff005b, #ff4f8a);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 10px;
+}
+
+.top-newsletter button:hover,
+.tk-newsletter button:hover,
+.top-newsletter input[type="submit"]:hover,
+.tk-newsletter input[type="submit"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(255, 0, 91, 0.25);
+}
+
+@media (max-width: 720px) {
+  .top-newsletter form,
+  .tk-newsletter form {
+    overflow-x: auto;
+  }
 }
 
 .container {

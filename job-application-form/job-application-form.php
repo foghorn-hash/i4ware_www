@@ -20,10 +20,12 @@ class JAF_Plugin {
   const OPTION_API_KEY = 'mh_ats_openai_api_key';
   const REST_NS = 'mh-ats/v1';
   const NONCE_ACTION = 'wp_rest';
+  const SCHEMA_VERSION = 2;
 
   public function __construct() {
     register_activation_hook( __FILE__, [ $this, 'on_activate' ] );
     add_action( 'admin_init', [ $this, 'register_settings' ] );
+    add_action( 'init', [ $this, 'maybe_upgrade_schema' ] );
     add_action( 'admin_menu', [ $this, 'admin_menu' ] );
     add_action( 'init', [ $this, 'register_shortcode' ] );
     add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
@@ -94,14 +96,30 @@ class JAF_Plugin {
   }
 
   public function on_activate() {
+    $this->maybe_upgrade_schema();
+    $this->ensure_private_upload_dir();
+  }
+
+  public function maybe_upgrade_schema() {
+    $current = (int) get_option( 'jaf_schema_version', 0 );
+    if ( $current >= self::SCHEMA_VERSION ) {
+      return;
+    }
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta( $this->get_schema_sql() );
+    $this->ensure_documents_columns();
+    update_option( 'jaf_schema_version', self::SCHEMA_VERSION );
+  }
+
+  private function get_schema_sql() {
     global $wpdb;
     $charset = $wpdb->get_charset_collate();
     $applicants = $wpdb->prefix . 'mh_ats_applicants';
     $docs = $wpdb->prefix . 'mh_ats_documents';
     $scores = $wpdb->prefix . 'mh_ats_scores';
 
-    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    $sql = "
+    return "
     CREATE TABLE IF NOT EXISTS $applicants (
       id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
       created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -141,9 +159,27 @@ class JAF_Plugin {
       status ENUM('accepted','maybe','rejected') NOT NULL,
       FOREIGN KEY (applicant_id) REFERENCES $applicants(id) ON DELETE CASCADE
     ) $charset;";
-    dbDelta($sql);
+  }
 
-    $this->ensure_private_upload_dir();
+  private function ensure_documents_columns() {
+    global $wpdb;
+    $docs = $wpdb->prefix . 'mh_ats_documents';
+    $columns = $wpdb->get_col( "SHOW COLUMNS FROM $docs", 0 );
+
+    if ( empty( $columns ) ) {
+      return;
+    }
+
+    if ( ! in_array( 'file_path', $columns, true ) ) {
+      $wpdb->query( "ALTER TABLE $docs ADD COLUMN file_path VARCHAR(255) NULL" );
+    }
+    if ( ! in_array( 'file_name', $columns, true ) ) {
+      $wpdb->query( "ALTER TABLE $docs ADD COLUMN file_name VARCHAR(190) NULL" );
+    }
+
+    if ( in_array( 'attachment_id', $columns, true ) ) {
+      $wpdb->query( "ALTER TABLE $docs MODIFY attachment_id BIGINT UNSIGNED NULL" );
+    }
   }
 
   public function register_settings() {
@@ -229,13 +265,16 @@ class JAF_Plugin {
       }
 
       $doc_rows = $wpdb->get_results($wpdb->prepare(
-        "SELECT type, attachment_id FROM $docs WHERE applicant_id = %d",
+        "SELECT type, attachment_id, file_path FROM $docs WHERE applicant_id = %d",
         $applicant_id
       ));
 
       $docs_by_type = [];
       foreach ($doc_rows as $doc_row) {
-        $docs_by_type[$doc_row->type] = $doc_row->attachment_id;
+        $docs_by_type[$doc_row->type] = [
+          'attachment_id' => $doc_row->attachment_id,
+          'file_path' => $doc_row->file_path,
+        ];
       }
 
       $back_url = admin_url('admin.php?page=jaf-applications');
@@ -294,7 +333,8 @@ class JAF_Plugin {
       ];
       $doc_links = [];
       foreach ($doc_labels as $type => $label) {
-        if (!empty($docs_by_type[$type])) {
+        $doc_meta = $docs_by_type[$type] ?? null;
+        if ($doc_meta && (!empty($doc_meta['file_path']) || !empty($doc_meta['attachment_id']))) {
           $download_url = wp_nonce_url(
             admin_url('admin-post.php?action=jaf_download&applicant_id=' . (int)$applicant_id . '&type=' . urlencode($type)),
             'jaf_download_' . $applicant_id . '_' . $type
@@ -663,6 +703,10 @@ class JAF_Plugin {
     require_once ABSPATH.'wp-admin/includes/file.php';
     $this->ensure_private_upload_dir();
 
+    $original_name = sanitize_file_name($file_array['name']);
+    $timestamp = gmdate('Ymd_His');
+    $file_array['name'] = $timestamp . '_' . $original_name;
+
     $upload_filter = function( $dirs ) {
       $private_dir = trailingslashit( $dirs['basedir'] ) . 'jaf-private';
       $dirs['path'] = $private_dir;
@@ -678,7 +722,7 @@ class JAF_Plugin {
     if ($movefile && !isset($movefile['error'])) {
       return [
         'file_path' => $movefile['file'],
-        'file_name' => sanitize_file_name($file_array['name'])
+        'file_name' => $original_name
       ];
     }
     return new WP_Error('upload_error', $movefile['error'] ?? 'Upload failed');
@@ -686,6 +730,7 @@ class JAF_Plugin {
 
   public function handle_submit(WP_REST_Request $req) {
     try {
+      $this->ensure_documents_columns();
       // CSRF (optional for public form)
       $nonce = $req->get_header('x-wp-nonce');
       if ($nonce && !wp_verify_nonce($nonce, self::NONCE_ACTION)) {
@@ -736,13 +781,19 @@ class JAF_Plugin {
         if (!empty($_FILES[$type]['name'])) {
           $upload = $this->handle_upload($_FILES[$type]);
           if (is_wp_error($upload)) return new WP_REST_Response(['message'=> $upload->get_error_message()], 400);
-          $wpdb->insert($docs_table, [
+          $inserted = $wpdb->insert($docs_table, [
             'applicant_id' => $applicant_id,
             'type' => $type,
-            'attachment_id' => null,
+            'attachment_id' => 0,
             'file_path' => $upload['file_path'],
             'file_name' => $upload['file_name'],
           ]);
+          if ( $inserted === false ) {
+            return new WP_REST_Response([
+              'message' => 'Failed to store document metadata',
+              'error' => $wpdb->last_error
+            ], 500);
+          }
         }
       }
 
@@ -806,6 +857,17 @@ class JAF_Plugin {
         'reason' => $reason,
         'status' => $status
       ]);
+
+      $admin_email = get_option('admin_email');
+      if ($admin_email) {
+        $subject = 'New job application received';
+        $message = "A new job application has been received.\n\n";
+        $message .= "Name: {$payload['firstname']} {$payload['lastname']}\n";
+        $message .= "Email: {$payload['email']}\n";
+        $message .= "Submitted at: " . gmdate('Y-m-d H:i:s') . " UTC\n\n";
+        $message .= "View in admin: " . admin_url('admin.php?page=jaf-applications&applicant_id=' . $applicant_id);
+        wp_mail($admin_email, $subject, $message);
+      }
 
       return new WP_REST_Response([
         'message' => 'Application stored',
