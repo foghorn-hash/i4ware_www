@@ -179,6 +179,32 @@ function i4ware_customize_register($wp_customize) {
     }
 
     foreach ($languages as $lang_code => $lang_label) {
+        $wp_customize->add_setting( "i4ware_cta_saas_headline_$lang_code", [
+            'default'   => ($lang_code === 'fi') ? 'SaaS-tuoteideasi tuotantoon i4ware SDK:lla kustannustehokkaasti' : 'Get your SaaS product to market cost-effectively with i4ware SDK',
+            'transport' => 'refresh',
+        ] );
+        $wp_customize->add_control( "i4ware_cta_saas_headline_control_$lang_code", [
+            'label'    => __( 'SaaS CTA Otsikko', 'i4ware' ) . " ($lang_label)",
+            'section'  => 'i4ware_cta_section',
+            'settings' => "i4ware_cta_saas_headline_$lang_code",
+            'type'     => 'text',
+        ] );
+    }
+
+    foreach ($languages as $lang_code => $lang_label) {
+        $wp_customize->add_setting( "i4ware_cta_saas_text_$lang_code", [
+            'default'   => ($lang_code === 'fi') ? __( 'Pyydä tarjous', 'i4ware' ) : __( 'Request a quote', 'i4ware' ),
+            'transport' => 'refresh',
+        ] );
+        $wp_customize->add_control( "i4ware_cta_saas_text_control_$lang_code", [
+            'label'    => __( 'SaaS CTA Button Text', 'i4ware' ) . " ($lang_label)",
+            'section'  => 'i4ware_cta_section',
+            'settings' => "i4ware_cta_saas_text_$lang_code",
+            'type'     => 'text',
+        ] );
+    }
+
+    foreach ($languages as $lang_code => $lang_label) {
         $wp_customize->add_setting( "i4ware_cta_text_$lang_code", [
             'default'   => ($lang_code === 'fi') ? __( 'Pyydä tarjous', 'i4ware' ) : __( 'Request a quote', 'i4ware' ),
             'transport' => 'refresh',
@@ -943,6 +969,7 @@ function i4ware_cta_shortcode( $atts ) {
         'url_en' => '',      // optional language specific URL for English
         'url_fi' => '',      // optional language specific URL for Finnish
         'class'  => '',      // extra classes
+        'use_saas_headline' => '0', // set to 1 to use SaaS CTA headline from Customizer
     ), $atts, 'i4ware_cta' );
 
     // detect language (Polylang if present, fallback to WP locale)
@@ -967,16 +994,24 @@ function i4ware_cta_shortcode( $atts ) {
     );
 
     // Use language-specific Customizer values when available
-    $t = array(
-      'headline' => get_theme_mod( "i4ware_cta_headline_{$lang}", $defaults[$lang]['headline'] ?? $defaults['en']['headline'] ),
-      'desc'     => get_theme_mod( "i4ware_cta_desc_{$lang}", $defaults[$lang]['desc'] ?? $defaults['en']['desc'] ),
-      'button'   => get_theme_mod( "i4ware_cta_text_{$lang}", $defaults[$lang]['button'] ?? $defaults['en']['button'] ),
-    );
+        $use_saas_headline = in_array(strtolower((string) $atts['use_saas_headline']), array('1', 'true', 'yes'), true);
+        $headline_key = $use_saas_headline ? "i4ware_cta_saas_headline_{$lang}" : "i4ware_cta_headline_{$lang}";
+        $button_key = $use_saas_headline ? "i4ware_cta_saas_text_{$lang}" : "i4ware_cta_text_{$lang}";
+
+        $t = array(
+            'headline' => get_theme_mod( $headline_key, $defaults[$lang]['headline'] ?? $defaults['en']['headline'] ),
+            'desc'     => get_theme_mod( "i4ware_cta_desc_{$lang}", $defaults[$lang]['desc'] ?? $defaults['en']['desc'] ),
+            'button'   => get_theme_mod( $button_key, $defaults[$lang]['button'] ?? $defaults['en']['button'] ),
+        );
 
     // choose best URL (language-specific > attribute url > fallback url)
     $url = $atts['url'];
     if ( $lang === 'en' && !empty( $atts['url_en'] ) ) $url = $atts['url_en'];
     if ( $lang === 'fi' && !empty( $atts['url_fi'] ) ) $url = $atts['url_fi'];
+    if ( $use_saas_headline && $url === '#' ) {
+        $saas_url = get_theme_mod( "i4ware_cta_saas_url_{$lang}", '' );
+        if ( ! empty( $saas_url ) ) $url = $saas_url;
+    }
 
     // markup (keeps styling minimal and self-contained)
     $html  = '<aside class="i4ware-cta-box ' . esc_attr( $atts['class'] ) . '" role="region" aria-label="' . esc_attr__( 'CTA', 'i4ware' ) . '">';
