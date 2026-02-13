@@ -42,8 +42,8 @@ class JAF_Plugin {
    */
   public function register_assets() {
     // Päivitä polut vastaamaan buildiasi
-    $css_rel = 'css/main.1d366fb0.css';
-    $js_rel  = 'js/main.dcd359f5.js';
+    $css_rel = 'css/main.d5d19d5a.css';
+    $js_rel  = 'js/main.fefe4008.js';
     $plugin_url = plugin_dir_url( __FILE__ ) . 'static/';
     $css_path = JAF_PLUGIN_PATH . $css_rel;
     $js_path  = JAF_PLUGIN_PATH . $js_rel;

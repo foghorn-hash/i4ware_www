@@ -138,6 +138,14 @@
   cursor: pointer;
   border: none;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-primary {
@@ -146,7 +154,7 @@
   box-shadow: 0 10px 26px rgba(65, 99, 255, 0.12);
 }
 
-.btn-primary:hover { transform: translateY(-2px); }
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
 
 .btn-secondary {
   background: rgba(255,255,255,0.04);

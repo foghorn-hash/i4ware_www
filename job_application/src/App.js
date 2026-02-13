@@ -204,7 +204,7 @@ export default function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitStatus({ type: "idle", message: "" });
+    setSubmitStatus({ type: "loading", message: "" });
 
     const rootEl = document.getElementById("jafroot");
     const baseUrl = API_BASE_URL ? API_BASE_URL.replace(/\/+$/, "") : "";
@@ -500,7 +500,16 @@ export default function App() {
         )}
 
         <div className="form-actions">
-          <button type="submit" className="btn btn-primary">{strings.submit}</button>
+          <button 
+            type="submit" 
+            className="btn btn-primary"
+            disabled={submitStatus.type === "loading"}
+          >
+            {submitStatus.type === "loading" && (
+              <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            )}
+            {strings.submit}
+          </button>
           <button type="reset" className="btn btn-secondary">{strings.reset}</button>
         </div>
       </form>
