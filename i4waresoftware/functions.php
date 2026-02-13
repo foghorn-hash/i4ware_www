@@ -1558,7 +1558,7 @@ function wp_quote_form_shortcode() {
         <label><input type="checkbox" name="materiaali[]" value="HTML"> <?php echo pll__('Staattinen HTML-kooste'); ?></label>
         <label><input type="checkbox" name="materiaali[]" value="Tekstit"> <?php echo pll__('Tekstit valmiina'); ?></label>
         <label><input type="checkbox" name="materiaali[]" value="Muu"> <?php echo pll__('Muu'); ?></label>
-        <input type="text" name="materiaali_muu" placeholder="<?php echo pll__('Muu materiaali (jos valittu)'); ?>">
+        <textarea name="materiaali_muu" placeholder="<?php echo pll__('Muu materiaali (jos valittu)'); ?>"></textarea>
 
         <div id="tuntimaara-wrapper" style="display:none;">
             <h3><?php echo pll__('Tuntimäärä (vain Tuntityö)'); ?></h3>
@@ -1576,7 +1576,6 @@ function wp_quote_form_shortcode() {
         <input type="text" name="nimi" placeholder="<?php echo pll__('Nimi'); ?>" required>
         <input type="text" name="yritys" placeholder="<?php echo pll__('Yritys / Organisaatio'); ?>">
         <input type="email" name="sahkoposti" placeholder="<?php echo pll__('Sähköposti'); ?>" required>
-        <?php echo do_shortcode('[newsletters_subscribe form=1]'); ?>
         <input type="tel" name="puhelin" placeholder="<?php echo pll__('Puhelinnumero'); ?>">
 
         <textarea name="lisatiedot" placeholder="<?php echo pll__('Lisätiedot / kommentit'); ?>"></textarea>
