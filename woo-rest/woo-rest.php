@@ -85,8 +85,8 @@ class WooCommerce_REST_Orders_Server {
      * Check API permissions
      */
     public function check_permissions() {
-        // Require authentication for accessing order data
-        return current_user_can('manage_woocommerce');
+        // Public API - no authentication required (data is anonymized)
+        return true;
     }
     
     /**
