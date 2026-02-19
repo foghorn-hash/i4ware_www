@@ -317,7 +317,7 @@ nav {
   text-align: center;
   padding: 4rem 0 6rem;
   position: relative;
-  background: url('../businessman-working-on-tablet-using-ai.jpg') no-repeat center center/cover;
+  background: linear-gradient(180deg, #2f2f2f 0%, #1f1f1f 52%, #121212 100%);
 }
 
 .hero::before {
@@ -547,7 +547,7 @@ img.partner-logo {
 }
 
 .btn {
-  background: var(--accent);
+  background: #8c0091;
   color: var(--light);
   padding: .75rem 2rem;
   border: none;
