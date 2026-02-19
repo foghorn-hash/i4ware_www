@@ -317,7 +317,9 @@ nav {
   text-align: center;
   padding: 4rem 0 6rem;
   position: relative;
-  background: linear-gradient(180deg, #2f2f2f 0%, #1f1f1f 52%, #121212 100%);
+  background-image: url(../52311-background.png);
+  background-size: cover;
+  background-position: center;
 }
 
 .hero::before {
