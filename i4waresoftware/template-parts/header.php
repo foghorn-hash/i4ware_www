@@ -69,9 +69,6 @@ function i4ware_breadcrumbs() {
     <script id="cookieyes" type="text/javascript" src="https://cdn-cookieyes.com/client_data/a1eed8ea8ae24b05c992cf15/script.js"></script>
     <!-- End cookieyes banner -->
      <link href="https://vjs.zencdn.net/8.23.3/video-js.css" rel="stylesheet" />
-     <meta property="og:image" content="<?php echo get_template_directory_uri(); ?>/assets/i4ware-software-og.png" />
-     <meta property="og:image:width" content="890" />
-     <meta property="og:image:height" content="890" />
      <?php
         if (is_front_page()) {
             if ($lang === 'fi') {
@@ -90,7 +87,39 @@ function i4ware_breadcrumbs() {
             if (!$desc) {
                 $desc = wp_strip_all_tags(get_the_excerpt());
             }
+        } else {
+            if ($lang === 'fi') {
+                $desc = 'Senior React-, PHP- ja full-stack-kehitystä Tampereella. i4ware Software rakentaa nopeita ja turvallisia web-ratkaisuja.';
+            } else {
+                $desc = 'Senior React, PHP, and full-stack development in Tampere. i4ware Software builds fast and secure web solutions.';
+            }
         }
+
+        $meta_title = wp_get_document_title();
+        if (is_singular()) {
+            $meta_url = get_permalink();
+        } elseif (is_front_page() || is_home()) {
+            $meta_url = home_url('/');
+        } else {
+            $meta_url = home_url($_SERVER['REQUEST_URI'] ?? '/');
+        }
+
+        $og_image_rel_path = '/assets/i4ware-software-og.jpg';
+        if (!file_exists(get_template_directory() . $og_image_rel_path)) {
+            $og_image_rel_path = '/assets/i4ware-software.png';
+        }
+        $og_image_url = get_template_directory_uri() . $og_image_rel_path;
     ?>
    <meta name="description" content="<?php echo esc_attr($desc); ?>">
+   <meta property="og:site_name" content="i4ware Software" />
+   <meta property="og:type" content="website" />
+   <meta property="og:title" content="<?php echo esc_attr($meta_title); ?>" />
+   <meta property="og:description" content="<?php echo esc_attr($desc); ?>" />
+   <meta property="og:url" content="<?php echo esc_url($meta_url); ?>" />
+   <meta property="og:image" content="<?php echo esc_url($og_image_url); ?>" />
+   <meta property="og:image:alt" content="i4ware Software Logo" />
+   <meta name="twitter:card" content="summary_large_image" />
+   <meta name="twitter:title" content="<?php echo esc_attr($meta_title); ?>" />
+   <meta name="twitter:description" content="<?php echo esc_attr($desc); ?>" />
+   <meta name="twitter:image" content="<?php echo esc_url($og_image_url); ?>" />
 </head>    
