@@ -136,44 +136,6 @@ nav {
   align-items: center;
 }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-cart {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--light);
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.header-cart:hover,
-.header-cart:focus {
-  text-decoration: none;
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.header-cart-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #fff;
-  font-size: 0.85rem;
-  line-height: 1;
-}
-
 .nav-links .current-menu-item > a {
     color: var(--accent);
     font-weight: bold;
