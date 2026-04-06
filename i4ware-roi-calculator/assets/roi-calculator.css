@@ -1,0 +1,173 @@
+#i4ware-roi-calculator-root {
+  width: 100%;
+}
+
+.i4ware-roi-wrap {
+  width: 100%;
+}
+
+.i4ware-roi-card {
+  max-width: 1120px;
+  margin: 24px auto;
+  padding: 20px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #12161d 0%, #0d1118 100%);
+  border: 1px solid #1f2a37;
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.28);
+  color: #f3f6fb;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.i4ware-roi-card h2 {
+  margin: 0 0 18px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.i4ware-roi-field {
+  margin-bottom: 16px;
+}
+
+.i4ware-roi-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.i4ware-roi-field input {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 18px;
+  line-height: 1.2;
+  box-sizing: border-box;
+  background: #f4f6f8;
+  color: #10233e;
+}
+
+.i4ware-roi-card button {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 16px;
+  margin-top: 6px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #dceaff;
+  background: #1e56ad;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.i4ware-roi-pricing-box {
+  margin: 18px 0;
+  padding: 12px;
+  border: 1px solid #263549;
+  border-radius: 10px;
+  background: rgba(9, 14, 22, 0.55);
+}
+
+.i4ware-roi-pricing-box h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  color: #f1f7ff;
+}
+
+.i4ware-roi-pricing-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.i4ware-roi-pricing-table th,
+.i4ware-roi-pricing-table td {
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 13px;
+  border-bottom: 1px solid #1f2a37;
+  color: #dbe8f8;
+}
+
+.i4ware-roi-pricing-table th {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.i4ware-roi-card button:hover {
+  background: #2767cb;
+}
+
+.i4ware-roi-note {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #b9cbe2;
+}
+
+.i4ware-roi-results {
+  margin-top: 28px;
+}
+
+.i4ware-roi-results h3 {
+  margin: 0 0 12px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.i4ware-roi-results p {
+  margin: 0 0 10px;
+  font-size: 22px;
+  line-height: 1.35;
+  color: #e4edf8;
+}
+
+@media (max-width: 768px) {
+  .i4ware-roi-card {
+    margin: 16px auto;
+    padding: 16px;
+  }
+
+  .i4ware-roi-card h2 {
+    font-size: 20px;
+  }
+
+  .i4ware-roi-field label {
+    font-size: 16px;
+  }
+
+  .i4ware-roi-field input {
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .i4ware-roi-card button {
+    font-size: 18px;
+    padding: 12px 14px;
+  }
+
+  .i4ware-roi-results h3 {
+    font-size: 20px;
+  }
+
+  .i4ware-roi-results p {
+    font-size: 16px;
+  }
+
+  .i4ware-roi-pricing-box h3 {
+    font-size: 14px;
+  }
+
+  .i4ware-roi-note {
+    font-size: 12px;
+  }
+
+  .i4ware-roi-pricing-table th,
+  .i4ware-roi-pricing-table td {
+    font-size: 12px;
+    padding: 7px 8px;
+  }
+}
