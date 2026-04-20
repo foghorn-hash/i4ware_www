@@ -22,24 +22,21 @@ let strings = new LocalizedStrings({
     error: "Failed to fetch transactions. Please try again.",
     loading: "Loading...",
     name: "Vendor Balance",
-    description: "These come from our real-time accounting system via a REST API interface from databases.",
-    total: "Total"
+    description: "These come from our real-time accounting system via a REST API interface from databases."
   },
   fi: {
     title: "Vuotuiset myyntitapahtumat",
     error: "Tapahtumien hakeminen epäonnistui. Yritä uudelleen.",
     loading: "Ladataan...",
     name: "Toimittajan saldo",
-    description: "Nämä tulevat reaaliaikaisesta kirjanpidotamme REST API -rajapinnan kautta tietokannoista.",
-    total: "Yhteensä"
+    description: "Nämä tulevat reaaliaikaisesta kirjanpidotamme REST API -rajapinnan kautta tietokannoista."
   },
   sv: {
     title: "Årliga försäljningstransaktioner",
     error: "Misslyckades med att hämta transaktioner. Försök igen.",
     loading: "Laddar...",
     name: "Leverantörssaldo",
-    description: "Dessa kommer från vårt realtidsbokföringssystem via ett REST API-gränssnitt från databaser.",
-    total: "Totalt"
+    description: "Dessa kommer från vårt realtidsbokföringssystem via ett REST API-gränssnitt från databaser."
   }
 });
 
@@ -62,7 +59,6 @@ const TransactionsTable = ({ revenueSource }) => {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [total, setTotal] = useState(0);
 
   const [lang, setLang] = useState(document.documentElement.lang || API_DEFAULT_LANGUAGE);
 
@@ -96,7 +92,6 @@ const TransactionsTable = ({ revenueSource }) => {
 
         setTransactions(data);
         setChartData(formattedData);
-        setTotal(Number(response?.data?.total || 0));
         setLoading(false);
       } catch (err) {
         setError(strings.error);
@@ -111,9 +106,9 @@ const TransactionsTable = ({ revenueSource }) => {
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div className="chart-container">
+    <div>
       <h2 className="calculator-title">{strings.title}</h2>
-      <p className="calculator-p">{strings.description} {strings.total}: {total.toFixed(2)} €</p>
+      <p>{strings.description}</p>
       {/* Bar Chart */}
       <ResponsiveContainer width="100%" height={400}>
         <BarChart data={chartData}>
