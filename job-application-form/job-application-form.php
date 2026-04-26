@@ -18,6 +18,11 @@ define( 'JAF_PLUGIN_VER', '1.0.0' );
 class JAF_Plugin {
   const OPTION_GROUP = 'mh_ats_settings';
   const OPTION_API_KEY = 'mh_ats_openai_api_key';
+  const OPTION_JOB_TITLE = 'mh_ats_job_title';
+  const OPTION_REQUIRED_SKILLS = 'mh_ats_required_skills';
+  const OPTION_MIN_EXPERIENCE = 'mh_ats_min_experience';
+  const OPTION_PREFERRED_LOCATION = 'mh_ats_preferred_location';
+  const OPTION_ADDITIONAL_CRITERIA = 'mh_ats_additional_criteria';
   const REST_NS = 'mh-ats/v1';
   const NONCE_ACTION = 'wp_rest';
   const SCHEMA_VERSION = 2;
@@ -184,12 +189,38 @@ class JAF_Plugin {
 
   public function register_settings() {
     register_setting(self::OPTION_GROUP, self::OPTION_API_KEY);
+    register_setting(self::OPTION_GROUP, self::OPTION_JOB_TITLE);
+    register_setting(self::OPTION_GROUP, self::OPTION_REQUIRED_SKILLS);
+    register_setting(self::OPTION_GROUP, self::OPTION_MIN_EXPERIENCE);
+    register_setting(self::OPTION_GROUP, self::OPTION_PREFERRED_LOCATION);
+    register_setting(self::OPTION_GROUP, self::OPTION_ADDITIONAL_CRITERIA);
     add_settings_section('mh_ats_sec', 'ATS asetukset', function(){
       echo '<p>Syötä OpenAI API -avain (tallennetaan WordPressin asetuksiin). Suosittelemme ympäristömuuttujaa tai Secret Manageria tuotannossa.</p>';
+      echo '<p>Määritä myös ATS-parametrit työn vaatimusten mukaan.</p>';
     }, self::OPTION_GROUP);
     add_settings_field(self::OPTION_API_KEY, 'OpenAI API Key', function(){
       $key = esc_attr(get_option(self::OPTION_API_KEY));
       echo '<input type="password" style="width:420px" name="'.self::OPTION_API_KEY.'" value="'.$key.'" placeholder="sk-..." />';
+    }, self::OPTION_GROUP, 'mh_ats_sec');
+    add_settings_field(self::OPTION_JOB_TITLE, 'Job Title', function(){
+      $value = esc_attr(get_option(self::OPTION_JOB_TITLE, 'Full Stack Developer'));
+      echo '<input type="text" style="width:420px" name="'.self::OPTION_JOB_TITLE.'" value="'.$value.'" placeholder="e.g. Full Stack Developer" />';
+    }, self::OPTION_GROUP, 'mh_ats_sec');
+    add_settings_field(self::OPTION_REQUIRED_SKILLS, 'Required Skills (comma-separated)', function(){
+      $value = esc_attr(get_option(self::OPTION_REQUIRED_SKILLS, 'React, PHP, Laravel, SQL'));
+      echo '<input type="text" style="width:420px" name="'.self::OPTION_REQUIRED_SKILLS.'" value="'.$value.'" placeholder="e.g. React, PHP, Laravel, SQL" />';
+    }, self::OPTION_GROUP, 'mh_ats_sec');
+    add_settings_field(self::OPTION_MIN_EXPERIENCE, 'Minimum Experience (years)', function(){
+      $value = esc_attr(get_option(self::OPTION_MIN_EXPERIENCE, '5'));
+      echo '<input type="number" style="width:100px" name="'.self::OPTION_MIN_EXPERIENCE.'" value="'.$value.'" min="0" step="0.5" />';
+    }, self::OPTION_GROUP, 'mh_ats_sec');
+    add_settings_field(self::OPTION_PREFERRED_LOCATION, 'Preferred Location', function(){
+      $value = esc_attr(get_option(self::OPTION_PREFERRED_LOCATION, 'Finland'));
+      echo '<input type="text" style="width:420px" name="'.self::OPTION_PREFERRED_LOCATION.'" value="'.$value.'" placeholder="e.g. Finland, Tampere" />';
+    }, self::OPTION_GROUP, 'mh_ats_sec');
+    add_settings_field(self::OPTION_ADDITIONAL_CRITERIA, 'Additional Criteria', function(){
+      $value = esc_attr(get_option(self::OPTION_ADDITIONAL_CRITERIA, ''));
+      echo '<textarea style="width:420px; height:100px" name="'.self::OPTION_ADDITIONAL_CRITERIA.'" placeholder="Additional requirements or notes">'.esc_textarea($value).'</textarea>';
     }, self::OPTION_GROUP, 'mh_ats_sec');
   }
 
@@ -842,18 +873,56 @@ class JAF_Plugin {
         }
       }
 
+      // Get ATS settings
+      $job_title = get_option(self::OPTION_JOB_TITLE, 'Full Stack Developer');
+      $required_skills_str = get_option(self::OPTION_REQUIRED_SKILLS, 'React, PHP, Laravel, SQL');
+      $min_experience = (float) get_option(self::OPTION_MIN_EXPERIENCE, 5);
+      $preferred_location = get_option(self::OPTION_PREFERRED_LOCATION, 'Finland');
+      $additional_criteria = get_option(self::OPTION_ADDITIONAL_CRITERIA, '');
+
+      // Parse required skills
+      $required_skills = array_map('trim', explode(',', $required_skills_str));
+      $required_skills_lower = array_map('strtolower', $required_skills);
+
       // ATS-sääntöjä (esimerkki) ennen OpenAI:ta
       $rule_score = 0; $reasons = [];
-      if (stripos($payload['skills'], 'react') !== false) $rule_score += 20; else $reasons[] = 'React puuttuu lomakkeesta';
-      if (preg_match('/(php|laravel)/i', $payload['skills'])) $rule_score += 20; else $reasons[] = 'PHP/Laravel puuttuu lomakkeesta';
-      if (preg_match('/(sql|mysql|postgres)/i', $payload['skills'])) $rule_score += 15; else $reasons[] = 'SQL puuttuu lomakkeesta';
-      
-      // Työkokemus tarkistetaan OpenAI:n kautta CV:stä, ei lomakkeesta
-      if (!preg_match('/\b(5|6|7|8|9|10)\+?\s*(years|v|vuotta)/i', $payload['workexp'])) {
-        $reasons[] = 'Työkokemus lomakkeessa puutteellinen (tarkistetaan CV:stä)';
+
+      // Check required skills
+      $found_skills = 0;
+      $missing_skills = [];
+      $skills_lower = strtolower($payload['skills']);
+      foreach ($required_skills_lower as $skill) {
+        if (stripos($skills_lower, $skill) !== false) {
+          $found_skills++;
+          $rule_score += 20 / count($required_skills); // Distribute points equally
+        } else {
+          $missing_skills[] = ucfirst($skill);
+        }
       }
-      
-      if (preg_match('/(finland|suomi|tampere|helsinki)/i', $payload['country'].' '.$payload['city'])) $rule_score += 10; else $reasons[] = 'Sijainti ei Suomessa';
+      if ($missing_skills) {
+        $reasons[] = 'Missing skills: ' . implode(', ', $missing_skills);
+      }
+
+      // Työkokemus tarkistetaan OpenAI:n kautta CV:stä, ei lomakkeesta
+      if (!preg_match('/\b(' . (int)$min_experience . '|' . ((int)$min_experience + 1) . '|' . ((int)$min_experience + 2) . '|10)\+?\s*(years|v|vuotta)/i', $payload['workexp'])) {
+        $reasons[] = 'Work experience in form may be insufficient (checked from CV)';
+      }
+
+      // Check preferred location
+      $location_match = false;
+      $location_parts = array_map('trim', explode(',', $preferred_location));
+      foreach ($location_parts as $loc) {
+        if (stripos(strtolower($payload['country'] . ' ' . $payload['city']), strtolower($loc)) !== false) {
+          $location_match = true;
+          break;
+        }
+      }
+      if ($location_match) {
+        $rule_score += 10;
+      } else {
+        $reasons[] = 'Location not in preferred area: ' . $preferred_location;
+      }
+
       if (!empty($payload['www'])) $rule_score += 5;
       if (!empty($payload['phone'])) $rule_score += 5;
 
@@ -905,7 +974,7 @@ class JAF_Plugin {
           
           $prompt = [
             'role' => 'user',
-            'content' => "You are an ATS (Applicant Tracking System) expert. Analyze the job application including CV, motivation letter, and application form.\n\nJob requirements: React, PHP/Laravel, SQL, 5+ years experience, Finland-based.\n\nIMPORTANT: Analyze work experience PRIMARILY from the CV PDF document, not from the form fields. The applicant may not have filled the form fields properly. Calculate total years of work experience from CV positions/dates.\n\nCompare CV content vs form fields and note if applicant provided insufficient information in form fields.\n\nReturn ONLY a valid JSON object (no markdown, no extra text) with these fields:\n{\n  \"skills\": [\"skill1\", \"skill2\"],\n  \"total_experience_years\": number (from CV),\n  \"cv_experience_summary\": \"brief summary of work experience from CV\",\n  \"form_vs_cv_quality\": \"excellent\" or \"good\" or \"poor\" (did applicant fill form properly compared to CV?),\n  \"seniority\": \"junior\" or \"mid\" or \"senior\",\n  \"score0to100\": number,\n  \"reasons\": [\"reason1\", \"reason2\"],\n  \"motivation_quality\": \"poor\" or \"average\" or \"good\" or \"excellent\",\n  \"overall_fit\": \"poor\" or \"moderate\" or \"good\" or \"excellent\"\n}\n\n" . $full_content
+            'content' => "You are an ATS (Applicant Tracking System) expert. Analyze the job application including CV, motivation letter, and application form.\n\nJob requirements: " . implode(', ', $required_skills) . ", {$min_experience}+ years experience, {$preferred_location}-based." . ($additional_criteria ? " Additional criteria: {$additional_criteria}." : "") . "\n\nIMPORTANT: Analyze work experience PRIMARILY from the CV PDF document, not from the form fields. The applicant may not have filled the form fields properly. Calculate total years of work experience from CV positions/dates.\n\nCompare CV content vs form fields and note if applicant provided insufficient information in form fields.\n\nReturn ONLY a valid JSON object (no markdown, no extra text) with these fields:\n{\n  \"skills\": [\"skill1\", \"skill2\"],\n  \"total_experience_years\": number (from CV),\n  \"cv_experience_summary\": \"brief summary of work experience from CV\",\n  \"form_vs_cv_quality\": \"excellent\" or \"good\" or \"poor\" (did applicant fill form properly compared to CV?),\n  \"seniority\": \"junior\" or \"mid\" or \"senior\",\n  \"score0to100\": number,\n  \"reasons\": [\"reason1\", \"reason2\"],\n  \"motivation_quality\": \"poor\" or \"average\" or \"good\" or \"excellent\",\n  \"overall_fit\": \"poor\" or \"moderate\" or \"good\" or \"excellent\"\n}\n\n" . $full_content
           ];
           
           $body = json_encode([
@@ -954,7 +1023,7 @@ class JAF_Plugin {
                       $ai_reasons[] = "CV summary: {$cv_summary}";
                     }
                     // Anna työkokemuspisteet CV:n perusteella
-                    if ($cv_experience >= 5) {
+                    if ($cv_experience >= $min_experience) {
                       $rule_score += 20; // Lisää säännölliseen pisteeseen CV:n mukaan
                     }
                   }
