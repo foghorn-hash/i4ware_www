@@ -1155,6 +1155,31 @@ function i4ware_saas_order_form_shortcode() {
                 placeholder="<?php pll_e('Describe funding source, amount and type'); ?>"></textarea>
         </div>
 
+        <!-- Additional services -->
+        <label><?php pll_e('Additional services'); ?></label>
+
+        <div class="i4ware-checkbox-group">
+            <label>
+                <input type="checkbox" name="additional_services[]" value="pitch_deck">
+                <?php if (pll_current_language() == 'fi') { echo 'Pitch Deck -suunnittelu VC/Angel-sijoittajille'; } else { echo 'Pitch Deck design for VC/Angel investors'; } ?>
+            </label>
+
+            <label>
+                <input type="checkbox" name="additional_services[]" value="financing_consultation">
+                <?php if (pll_current_language() == 'fi') { echo 'Konsultaatio muista rahoitusmalleista (Business Finland, ELY-keskus, EU-apurahat)'; } else { echo 'Consultation on other financing models (Business Finland, ELY-center, EU-funds)'; } ?>
+            </label>
+
+            <label>
+                <input type="checkbox" name="additional_services[]" value="finvera_loan">
+                <?php if (pll_current_language() == 'fi') { echo 'Miksi ei liian aikaisin hakea Finveran takaamaa pankkilainaa'; } else { echo "Why not too early apply for Finvera's guaranteed bank loan"; } ?>
+            </label>
+
+            <label>
+                <input type="checkbox" name="additional_services[]" value="organizations_advice">
+                <?php if (pll_current_language() == 'fi') { echo 'Organisaatioiden listaaminen mistä saa lisäneuvoja, markkinatutkimus'; } else { echo 'Listing organizations for additional advice, market research'; } ?>
+            </label>
+        </div>
+
         <!-- Company info -->
         <label><?php pll_e('Company founding year'); ?></label>
         <input type="number" name="company_founding_year" min="1800" max="<?php echo date('Y'); ?>">
@@ -1413,6 +1438,7 @@ function i4ware_submit_order() {
         'external_funding' => isset($_POST['external_funding_available']) ? 'Yes' : 'No',
         'external_funding_details' => sanitize_textarea_field($_POST['external_funding_details'] ?? ''),
         'revenue_funded' => isset($_POST['revenue_funded']) ? 'Yes' : 'No',
+        'additional_services' => isset($_POST['additional_services']) && is_array($_POST['additional_services']) ? implode(', ', array_map('sanitize_text_field', $_POST['additional_services'])) : '',
         'company_founding_year' => intval($_POST['company_founding_year'] ?? ''),
         'company_name' => sanitize_text_field($_POST['company_name'] ?? ''),
         'contact_person' => sanitize_text_field($_POST['contact_person'] ?? ''),

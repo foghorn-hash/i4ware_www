@@ -120,6 +120,7 @@ header {
   justify-content: space-between;
   align-items: center;
   gap: 24px;
+  flex-wrap: wrap;
 }
 
 .container {
@@ -278,7 +279,9 @@ nav {
   text-align: center;
   padding: 4rem 0 6rem;
   position: relative;
-  background: url('../businessman-working-on-tablet-using-ai.jpg') no-repeat center center/cover;
+  background-image: url(../52311-background.png);
+  background-size: cover;
+  background-position: center;
 }
 
 .hero::before {
@@ -508,7 +511,7 @@ img.partner-logo {
 }
 
 .btn {
-  background: var(--accent);
+  background: #8c0091;
   color: var(--light);
   padding: .75rem 2rem;
   border: none;
@@ -2118,4 +2121,23 @@ p#form-message {
     #wp_quote-form {
         padding: 20px;
     }
+}
+
+.add_to_cart_button  {
+    background-color: var(--accent) !important;
+    color: var(--light) !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    transition: background-color 0.3s ease !important;
+}
+
+.woocommerce-ordering select {
+    background-color: #2b2b2b;
+    color: #f1f1f1;
+    padding: 8px 12px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    font-size: 1em;
 }

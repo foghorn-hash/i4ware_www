@@ -94,9 +94,7 @@ useEffect(() => {
         >
           <option value="all">{strings.all}</option>
           <option value="atlassian">{strings.atlassian}</option>
-          <option value="kela">{strings.kela}</option>
           <option value="hourly">{strings.hourly}</option>
-          <option value="grandparents">{strings.grandparents}</option>
         </select>
       </div>
 
