@@ -1577,8 +1577,8 @@ function wp_quote_form_shortcode() {
             let tunti = parseFloat(tuntimaaraEl.val()) || 0;
             let hinta = 0;
 
-            if(taso === 'Pronssi') hinta = 500;
-            else if(taso === 'Hopea') hinta = "800-4000";
+            if(taso === 'Pronssi') hinta = 950
+            else if(taso === 'Hopea') hinta = "1250-6500";
             else if(taso === 'Kulta') hinta = "<?php echo pll__('Saat tarjouksen'); ?>";
             else if (taso === 'Tuntityo') {
             if (tunti === 0) {
