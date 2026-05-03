@@ -199,10 +199,10 @@ export default function App() {
   const [openingsHtml, setOpeningsHtml] = useState("");
 
   // Determine initial language from <html lang> or API default
-  const [lang, setLang] = useState(API_DEFAULT_LANGUAGE);
+  const htmlLang = (document.documentElement.lang || API_DEFAULT_LANGUAGE).substring(0, 2).toLowerCase();
+  const [lang, setLang] = useState(htmlLang);
 
-  const htmlLang = document.documentElement.lang || API_DEFAULT_LANGUAGE;
-  strings.setLanguage(htmlLang);
+  strings.setLanguage(lang);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

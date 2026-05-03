@@ -50,10 +50,10 @@ class JAF_Plugin {
   public function register_assets() {
     // Päivitä polut vastaamaan buildiasi
     $css_rel = 'css/main.fbd31224.css';
-    $js_rel  = 'js/main.b76b180f.js';
+    $js_rel  = 'js/main.b29b4b46.js';
     $plugin_url = plugin_dir_url( __FILE__ ) . 'static/';
-    $css_path = JAF_PLUGIN_PATH . $css_rel;
-    $js_path  = JAF_PLUGIN_PATH . $js_rel;
+    $css_path = JAF_PLUGIN_PATH . 'static/' . $css_rel;
+    $js_path  = JAF_PLUGIN_PATH . 'static/' . $js_rel;
 
     $css_ver = file_exists( $css_path ) ? filemtime( $css_path ) : JAF_PLUGIN_VER;
     $js_ver  = file_exists( $js_path ) ? filemtime( $js_path )  : JAF_PLUGIN_VER;
