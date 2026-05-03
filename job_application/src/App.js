@@ -196,6 +196,7 @@ export default function App() {
   const [fileError, setFileError] = useState("");
   const [recaptchaToken, setRecaptchaToken] = useState("");
   const recaptchaRef = useRef(null);
+  const [openingsHtml, setOpeningsHtml] = useState("");
 
   // Determine initial language from <html lang> or API default
   const [lang, setLang] = useState(API_DEFAULT_LANGUAGE);
@@ -205,27 +206,51 @@ export default function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!recaptchaToken) return; // block if no token
 
-    // send token with your payload
-    const res = await fetch(window.JAF_REC.verifyUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...formData, recaptcha: recaptchaToken }),
-    });
-    const data = await res.json();
+    const root = document.getElementById("jafroot");
+    if (!root) {
+      alert("Application container not found.");
+      return;
+    }
 
-    if (data?.ok) {
-      alert("Form submitted!");      // your localized message
-      recaptchaRef.current?.reset(); // reset captcha
-      setRecaptchaToken("");
-    } else {
-      alert("reCAPTCHA failed.");
+    const endpoint = root.dataset.endpoint;
+    const nonce = root.dataset.nonce;
+
+    // Build FormData since we have file uploads
+    const payload = new FormData();
+    for (const key in formData) {
+      if (formData[key] !== undefined && formData[key] !== null) {
+        payload.append(key, formData[key]);
+      }
+    }
+
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "X-WP-Nonce": nonce,
+        },
+        body: payload,
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(strings.formSubmitted || "Form submitted!");
+      } else {
+        alert("Submission failed: " + (data.message || "Unknown error"));
+      }
+    } catch (err) {
+      alert("Network error: " + err.message);
     }
   };
 
   useEffect(() => {
     strings.setLanguage(lang);
+    const root = document.getElementById("jafroot");
+    if (root && root.dataset.openings) {
+      setOpeningsHtml(root.dataset.openings);
+    }
   }, [lang]);
 
   const handleChange = (e) => {
@@ -249,6 +274,12 @@ export default function App() {
 
   return (
     <div className="app-container">
+      {openingsHtml && (
+        <div 
+          className="ats-openings-section" 
+          dangerouslySetInnerHTML={{ __html: openingsHtml }} 
+        />
+      )}
       <form className="app-card" onSubmit={handleSubmit}>
         <div className="two-col">
           <div className="ats-form-section">

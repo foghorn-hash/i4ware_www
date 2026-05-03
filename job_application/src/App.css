@@ -168,3 +168,38 @@ details pre { background: rgba(255,255,255,0.02); padding: 12px; border-radius: 
   .form-actions { flex-direction: column; align-items: stretch; }
 }
 
+/* Job Openings Section */
+.ats-openings-section {
+  margin-bottom: 24px;
+}
+
+.mh-ats-job-openings {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mh-ats-job-openings li a {
+  display: block;
+  padding: 16px 22px;
+  background: rgba(8, 14, 22, 0.6);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  color: #41d1ff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 15px rgba(2,8,20,0.4);
+}
+
+.mh-ats-job-openings li a:hover {
+  background: rgba(255,255,255,0.04);
+  transform: translateY(-2px);
+  border-color: rgba(65, 99, 255, 0.3);
+  color: #6c63ff;
+  box-shadow: 0 8px 24px rgba(65, 99, 255, 0.12);
+}

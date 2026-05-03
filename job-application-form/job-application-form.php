@@ -23,6 +23,7 @@ class JAF_Plugin {
   const OPTION_MIN_EXPERIENCE = 'mh_ats_min_experience';
   const OPTION_PREFERRED_LOCATION = 'mh_ats_preferred_location';
   const OPTION_ADDITIONAL_CRITERIA = 'mh_ats_additional_criteria';
+  const OPTION_JOB_OPENINGS = 'mh_ats_job_openings';
   const REST_NS = 'mh-ats/v1';
   const NONCE_ACTION = 'wp_rest';
   const SCHEMA_VERSION = 2;
@@ -33,6 +34,7 @@ class JAF_Plugin {
     add_action( 'init', [ $this, 'maybe_upgrade_schema' ] );
     add_action( 'admin_menu', [ $this, 'admin_menu' ] );
     add_action( 'init', [ $this, 'register_shortcode' ] );
+    add_action( 'init', [ $this, 'register_polylang_strings' ] );
     add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
     add_action( 'rest_api_init', [ $this, 'register_routes' ] );
     add_filter( 'rest_authentication_errors', [ $this, 'allow_public_rest' ], 20 );
@@ -47,8 +49,8 @@ class JAF_Plugin {
    */
   public function register_assets() {
     // Päivitä polut vastaamaan buildiasi
-    $css_rel = 'css/main.d5d19d5a.css';
-    $js_rel  = 'js/main.fefe4008.js';
+    $css_rel = 'css/main.fbd31224.css';
+    $js_rel  = 'js/main.b76b180f.js';
     $plugin_url = plugin_dir_url( __FILE__ ) . 'static/';
     $css_path = JAF_PLUGIN_PATH . $css_rel;
     $js_path  = JAF_PLUGIN_PATH . $js_rel;
@@ -78,6 +80,51 @@ class JAF_Plugin {
    */
   public function register_shortcode() {
     add_shortcode( 'job_application_form', [ $this, 'shortcode' ] );
+    add_shortcode( 'job_openings', [ $this, 'shortcode_job_openings' ] );
+  }
+
+  /**
+   * Register strings for Polylang translation.
+   */
+  public function register_polylang_strings() {
+    if ( function_exists( 'pll_register_string' ) ) {
+      pll_register_string( 
+        'mh_ats_job_openings', 
+        get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | /apply"), 
+        'Job Application Form', 
+        true 
+      );
+    }
+  }
+
+  /**
+   * Shortcode handler for open positions list.
+   * Usage: [job_openings]
+   */
+  public function shortcode_job_openings() {
+    $openings_text = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | /apply");
+    
+    if ( function_exists( 'pll__' ) ) {
+      $openings_text = pll__( $openings_text );
+    }
+    
+    $lines = explode("\n", $openings_text);
+    
+    ob_start();
+    echo '<ul class="mh-ats-job-openings">';
+    foreach ($lines as $line) {
+      $line = trim($line);
+      if (!$line) continue;
+      
+      $parts = explode('|', $line, 2);
+      $title = trim($parts[0]);
+      $link = isset($parts[1]) ? trim($parts[1]) : '#';
+      
+      echo '<li><a href="' . esc_url($link) . '">' . esc_html($title) . '</a></li>';
+    }
+    echo '</ul>';
+    
+    return ob_get_clean();
   }
 
   /**
@@ -92,10 +139,11 @@ class JAF_Plugin {
     $id = 'jafroot';
     $nonce = wp_create_nonce( self::NONCE_ACTION );
     $rest = esc_url_raw( rest_url( self::REST_NS . '/applications' ) );
+    $openings_html = do_shortcode('[job_openings]');
 
     ob_start();
     ?>
-      <div id="<?php echo esc_attr( $id ); ?>" class="job-app-form-root" data-endpoint="<?php echo esc_attr( $rest ); ?>" data-nonce="<?php echo esc_attr( $nonce ); ?>"></div>
+      <div id="<?php echo esc_attr( $id ); ?>" class="job-app-form-root" data-endpoint="<?php echo esc_attr( $rest ); ?>" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-openings="<?php echo esc_attr( $openings_html ); ?>"></div>
     <?php
     return ob_get_clean();
   }
@@ -194,6 +242,7 @@ class JAF_Plugin {
     register_setting(self::OPTION_GROUP, self::OPTION_MIN_EXPERIENCE);
     register_setting(self::OPTION_GROUP, self::OPTION_PREFERRED_LOCATION);
     register_setting(self::OPTION_GROUP, self::OPTION_ADDITIONAL_CRITERIA);
+    register_setting(self::OPTION_GROUP, self::OPTION_JOB_OPENINGS);
     add_settings_section('mh_ats_sec', 'ATS asetukset', function(){
       echo '<p>Syötä OpenAI API -avain (tallennetaan WordPressin asetuksiin). Suosittelemme ympäristömuuttujaa tai Secret Manageria tuotannossa.</p>';
       echo '<p>Määritä myös ATS-parametrit työn vaatimusten mukaan.</p>';
@@ -221,6 +270,11 @@ class JAF_Plugin {
     add_settings_field(self::OPTION_ADDITIONAL_CRITERIA, 'Additional Criteria', function(){
       $value = esc_attr(get_option(self::OPTION_ADDITIONAL_CRITERIA, ''));
       echo '<textarea style="width:420px; height:100px" name="'.self::OPTION_ADDITIONAL_CRITERIA.'" placeholder="Additional requirements or notes">'.esc_textarea($value).'</textarea>';
+    }, self::OPTION_GROUP, 'mh_ats_sec');
+    add_settings_field(self::OPTION_JOB_OPENINGS, 'Open Positions (Title | Link)', function(){
+      $value = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | /apply\nUX Designer | /apply");
+      echo '<textarea style="width:420px; height:100px" name="'.self::OPTION_JOB_OPENINGS.'" placeholder="Job Title | https://...">'.esc_textarea($value).'</textarea>';
+      echo '<p class="description">Use the shortcode <code>[job_openings]</code> to display this list.</p>';
     }, self::OPTION_GROUP, 'mh_ats_sec');
   }
 
