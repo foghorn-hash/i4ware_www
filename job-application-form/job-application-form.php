@@ -90,7 +90,7 @@ class JAF_Plugin {
     if ( function_exists( 'pll_register_string' ) ) {
       pll_register_string( 
         'mh_ats_job_openings', 
-        get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | /apply"), 
+        get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot"), 
         'Job Application Form', 
         true 
       );
@@ -102,7 +102,7 @@ class JAF_Plugin {
    * Usage: [job_openings]
    */
   public function shortcode_job_openings() {
-    $openings_text = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | /apply");
+    $openings_text = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot");
     
     if ( function_exists( 'pll__' ) ) {
       $openings_text = pll__( $openings_text );
@@ -118,7 +118,7 @@ class JAF_Plugin {
       
       $parts = explode('|', $line, 2);
       $title = trim($parts[0]);
-      $link = isset($parts[1]) ? trim($parts[1]) : '#';
+      $link = isset($parts[1]) ? trim($parts[1]) : '#jafroot';
       
       echo '<li><a href="' . esc_url($link) . '">' . esc_html($title) . '</a></li>';
     }
@@ -272,8 +272,8 @@ class JAF_Plugin {
       echo '<textarea style="width:420px; height:100px" name="'.self::OPTION_ADDITIONAL_CRITERIA.'" placeholder="Additional requirements or notes">'.esc_textarea($value).'</textarea>';
     }, self::OPTION_GROUP, 'mh_ats_sec');
     add_settings_field(self::OPTION_JOB_OPENINGS, 'Open Positions (Title | Link)', function(){
-      $value = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | /apply\nUX Designer | /apply");
-      echo '<textarea style="width:420px; height:100px" name="'.self::OPTION_JOB_OPENINGS.'" placeholder="Job Title | https://...">'.esc_textarea($value).'</textarea>';
+      $value = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot\nUX Designer | #jafroot");
+      echo '<textarea style="width:420px; height:100px" name="'.self::OPTION_JOB_OPENINGS.'" placeholder="Job Title | #jafroot">'.esc_textarea($value).'</textarea>';
       echo '<p class="description">Use the shortcode <code>[job_openings]</code> to display this list.</p>';
     }, self::OPTION_GROUP, 'mh_ats_sec');
   }
