@@ -1219,64 +1219,71 @@ function i4ware_saas_order_form_shortcode() {
     </form>
 
     <script>
-        function i4wareCalcPrice(hours) {
-            const rate = <?php echo (int)$hourly_rate; ?>;
-            document.getElementById('i4ware-total-price').innerText =
-                hours ? (hours * rate) : 0;
+function i4wareCalcPrice(hours) {
+    const rate = <?php echo (int) $hourly_rate; ?>;
+    const totalEl = document.getElementById('i4ware-total-price');
+
+    hours = parseFloat(hours) || 0;
+    totalEl.innerText = hours > 0 ? (hours * rate).toFixed(0) : 0;
+}
+
+jQuery(document).ready(function($){
+    $('#external_funding_checkbox').on('change', function(){
+        $('#external_funding_details').toggle(this.checked);
+    });
+
+    $('#i4ware-saas-form').on('submit', function(e){
+        e.preventDefault();
+
+        const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
+        const messageEl = $('#i4ware-form-message');
+
+        if(!form.find('input[name="terms"]').is(':checked') || !form.find('input[name="privacy"]').is(':checked')) {
+            messageEl.text('<?php echo esc_js(pll__("Sinun tulee hyväksyä Toimitusehdot ja Yksityisyydensuojaseloste ennen lähettämistä.")); ?>');
+            return;
         }
 
-        jQuery(document).ready(function($){
-            // Piilotetaan/ näytetään rahoitusdetails
-            $('#external_funding_checkbox').on('change', function(){
-                $('#external_funding_details').toggle(this.checked);
-            });
+        const textSending = '<?php echo esc_js(pll__("Sending...")); ?>';
+        const textSuccess = '<?php echo esc_js(pll__("Order request sent successfully")); ?>';
+        const textFailed = '<?php echo esc_js(pll__("Submission failed")); ?>';
+        const textServerError = '<?php echo esc_js(pll__("Server error")); ?>';
+        const textSendOrder = '<?php echo esc_js(pll__("Send order request")); ?>';
 
-            // AJAX-lähetys
-            $('#i4ware-saas-form').on('submit', function(e){
-                e.preventDefault();
-                const form = $(this);
-                const submitBtn = form.find('button');
-                const messageEl = $('#i4ware-form-message');
-                
+        submitBtn.prop('disabled', true).text(textSending);
 
-                // Tarkistetaan, että checkboxit on valittu
-                if(!$('#terms').is(':checked') || !$('#privacy').is(':checked')) {
-                    messageEl.text('<?php echo pll__("Sinun tulee hyväksyä Toimitusehdot ja Yksityisyydensuojaseloste ennen lähettämistä."); ?>');
-                    return;
-                }
+        $.ajax({
+            url: '<?php echo esc_url(admin_url("admin-ajax.php")); ?>',
+            type: 'POST',
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(response){
+                if(response.success){
+                    messageEl.text(textSuccess);
 
-                const textSending = '<?php echo esc_js(pll__("Sending...")); ?>';
-                const textSuccess = '<?php echo esc_js(pll__("Order request sent successfully")); ?>';
-                const textFailed = '<?php echo esc_js(pll__("Submission failed")); ?>';
-                const textServerError = '<?php echo esc_js(pll__("Server error")); ?>';
-                const textSendOrder = '<?php echo esc_js(pll__("Send order request")); ?>';
+                    const hours = parseInt(form.find('input[name="estimated_hours"]').val() || 0, 10);
+                    const totalValue = hours * <?php echo (int) $hourly_rate; ?>;
 
-                submitBtn.prop('disabled', true).text(textSending);
-
-                $.ajax({
-                    url: '<?php echo admin_url("admin-ajax.php"); ?>',
-                    type: 'POST',
-                    data: form.serialize(),
-                    dataType: 'json',
-                    success: function(response){
-                        if(response.success){
-                            messageEl.text(textSuccess);
-                            form[0].reset();
-                            $('#external_funding_details').hide();
-                            i4wareCalcPrice(0);
-                        } else {
-                            messageEl.text(response.data || textFailed);
-                        }
-                    },
-                    error: function(){
-                        messageEl.text(textServerError);
-                    },
-                    complete: function(){
-                        submitBtn.prop('disabled', false).text(textSendOrder);
+                    if (typeof window.i4wareTrackSaasOrderSuccess === 'function') {
+                        window.i4wareTrackSaasOrderSuccess(totalValue);
                     }
-                });
-            });
+
+                    form[0].reset();
+                    $('#external_funding_details').hide();
+                    i4wareCalcPrice(0);
+                } else {
+                    messageEl.text(response.data || textFailed);
+                }
+            },
+            error: function(){
+                messageEl.text(textServerError);
+            },
+            complete: function(){
+                submitBtn.prop('disabled', false).text(textSendOrder);
+            }
         });
+    });
+});
     </script>
 
     <style>
@@ -1612,6 +1619,9 @@ function wp_quote_form_shortcode() {
                 data: form.serialize() + '&action=wp_quote_send',
                 success: function(response){
                     messageEl.text(response);
+                    if (typeof window.i4wareTrackQuoteSuccess === 'function') {
+                        window.i4wareTrackQuoteSuccess();
+                    }
                     form[0].reset();
                     naytaTaiPiilotaTuntimaara();
                     laskeHinta();
@@ -1622,6 +1632,75 @@ function wp_quote_form_shortcode() {
             });
         });
     });
+    (function($){
+  function gaEvent(name, params = {}) {
+    if (typeof gtag === 'function') {
+      gtag('event', name, params);
+    }
+  }
+
+  // WP quote form
+  $(document).on('focusin', '#wp_quote-form input, #wp_quote-form textarea, #wp_quote-form select', function(){
+    const form = $('#wp_quote-form');
+    if (!form.data('ga-started')) {
+      form.data('ga-started', true);
+      gaEvent('quote_form_start', {
+        form_name: 'wp_quote',
+        form_type: 'wordpress_quote'
+      });
+    }
+  });
+
+  $(document).on('change', '#tilaus_taso', function(){
+    gaEvent('quote_level_selected', {
+      form_name: 'wp_quote',
+      quote_level: $(this).val()
+    });
+  });
+
+  $(document).on('submit', '#wp_quote-form', function(){
+    gaEvent('quote_form_submit_attempt', {
+      form_name: 'wp_quote'
+    });
+  });
+
+  // SaaS order form
+  $(document).on('focusin', '#i4ware-saas-form input, #i4ware-saas-form textarea, #i4ware-saas-form select', function(){
+    const form = $('#i4ware-saas-form');
+    if (!form.data('ga-started')) {
+      form.data('ga-started', true);
+      gaEvent('saas_order_form_start', {
+        form_name: 'i4ware_saas_order',
+        form_type: 'saas_order'
+      });
+    }
+  });
+
+  $(document).on('input', '#i4ware-saas-form input[name="estimated_hours"]', function(){
+    const hours = parseInt($(this).val() || 0, 10);
+    gaEvent('saas_hours_changed', {
+      form_name: 'i4ware_saas_order',
+      estimated_hours: hours,
+      value: hours * 95,
+      currency: 'EUR'
+    });
+  });
+
+  window.i4wareTrackQuoteSuccess = function() {
+    gaEvent('quote_request_success', {
+      form_name: 'wp_quote',
+      currency: 'EUR'
+    });
+  };
+
+  window.i4wareTrackSaasOrderSuccess = function(value) {
+    gaEvent('saas_order_request_success', {
+      form_name: 'i4ware_saas_order',
+      value: value || 0,
+      currency: 'EUR'
+    });
+  };
+})(jQuery);
     </script>
     <?php
     return ob_get_clean();
@@ -1706,5 +1785,197 @@ function wp_quote_customizer_settings($wp_customize) {
     }
 }
 add_action('customize_register', 'wp_quote_customizer_settings');
+
+add_action('wp_footer', function () {
+?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    function trackLinkClick(eventName, url, label) {
+        if (typeof gtag === 'function') {
+            gtag('event', eventName, {
+                link_url: url,
+                link_text: label,
+                page_location: window.location.href,
+                transport_type: 'beacon'
+            });
+        }
+    }
+
+    document.querySelectorAll('a').forEach(function(link){
+
+        link.addEventListener('click', function(){
+
+            const url = link.href || '';
+            const text = (link.innerText || '').trim();
+
+            // Atlassian Marketplace
+            if (
+                url.includes('marketplace.atlassian.com')
+            ) {
+                trackLinkClick(
+                    'marketplace_click',
+                    url,
+                    text
+                );
+            }
+
+            // Documentation
+            if (
+                url.includes('/documentation') ||
+                url.includes('/docs') ||
+                text.toLowerCase().includes('documentation') ||
+                text.toLowerCase().includes('docs')
+            ) {
+                trackLinkClick(
+                    'documentation_click',
+                    url,
+                    text
+                );
+            }
+
+            // Terms / Agreements / Privacy
+            if (
+                url.includes('/privacy') ||
+                url.includes('/terms') ||
+                url.includes('/agreement') ||
+                text.toLowerCase().includes('privacy') ||
+                text.toLowerCase().includes('terms') ||
+                text.toLowerCase().includes('sopimus') ||
+                text.toLowerCase().includes('toimitusehdot')
+            ) {
+                trackLinkClick(
+                    'agreement_click',
+                    url,
+                    text
+                );
+            }
+
+        });
+
+    });
+
+});
+</script>
+<?php
+});
+
+add_action('wp_footer', function () {
+?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    function sendCTAEvent(eventName, buttonText, url) {
+
+        if (typeof gtag !== 'function') {
+            return;
+        }
+
+        gtag('event', eventName, {
+            cta_text: buttonText,
+            cta_url: url,
+            page_title: document.title,
+            page_location: window.location.href,
+            transport_type: 'beacon'
+        });
+    }
+
+    document.querySelectorAll('a, button').forEach(function(el){
+
+        el.addEventListener('click', function(){
+
+            const text = (el.innerText || '').trim().toLowerCase();
+            const url = el.href || '';
+
+            // Marketplace CTA
+            if (
+                url.includes('marketplace.atlassian.com')
+            ) {
+                sendCTAEvent(
+                    'timesheet_marketplace_click',
+                    text,
+                    url
+                );
+            }
+
+            // Documentation CTA
+            if (
+                text.includes('documentation') ||
+                text.includes('docs') ||
+                text.includes('api') ||
+                url.includes('/documentation') ||
+                url.includes('/docs')
+            ) {
+                sendCTAEvent(
+                    'timesheet_docs_click',
+                    text,
+                    url
+                );
+            }
+
+            // Trial CTA
+            if (
+                text.includes('trial') ||
+                text.includes('free trial') ||
+                text.includes('try') ||
+                text.includes('kokeile')
+            ) {
+                sendCTAEvent(
+                    'timesheet_trial_click',
+                    text,
+                    url
+                );
+            }
+
+            // Pricing CTA
+            if (
+                text.includes('pricing') ||
+                text.includes('price') ||
+                text.includes('hinta')
+            ) {
+                sendCTAEvent(
+                    'timesheet_pricing_click',
+                    text,
+                    url
+                );
+            }
+
+            // Contact CTA
+            if (
+                text.includes('contact') ||
+                text.includes('support') ||
+                text.includes('sales') ||
+                text.includes('ota yhteyttä')
+            ) {
+                sendCTAEvent(
+                    'timesheet_contact_click',
+                    text,
+                    url
+                );
+            }
+
+            // Agreement / Terms CTA
+            if (
+                text.includes('privacy') ||
+                text.includes('terms') ||
+                text.includes('agreement') ||
+                text.includes('toimitusehdot') ||
+                text.includes('yksityisyys')
+            ) {
+                sendCTAEvent(
+                    'timesheet_agreement_click',
+                    text,
+                    url
+                );
+            }
+
+        });
+
+    });
+
+});
+</script>
+<?php
+});
 
 ?>

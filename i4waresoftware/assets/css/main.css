@@ -348,40 +348,34 @@ nav {
   animation: floatSlight 6s ease-in-out infinite;
 }
 
-h1 {
+h1, h2, h3, h4, h5, h6 {
   margin-top: 1rem;
-  font-size: 2.5rem;
   text-align: left !important;
+  color: var(--accent);
 }
 
-h2 {
-  margin-top: 1rem;
-  font-size: 2rem;
-  text-align: left !important;
+h1.wp-block-heading { 
+  font-size: clamp(1.8rem, 4vw, 2.4rem) !important; 
 }
 
-h3 {
-  margin-top: 1rem;
-  font-size: 1.5rem;
-  text-align: left !important;
+h2.wp-block-heading { 
+  font-size: clamp(1.6rem, 3.5vw, 2rem) !important; 
 }
 
-h4 {
-  margin-top: 1rem;
-  font-size: 1.25rem;
-  text-align: left !important;
+h3.wp-block-heading { 
+  font-size: clamp(1.4rem, 3vw, 1.7rem) !important; 
 }
 
-h5 {
-  margin-top: 1rem;
-  font-size: 1rem;
-  text-align: left !important;
+h4.wp-block-heading { 
+  font-size: clamp(1.2rem, 2.5vw, 1.4rem) !important; 
 }
 
-h6 {
-  margin-top: 1rem;
-  font-size: 0.875rem;
-  text-align: left !important;
+h5.wp-block-heading { 
+  font-size: clamp(1.05rem, 2vw, 1.15rem) !important; 
+}
+
+h6.wp-block-heading { 
+  font-size: clamp(0.95rem, 1.5vw, 1rem) !important; 
 }
 
 /* Add a container for the logos */
