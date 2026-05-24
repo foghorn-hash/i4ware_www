@@ -15,6 +15,7 @@ let strings = new LocalizedStrings({
     kela: "Pension Insurance",
     hourly: "Hourly Rate Customers",
     grandparents: "Grandparents' Inheritance",
+    woocommerce: "WooCommerce",
     year: "Year",
   },
   fi: {
@@ -23,6 +24,7 @@ let strings = new LocalizedStrings({
     kela: "Eläkevakuutus",
     hourly: "Tuntiveloitusasiakkaat",
     grandparents: "Isovanhempien perintö",
+    woocommerce: "WooCommerce",
     year: "Vuosi",
   },
   sv: {
@@ -31,6 +33,7 @@ let strings = new LocalizedStrings({
     kela: "Pensionsförsäkring",
     hourly: "Timdebiterade kunder",
     grandparents: "Mor- och farföräldrars arv",
+    woocommerce: "WooCommerce",
     year: "År",
   },
 });
@@ -95,6 +98,7 @@ useEffect(() => {
           <option value="all">{strings.all}</option>
           <option value="atlassian">{strings.atlassian}</option>
           <option value="hourly">{strings.hourly}</option>
+          <option value="woocommerce">{strings.woocommerce}</option>
         </select>
       </div>
 
