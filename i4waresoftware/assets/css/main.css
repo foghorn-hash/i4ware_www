@@ -232,12 +232,18 @@ nav {
   align-items: center;
   gap: 2rem;
   transform: scale(0);
-  transition: transform .3s ease;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: transform .3s ease, opacity .3s ease;
   z-index: 2000;
 }
 
 .overlay.open {
   transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 
 .overlay a {
