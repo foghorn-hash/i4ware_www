@@ -22,22 +22,34 @@ let strings = new LocalizedStrings({
     error:"Failed to fetch transactions. Please try again.",
     loading:"Loading...",
     name:"Vendor Amount",
+    allTransactions: "All Transactions",
+    saleDate: "Sale Date",
+    revenueSource: "Revenue Source",
+    vendorAmount: "Vendor Amount"
   },
   fi: {
     title: "Tapahtumat pylväskaavion kanssa",
     error: "Tapahtumien hakeminen epäonnistui. Yritä uudelleen.",
     loading: "Ladataan...",
-    name: "Toimittajan määrä"
+    name: "Toimittajan määrä",
+    allTransactions: "Kaikki tapahtumat",
+    saleDate: "Myyntipäivä",
+    revenueSource: "Tulojen lähde",
+    vendorAmount: "Toimittajan määrä"
   },
   sv: {
     title: "Transaktioner med stapeldiagram",
     error: "Misslyckades med att hämta transaktioner. Försök igen.",
     loading: "Laddar...",
-    name: "Leverantörens belopp"
+    name: "Leverantörens belopp",
+    allTransactions: "Alla transaktioner",
+    saleDate: "Försäljningsdatum",
+    revenueSource: "Inkomstkälla",
+    vendorAmount: "Leverantörens belopp"
   }
- });
+});
 
- const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
       <div className="custom-tooltip">
@@ -52,9 +64,7 @@ let strings = new LocalizedStrings({
 };
 
 const TransactionsTableAll = ({ revenueSource }) => {
-  const [transactions, setTransactions] = useState([]);
   const [transactionsMerged, setTransactionsMerged] = useState([]);
-  const [chartData, setChartData] = useState([]);
   const [chartDataMerged, setChartDataMerged] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -75,21 +85,21 @@ const TransactionsTableAll = ({ revenueSource }) => {
 
   useEffect(() => {
     fetchMergedTransactions();
-  }, [revenueSource]); // Add revenueSource as dependency
+  }, [revenueSource]);
 
   const fetchMergedTransactions = async () => {
     try {
-      setLoading(true); setError(null);
+      setLoading(true);
+      setError(null);
       const response = await axios.get(
         `${API_BASE_URL}/api/reports/merged-sales?source=${revenueSource}`
-      ); // Pass revenueSource to backend
-      const data = response.data.root;
+      );
+      const data = response.data.root || [];
 
-      // Prepare chart data
       const formattedChartData = data.map((item) => ({
         saleDate: item.saleDate,
-        vendorAmount: parseFloat(item.vendorAmount),
-        balanceVendor: parseFloat(item.balanceVendor),
+        vendorAmount: parseFloat(item.vendorAmount) || 0,
+        balanceVendor: parseFloat(item.balanceVendor) || 0,
       }));
 
       setTransactionsMerged(data);
@@ -102,17 +112,21 @@ const TransactionsTableAll = ({ revenueSource }) => {
   };
 
   const groupedByDay = Object.values(
-  chartDataMerged.reduce((acc, row) => {
-    const key = row.saleDate.slice(0, 10);           // daily bucket
-    const amount = typeof row.vendorAmount === "number"
-      ? row.vendorAmount
-      : parseFloat(String(row.vendorAmount).replace(/[^\d.-]/g, "")) || 0; // strip € and commas
+    chartDataMerged.reduce((acc, row) => {
+      const key = row.saleDate?.slice(0, 10) || "";
+      const amount = typeof row.vendorAmount === "number"
+        ? row.vendorAmount
+        : parseFloat(String(row.vendorAmount).replace(/[^\d.-]/g, "")) || 0;
 
-    if (!acc[key]) acc[key] = { saleDate: key, vendorAmount: 0 };
-    acc[key].vendorAmount += amount;                  // sum (keeps negatives/refunds)
-    return acc;
-  }, {})
-).sort((a, b) => new Date(a.saleDate) - new Date(b.saleDate));
+      if (!acc[key]) acc[key] = { saleDate: key, vendorAmount: 0 };
+      acc[key].vendorAmount += amount;
+      return acc;
+    }, {})
+  ).sort((a, b) => new Date(a.saleDate) - new Date(b.saleDate));
+
+  const tableRows = transactionsMerged
+    .slice()
+    .sort((a, b) => new Date(a.saleDate) - new Date(b.saleDate));
 
   if (loading) return <div className="loading-screen"><img src={LOADING} alt={strings.loading} /></div>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -120,8 +134,7 @@ const TransactionsTableAll = ({ revenueSource }) => {
   return (
     <div>
       <h2 className="calculator-title">{strings.title}</h2>
-      {/* Bar Chart */}
-      <ResponsiveContainer width="100%" height={620}>
+      <ResponsiveContainer width="100%" height={420}>
         <BarChart
           data={groupedByDay}
           margin={{ top: 16, right: 24, left: 16, bottom: 120 }}
@@ -137,12 +150,12 @@ const TransactionsTableAll = ({ revenueSource }) => {
             tickMargin={10}
             tick={{ fontSize: 12 }}
             allowDuplicatedCategory={false}
-            tickFormatter={(d) => d}  // shows full YYYY-MM-DD
+            tickFormatter={(d) => d}
             height={70}
           />
           <YAxis />
           <Tooltip
-            formatter={(v) => [`${Number(v).toFixed(2)} €`, strings.name]} // add € only here
+            formatter={(v) => [`${Number(v).toFixed(2)} €`, strings.name]}
             labelFormatter={(d) => d}
             content={<CustomTooltip />}
           />
@@ -150,6 +163,39 @@ const TransactionsTableAll = ({ revenueSource }) => {
           <Brush dataKey="saleDate" height={24} travellerWidth={8} />
         </BarChart>
       </ResponsiveContainer>
+
+      {/*
+        Saved for future use: transactions table (commented out)
+        <div style={{ marginTop: 24 }}>
+          <h3 className="calculator-title">{strings.allTransactions}</h3>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th className="text-start">{strings.saleDate}</th>
+                <th className="text-start">{strings.revenueSource}</th>
+                <th className="text-start">{strings.vendorAmount}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tableRows.map((row, index) => {
+                const saleDate = row.saleDate?.slice(0, 10) || row.saleDate || "";
+                const sourceLabel = row.source || row.revenueSource || revenueSource || "";
+                const amount = typeof row.vendorAmount === "number"
+                  ? row.vendorAmount
+                  : parseFloat(String(row.vendorAmount).replace(/[^\d.-]/g, "")) || 0;
+
+                return (
+                  <tr key={`${saleDate}-${index}`}>
+                    <td className="text-start">{saleDate}</td>
+                    <td className="text-start">{sourceLabel}</td>
+                    <td className="text-start">{amount.toFixed(2)} €</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        </div>
+      */}
     </div>
   );
 };

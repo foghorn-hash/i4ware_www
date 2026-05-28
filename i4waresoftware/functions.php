@@ -6,6 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
+require_once( get_template_directory() . '/google-ai-shortcode.php' );
+
 // Theme setup
 function i4waresoftware_setup() {
     // Add support for title tag

@@ -45,13 +45,19 @@ class WooCommerce_REST_Orders_Server {
                     'required' => false,
                     'type' => 'string',
                     'description' => 'Order status (e.g., completed, processing, any)',
-                    'default' => 'any',
+                    'default' => 'completed',
                 ),
                 'limit' => array(
                     'required' => false,
                     'type' => 'integer',
                     'description' => 'Number of orders to retrieve',
                     'default' => 100,
+                ),
+                'compact' => array(
+                    'required' => false,
+                    'type' => 'boolean',
+                    'description' => 'If true, return only date and vendor balance to speed up response',
+                    'default' => false,
                 ),
                 'date_from' => array(
                     'required' => false,
@@ -94,7 +100,11 @@ class WooCommerce_REST_Orders_Server {
      */
     public function get_orders($request) {
         $status = $request->get_param('status');
+        if (empty($status) || $status === 'any') {
+            $status = 'completed';
+        }
         $limit = $request->get_param('limit');
+        $compact = filter_var($request->get_param('compact'), FILTER_VALIDATE_BOOLEAN);
         $date_from = $request->get_param('date_from');
         $date_to = $request->get_param('date_to');
         
@@ -115,13 +125,60 @@ class WooCommerce_REST_Orders_Server {
             }
         }
         
+        // Compact mode: query posts directly and return only date + vendor balance (faster)
+        if ($compact) {
+            // Simple transient cache to speed repeated identical requests briefly
+            $cache_key = 'woo_rest_compact_' . md5(serialize(array($status, $limit, $date_from, $date_to)));
+            $cached = get_transient($cache_key);
+            if ($cached !== false) {
+                return rest_ensure_response($cached);
+            }
+
+            $query_args = array(
+                'post_type' => 'shop_order',
+                'posts_per_page' => $limit,
+                'post_status' => ($status === 'any' || empty($status)) ? 'any' : 'wc-' . $status,
+                'fields' => 'ids',
+            );
+
+            $date_query = array();
+            if ($date_from && $date_to) {
+                $date_query[] = array('after' => $date_from, 'before' => $date_to, 'inclusive' => true);
+            } elseif ($date_from) {
+                $date_query[] = array('after' => $date_from, 'inclusive' => true);
+            } elseif ($date_to) {
+                $date_query[] = array('before' => $date_to, 'inclusive' => true);
+            }
+            if (!empty($date_query)) $query_args['date_query'] = $date_query;
+
+            $posts = get_posts($query_args);
+            $orders_data = array();
+            foreach ($posts as $post_id) {
+                $total = get_post_meta($post_id, '_order_total', true);
+                // fallback to 0 if empty
+                $amount = $total !== '' ? floatval($total) : 0.0;
+                $date = get_post_field('post_date', $post_id);
+                $orders_data[] = array(
+                    'saleDate' => date('Y-m-d', strtotime($date)),
+                    'vendorAmount' => number_format($amount, 2, '.', ''),
+                    'vendorAmountFormatted' => wc_price($amount),
+                );
+            }
+
+            $resp = array('success' => true, 'count' => count($orders_data), 'orders' => $orders_data);
+            // cache for short time (30 seconds)
+            set_transient($cache_key, $resp, 30);
+            return rest_ensure_response($resp);
+        }
+
+        // Full mode (legacy) — slower due to creating WC_Order objects and formatting
         $orders = wc_get_orders($args);
         
         $orders_data = array();
         foreach ($orders as $order) {
             $orders_data[] = $this->format_order_data($order);
         }
-        
+
         return rest_ensure_response(array(
             'success' => true,
             'count' => count($orders_data),

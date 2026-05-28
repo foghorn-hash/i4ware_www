@@ -24,7 +24,7 @@ class AtlassianSalesController extends Controller
     public function getYearlySalesDistribution(Request $request)
     {
         try {
-            $source = $request->query('source', 'all'); // 'all', 'kela', 'hourly'
+            $source = $request->query('source', 'all'); // 'all', 'kela', 'hourly', 'grandparents', 'student'
 
             $query = DB::table('invoices');
 
@@ -32,18 +32,32 @@ class AtlassianSalesController extends Controller
             if ($source === 'kela') {
                 $query->whereIn('customer_id', [1, 7]);
             } elseif ($source === 'hourly') {
-                $query->whereNotIn('customer_id', [1, 7, 8]); // Or use whereNotIn for more complex logic
+                // Hourly invoicing: exclude Kela, grandparents, and student invoices (legacy ids)
+                $query->whereNotIn('customer_id', [1, 7, 85, 86]);
             } elseif ($source === 'grandparents') {
-                $query->where('customer_id', 8); // Replace 2 with the actual customer_id for Grandparents' Inheritance
+                $query->where('customer_id', 86); // Grandparents source (legacy id)
+            } elseif ($source === 'student') {
+                $query->where('customer_id', 85); // Student source (legacy id)
+            }
+
+            // Build WHERE fragment for the subquery based on source
+            $subWhere = '';
+            if ($source === 'kela') {
+                $subWhere = ' WHERE customer_id IN (1, 7)';
+            } elseif ($source === 'hourly') {
+                // Hourly invoicing: exclude Kela, grandparents, and student invoices in subquery
+                    $subWhere = ' WHERE customer_id NOT IN (1, 7, 85, 86)';
+            } elseif ($source === 'grandparents') {
+                $subWhere = ' WHERE customer_id = 86';
+            } elseif ($source === 'student') {
+                $subWhere = ' WHERE customer_id = 85';
             }
 
             $salesData = $query
                 ->select(
                     DB::raw('YEAR(due_date) as year'),
                     DB::raw('SUM(total_including_vat) as total_sales'),
-                    DB::raw('(SUM(total_including_vat) / (SELECT SUM(total_including_vat) FROM invoices' . 
-                        ($source === 'kela' ? ' WHERE customer_id = 1' : ($source === 'hourly' ? ' WHERE customer_id != 1' : '')) . 
-                        ') * 100) as sales_percentage')
+                    DB::raw('(SUM(total_including_vat) / (SELECT SUM(total_including_vat) FROM invoices' . $subWhere . ') * 100) as sales_percentage')
                 )
                 ->groupBy(DB::raw('YEAR(due_date)'))
                 ->orderBy('year', 'asc')
@@ -102,7 +116,7 @@ class AtlassianSalesController extends Controller
     {
         try {
             $year   = (int) $request->query('year', now()->year);
-            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly', 'grandparents'
+            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly', 'grandparents', 'student'
 
             // --- Fetch Atlassian sales (if requested) ---
             $normalizedAtlassianSales = [];
@@ -112,6 +126,7 @@ class AtlassianSalesController extends Controller
                     return [
                         'saleDate'     => $tx['saleDate'],
                         'vendorAmount' => (float) $tx['vendorAmount'],
+                        'revenueSource' => 'Atlassian Pty Ltd',
                     ];
                 }, $atlassianSales['root'] ?? []);
             }
@@ -124,25 +139,45 @@ class AtlassianSalesController extends Controller
                     return [
                         'saleDate'     => $tx['saleDate'],
                         'vendorAmount' => (float) $tx['vendorAmount'],
+                        'revenueSource' => 'WooCommerce',
                     ];
                 }, $wooSales['root'] ?? []);
             }
 
             // --- Fetch local sales (if requested) ---
             $localSales = collect();
-            if (in_array($source, ['all', 'kela', 'hourly', 'grandparents'], true)) {
-                $query = Invoice::orderBy('due_date');
+            if (in_array($source, ['all', 'kela', 'hourly', 'grandparents', 'student'], true)) {
+                $query = Invoice::with('customer')->orderBy('due_date');
                 if ($source === 'kela') {
                     $query->whereIn('customer_id', [1, 7]);
                 } elseif ($source === 'hourly') {
-                    $query->whereNotIn('customer_id', [1, 7, 8]);
+                    $query->whereNotIn('customer_id', [1, 7, 85, 86]);
                 } elseif ($source === 'grandparents') {
-                    $query->where('customer_id', 8);
+                    $query->where('customer_id', 86);
+                } elseif ($source === 'student') {
+                    $query->where('customer_id', 85);
                 }
                 $localSales = $query->get()->map(function ($invoice) {
+                    $revenueSource = 'Confidential (Hourly)';
+                    if ($invoice->customer_id == 85) {
+                        $revenueSource = 'KELA/Opintotuki';
+                    } elseif ($invoice->customer_id == 86) {
+                        $revenueSource = 'Perintö';
+                    } elseif ($invoice->customer_id == 1) {
+                        $revenueSource = 'KELA/Varma';
+                    } elseif ($invoice->customer_id == 7) {
+                        $revenueSource = 'VARMA';
+                    } elseif ($invoice->customer && !empty(trim((string)$invoice->customer->name))) {
+                        $nameLower = strtolower(trim((string)$invoice->customer->name));
+                        if ($nameLower === 'atlassian pty ltd') {
+                            $revenueSource = 'Atlassian Pty Ltd';
+                        }
+                    }
+
                     return [
                         'saleDate'     => $invoice->due_date,                 // date/datetime
                         'vendorAmount' => (float) $invoice->total_including_vat,
+                        'revenueSource'=> $revenueSource,
                     ];
                 });
             }
@@ -155,7 +190,7 @@ class AtlassianSalesController extends Controller
                     try {
                         $d = CarbonImmutable::parse($row['saleDate']);
                         return $d->year === $year;
-                    } catch (\Throwable $e) {
+                    } catch (\Exception $e) {
                         return false; // skip bad dates
                     }
                 })
@@ -196,11 +231,11 @@ class AtlassianSalesController extends Controller
                 'root'      => $months->values(), // 12 items Jan..Dec
             ], 200);
 
-        } catch (\Throwable $e) {
+        } catch (\Exception $e) {
             return response()->json([
-                'status'  => 'error',
-                'message' => 'Failed to fetch merged monthly income.',
-                'error'   => $e->getMessage(),
+                'status' => 'error',
+                'message' => 'Failed to fetch monthly income data.',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -208,7 +243,7 @@ class AtlassianSalesController extends Controller
     public function getMergedSales(Request $request)
     {
         try {
-            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly'
+            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly', 'grandparents', 'student'
 
             // Fetch Atlassian sales if needed
             $atlassianSales = [];
@@ -218,6 +253,7 @@ class AtlassianSalesController extends Controller
                     return [
                         'saleDate' => $transaction['saleDate'],
                         'vendorAmount' => $transaction['vendorAmount'],
+                        'revenueSource' => 'Atlassian Pty Ltd',
                     ];
                 }, $atlassianSales['root']);
             } else {
@@ -232,25 +268,45 @@ class AtlassianSalesController extends Controller
                     return [
                         'saleDate' => $transaction['saleDate'],
                         'vendorAmount' => $transaction['vendorAmount'],
+                        'revenueSource' => 'WooCommerce',
                     ];
                 }, $wooSales['root'] ?? []);
             }
 
             // Fetch local sales (from invoices) if needed
             $localSales = collect();
-            if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents') {
-                $query = Invoice::orderBy('due_date');
+            if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents' || $source === 'student') {
+                $query = Invoice::with('customer')->orderBy('due_date');
                 if ($source === 'kela') {
                     $query->whereIn('customer_id', [1, 7]);
                 } elseif ($source === 'hourly') {
-                    $query->whereNotIn('customer_id', [1, 7, 8]); // Or use whereNotIn for more complex logic
+                    $query->whereNotIn('customer_id', [1, 7, 85, 86]);
                 } elseif ($source === 'grandparents') {
-                    $query->where('customer_id', 8); // Replace 2 with the actual customer_id for Grandparents' Inheritance
+                    $query->where('customer_id', 86); // grandparent source
+                } elseif ($source === 'student') {
+                    $query->where('customer_id', 85); // student source
                 }
                 $localSales = $query->get()->map(function ($invoice) {
+                    $revenueSource = 'Confidential (Hourly)';
+                    if ($invoice->customer_id == 85) {
+                        $revenueSource = 'KELA/Opintotuki';
+                    } elseif ($invoice->customer_id == 86) {
+                        $revenueSource = 'Perintö';
+                    } elseif ($invoice->customer_id == 1) {
+                        $revenueSource = 'KELA/Varma';
+                    } elseif ($invoice->customer_id == 7) {
+                        $revenueSource = 'VARMA';
+                    } elseif ($invoice->customer && !empty(trim((string)$invoice->customer->name))) {
+                        $nameLower = strtolower(trim((string)$invoice->customer->name));
+                        if ($nameLower === 'atlassian pty ltd') {
+                            $revenueSource = 'Atlassian Pty Ltd';
+                        }
+                    }
+
                     return [
                         'saleDate' => $invoice->due_date,
                         'vendorAmount' => $invoice->total_including_vat,
+                        'revenueSource' => $revenueSource,
                     ];
                 });
             }
@@ -322,7 +378,7 @@ class AtlassianSalesController extends Controller
 
     public function getSalesReport(Request $request)
     {
-        $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly'
+            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly', 'grandparents', 'student'
 
         // Configurations
         $vendorId = env('ATLASSIAN_VENDOR_ID');
@@ -380,14 +436,16 @@ class AtlassianSalesController extends Controller
         }
 
         // Fetch local sales data if needed
-        if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents') {
+            if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents' || $source === 'student') {
             $query = Invoice::orderBy('due_date');
             if ($source === 'kela') {
                 $query->whereIn('customer_id', [1, 7]);
-            } elseif ($source === 'hourly') {
-                $query->whereNotIn('customer_id', [1, 7, 8]); // Or use whereNotIn for more complex logic
-            } elseif ($source === 'grandparents') {
-                $query->where('customer_id', 8); // Replace 2 with the actual customer_id for Grandparents' Inheritance
+                } elseif ($source === 'hourly') {
+                    $query->whereNotIn('customer_id', [1, 7, 85, 86]); // Exclude Kela, grandparents, and student invoices
+                } elseif ($source === 'grandparents') {
+                    $query->where('customer_id', 86); // Grandparents source
+                } elseif ($source === 'student') {
+                    $query->where('customer_id', 85); // Student source
             }
             $localSales = $query->get()->map(function ($invoice) {
                 return [
@@ -454,6 +512,7 @@ class AtlassianSalesController extends Controller
             $json['root'][$i] = [
                 'vendorAmount' => $vendorAmount,
                 'saleDate' => $transaction['purchaseDetails']['saleDate'] ?? null,
+                'revenueSource' => 'Atlassian Pty Ltd',
             ];
         }
 
@@ -467,7 +526,7 @@ class AtlassianSalesController extends Controller
         $password = env('ATLASSIAN_PASSWORD');
 
         try {
-            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly'
+            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly', 'grandparents', 'student'
 
             $salesByDate = [];
             $cumulativeVendorBalance = 0;
@@ -509,14 +568,16 @@ class AtlassianSalesController extends Controller
             }
 
             // Process local sales if needed
-            if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents') {
+            if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents' || $source === 'student') {
                 $query = Invoice::orderBy('due_date');
                 if ($source === 'kela') {
                     $query->whereIn('customer_id', [1, 7]);
                 } elseif ($source === 'hourly') {
-                    $query->whereNotIn('customer_id', [1, 7, 8]); // Or use whereNotIn for more complex logic
+                    $query->whereNotIn('customer_id', [1, 7, 85, 86]);
                 } elseif ($source === 'grandparents') {
-                    $query->where('customer_id', 8); // Replace 2 with the actual customer_id for Grandparents' Inheritance
+                    $query->where('customer_id', 86); // Grandparents source
+                } elseif ($source === 'student') {
+                    $query->where('customer_id', 85); // Student source
                 }
                 $localSales = $query->get()->map(function ($invoice) {
                     return [
@@ -554,7 +615,7 @@ class AtlassianSalesController extends Controller
 
         /**
      * GET /api/reports/income-by-month-all-years?source=all
-     * source: 'all' | 'atlassian' | 'kela' | 'hourly' | 'grandparents'
+    * source: 'all' | 'atlassian' | 'kela' | 'hourly' | 'grandparents' | 'student'
      *
      * Response:
      * {
@@ -572,7 +633,7 @@ class AtlassianSalesController extends Controller
     {
         try {
             $year   = (int) $request->query('year', now()->year);
-            $source = $request->query('source', 'all');
+            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly', 'grandparents', 'student'
 
             // --- Atlassian (if requested) ---
             $atlRows = [];
@@ -586,7 +647,6 @@ class AtlassianSalesController extends Controller
                     ];
                 }
             }
-
             // --- WooCommerce (if requested) ---
             $wooRows = [];
             if ($source === 'all' || $source === 'woocommerce') {
@@ -601,20 +661,40 @@ class AtlassianSalesController extends Controller
 
             // --- Local invoices (if requested) ---
             $localRows = collect();
-            if (in_array($source, ['all','kela','hourly','grandparents'], true)) {
-                $q = Invoice::query()->orderBy('due_date');
+            if (in_array($source, ['all','kela','hourly','grandparents','student'], true)) {
+                $q = Invoice::with('customer')->orderBy('due_date');
                 if ($source === 'kela') {
                     $q->whereIn('customer_id', [1, 7]);
                 } elseif ($source === 'hourly') {
-                    $q->whereNotIn('customer_id', [1, 7, 8]);
+                    $q->whereNotIn('customer_id', [1, 7, 85, 86]);
                 } elseif ($source === 'grandparents') {
-                    $q->where('customer_id', 8);
+                    $q->where('customer_id', 86);
+                } elseif ($source === 'student') {
+                    $q->where('customer_id', 85);
                 }
 
-                $localRows = $q->get()->map(fn($inv) => [
-                    'saleDate'     => $inv->due_date,
-                    'vendorAmount' => (float) $inv->total_including_vat,
-                ]);
+                $localRows = $q->get()->map(function($inv) {
+                    $revenueSource = 'Confidential (Hourly)';
+                    if ($inv->customer_id == 85) {
+                        $revenueSource = 'KELA/Opintotuki';
+                    } elseif ($inv->customer_id == 86) {
+                        $revenueSource = 'Perintö';
+                    } elseif ($inv->customer_id == 1) {
+                        $revenueSource = 'KELA/Varma';
+                    } elseif ($inv->customer_id == 7) {
+                        $revenueSource = 'VARMA';
+                    } elseif ($inv->customer && !empty(trim((string)$inv->customer->name))) {
+                        $nameLower = strtolower(trim((string)$inv->customer->name));
+                        if ($nameLower === 'atlassian pty ltd') {
+                            $revenueSource = 'Atlassian Pty Ltd';
+                        }
+                    }
+                    return [
+                        'saleDate'     => $inv->due_date,
+                        'vendorAmount' => (float) $inv->total_including_vat,
+                        'revenueSource'=> $revenueSource,
+                    ];
+                });
             }
 
             // --- Merge + keep only requested year ---
@@ -670,16 +750,18 @@ class AtlassianSalesController extends Controller
     public function getIncomeYears(Request $request)
     {
         try {
-            $source = $request->query('source', 'all');
+            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly', 'grandparents', 'student'
 
             // ---- Invoices (local DB) ----
             $invoiceQuery = Invoice::query();
             if ($source === 'kela') {
                 $invoiceQuery->whereIn('customer_id', [1, 7]);
             } elseif ($source === 'hourly') {
-                $invoiceQuery->whereNotIn('customer_id', [1, 7, 8]);
+                $invoiceQuery->whereNotIn('customer_id', [1, 7, 85, 86]);
             } elseif ($source === 'grandparents') {
-                $invoiceQuery->where('customer_id', 8);
+                $invoiceQuery->where('customer_id', 86);
+            } elseif ($source === 'student') {
+                $invoiceQuery->where('customer_id', 85);
             }
             // DISTINCT years from due_date
             $invoiceYears = $invoiceQuery
@@ -770,6 +852,7 @@ class AtlassianSalesController extends Controller
                     $json['root'][] = [
                         'vendorAmount' => $vendorAmount,
                         'saleDate' => $saleDate,
+                        'revenueSource' => 'WooCommerce',
                     ];
                 }
             }
