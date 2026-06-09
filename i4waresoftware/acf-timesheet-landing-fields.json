@@ -1,0 +1,1003 @@
+[
+  {
+    "key": "group_tfj_landing",
+    "title": "Timesheet Landing Page Fields",
+    "fields": [
+      {
+        "key": "field_tfj_hero_tab",
+        "label": "Hero Section",
+        "name": "",
+        "type": "tab",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "placement": "top",
+        "endpoint": 0
+      },
+      {
+        "key": "field_tfj_hero_badge",
+        "label": "Hero Badge",
+        "name": "tfj_hero_badge",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_hero_title",
+        "label": "Hero Title",
+        "name": "tfj_hero_title",
+        "type": "text",
+        "instructions": "Supports HTML tags like <span> for colored gradient styling.",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_hero_lead",
+        "label": "Hero Lead Paragraph",
+        "name": "tfj_hero_lead",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "maxlength": "",
+        "rows": 3,
+        "new_lines": ""
+      },
+      {
+        "key": "field_tfj_btn_1_text",
+        "label": "Button 1 Text",
+        "name": "tfj_btn_1_text",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_btn_1_url",
+        "label": "Button 1 URL",
+        "name": "tfj_btn_1_url",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_btn_2_text",
+        "label": "Button 2 Text",
+        "name": "tfj_btn_2_text",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_btn_2_url",
+        "label": "Button 2 URL",
+        "name": "tfj_btn_2_url",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_trust_tab",
+        "label": "Trust Bar",
+        "name": "",
+        "type": "tab",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "placement": "top",
+        "endpoint": 0
+      },
+      {
+        "key": "field_tfj_trust_bar_1",
+        "label": "Trust Item 1",
+        "name": "tfj_trust_bar_1",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_trust_bar_2",
+        "label": "Trust Item 2",
+        "name": "tfj_trust_bar_2",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_trust_bar_3",
+        "label": "Trust Item 3",
+        "name": "tfj_trust_bar_3",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_trust_bar_4",
+        "label": "Trust Item 4",
+        "name": "tfj_trust_bar_4",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_benefits_tab",
+        "label": "Key Benefits",
+        "name": "",
+        "type": "tab",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "placement": "top",
+        "endpoint": 0
+      },
+      {
+        "key": "field_tfj_benefits_title",
+        "label": "Section Title",
+        "name": "tfj_benefits_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_benefits_subtitle",
+        "label": "Section Subtitle",
+        "name": "tfj_benefits_subtitle",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "default_value": "",
+        "placeholder": "",
+        "prepend": "",
+        "append": "",
+        "maxlength": ""
+      },
+      {
+        "key": "field_tfj_benefit_1_title",
+        "label": "Benefit 1 Title",
+        "name": "tfj_benefit_1_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_benefit_1_desc",
+        "label": "Benefit 1 Description",
+        "name": "tfj_benefit_1_desc",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_benefit_2_title",
+        "label": "Benefit 2 Title",
+        "name": "tfj_benefit_2_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_benefit_2_desc",
+        "label": "Benefit 2 Description",
+        "name": "tfj_benefit_2_desc",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_benefit_3_title",
+        "label": "Benefit 3 Title",
+        "name": "tfj_benefit_3_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_benefit_3_desc",
+        "label": "Benefit 3 Description",
+        "name": "tfj_benefit_3_desc",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_benefit_4_title",
+        "label": "Benefit 4 Title",
+        "name": "tfj_benefit_4_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_benefit_4_desc",
+        "label": "Benefit 4 Description",
+        "name": "tfj_benefit_4_desc",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_benefit_5_title",
+        "label": "Benefit 5 Title",
+        "name": "tfj_benefit_5_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_benefit_5_desc",
+        "label": "Benefit 5 Description",
+        "name": "tfj_benefit_5_desc",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_benefit_6_title",
+        "label": "Benefit 6 Title",
+        "name": "tfj_benefit_6_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_benefit_6_desc",
+        "label": "Benefit 6 Description",
+        "name": "tfj_benefit_6_desc",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_shortcuts_tab",
+        "label": "Shortcuts",
+        "name": "",
+        "type": "tab",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "placement": "top",
+        "endpoint": 0
+      },
+      {
+        "key": "field_tfj_shortcuts_badge",
+        "label": "Badge Text",
+        "name": "tfj_shortcuts_badge",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_shortcuts_title",
+        "label": "Title",
+        "name": "tfj_shortcuts_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_shortcuts_lead",
+        "label": "Description Paragraph",
+        "name": "tfj_shortcuts_lead",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "rows": 3
+      },
+      {
+        "key": "field_tfj_shortcuts_accent",
+        "label": "Accent Text (inside badge)",
+        "name": "tfj_shortcuts_accent",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_shortcut_1_key",
+        "label": "Shortcut 1 Key Command",
+        "name": "tfj_shortcut_1_key",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_shortcut_1_action",
+        "label": "Shortcut 1 Action / Operation",
+        "name": "tfj_shortcut_1_action",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_shortcut_2_key",
+        "label": "Shortcut 2 Key Command",
+        "name": "tfj_shortcut_2_key",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_shortcut_2_action",
+        "label": "Shortcut 2 Action / Operation",
+        "name": "tfj_shortcut_2_action",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_shortcut_3_key",
+        "label": "Shortcut 3 Key Command",
+        "name": "tfj_shortcut_3_key",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_shortcut_3_action",
+        "label": "Shortcut 3 Action / Operation",
+        "name": "tfj_shortcut_3_action",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_shortcut_4_key",
+        "label": "Shortcut 4 Key Command",
+        "name": "tfj_shortcut_4_key",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_shortcut_4_action",
+        "label": "Shortcut 4 Action / Operation",
+        "name": "tfj_shortcut_4_action",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_shortcut_5_key",
+        "label": "Shortcut 5 Key Command",
+        "name": "tfj_shortcut_5_key",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_shortcut_5_action",
+        "label": "Shortcut 5 Action / Operation",
+        "name": "tfj_shortcut_5_action",
+        "type": "text",
+        "wrapper": { "width": "50" }
+      },
+      {
+        "key": "field_tfj_video_tab",
+        "label": "Video Demos",
+        "name": "",
+        "type": "tab",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "placement": "top",
+        "endpoint": 0
+      },
+      {
+        "key": "field_tfj_video_title",
+        "label": "Section Title",
+        "name": "tfj_video_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_video_desc",
+        "label": "Section Description",
+        "name": "tfj_video_desc",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_video_1_title",
+        "label": "Video 1 Title",
+        "name": "tfj_video_1_title",
+        "type": "text",
+        "wrapper": { "width": "33" }
+      },
+      {
+        "key": "field_tfj_video_1_lang",
+        "label": "Video 1 Language Tag",
+        "name": "tfj_video_1_lang",
+        "type": "text",
+        "wrapper": { "width": "33" }
+      },
+      {
+        "key": "field_tfj_video_1_id",
+        "label": "Video 1 YouTube ID",
+        "name": "tfj_video_1_id",
+        "type": "text",
+        "wrapper": { "width": "33" }
+      },
+      {
+        "key": "field_tfj_video_1_desc",
+        "label": "Video 1 Description Text",
+        "name": "tfj_video_1_desc",
+        "type": "textarea",
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_video_2_title",
+        "label": "Video 2 Title",
+        "name": "tfj_video_2_title",
+        "type": "text",
+        "wrapper": { "width": "33" }
+      },
+      {
+        "key": "field_tfj_video_2_lang",
+        "label": "Video 2 Language Tag",
+        "name": "tfj_video_2_lang",
+        "type": "text",
+        "wrapper": { "width": "33" }
+      },
+      {
+        "key": "field_tfj_video_2_id",
+        "label": "Video 2 YouTube ID",
+        "name": "tfj_video_2_id",
+        "type": "text",
+        "wrapper": { "width": "33" }
+      },
+      {
+        "key": "field_tfj_video_2_desc",
+        "label": "Video 2 Description Text",
+        "name": "tfj_video_2_desc",
+        "type": "textarea",
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_gallery_tab",
+        "label": "Screenshots Gallery",
+        "name": "",
+        "type": "tab",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "placement": "top",
+        "endpoint": 0
+      },
+      {
+        "key": "field_tfj_gallery_title",
+        "label": "Section Title",
+        "name": "tfj_gallery_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_gallery_desc",
+        "label": "Section Description",
+        "name": "tfj_gallery_desc",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        },
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_gallery_tab_all",
+        "label": "\"All Features\" Tab Label",
+        "name": "tfj_gallery_tab_all",
+        "type": "text",
+        "wrapper": { "width": "25" }
+      },
+      {
+        "key": "field_tfj_gallery_tab_dev",
+        "label": "\"For Developers\" Tab Label",
+        "name": "tfj_gallery_tab_dev",
+        "type": "text",
+        "wrapper": { "width": "25" }
+      },
+      {
+        "key": "field_tfj_gallery_tab_mgr",
+        "label": "\"For Managers\" Tab Label",
+        "name": "tfj_gallery_tab_mgr",
+        "type": "text",
+        "wrapper": { "width": "25" }
+      },
+      {
+        "key": "field_tfj_gallery_tab_billing",
+        "label": "\"Billing & JSM\" Tab Label",
+        "name": "tfj_gallery_tab_billing",
+        "type": "text",
+        "wrapper": { "width": "25" }
+      },
+
+      {
+        "key": "field_tfj_cta_tab",
+        "label": "Bottom CTA Box",
+        "name": "",
+        "type": "tab",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "placement": "top",
+        "endpoint": 0
+      },
+      {
+        "key": "field_tfj_cta_title",
+        "label": "CTA Title",
+        "name": "tfj_cta_title",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_cta_desc",
+        "label": "CTA Description Paragraph",
+        "name": "tfj_cta_desc",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "rows": 2
+      },
+      {
+        "key": "field_tfj_cta_btn_text",
+        "label": "CTA Button Text",
+        "name": "tfj_cta_btn_text",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_cta_btn_url",
+        "label": "CTA Button URL",
+        "name": "tfj_cta_btn_url",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "50",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_cta_trust_line",
+        "label": "CTA Subtext / Trust line",
+        "name": "tfj_cta_trust_line",
+        "type": "text",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        }
+      },
+      {
+        "key": "field_tfj_footer_tab",
+        "label": "Footer",
+        "name": "",
+        "type": "tab",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "placement": "top",
+        "endpoint": 0
+      },
+      {
+        "key": "field_tfj_footer_text",
+        "label": "Footer Copyright Bottom Text",
+        "name": "tfj_footer_text",
+        "type": "textarea",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "rows": 3
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "post_type",
+          "operator": "==",
+          "value": "page"
+        }
+      ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": ""
+  },
+  {
+    "key": "group_tfj_screenshot",
+    "title": "Timesheet Screenshot Settings",
+    "fields": [
+      {
+        "key": "field_tfj_screenshot_category",
+        "label": "Category",
+        "name": "tfj_screenshot_category",
+        "type": "select",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "choices": {
+          "dev": "For Developers",
+          "mgr": "For Managers",
+          "billing": "Billing & JSM"
+        },
+        "default_value": "dev",
+        "allow_null": 0,
+        "multiple": 0,
+        "ui": 0,
+        "return_format": "value",
+        "ajax": 0,
+        "placeholder": ""
+      },
+      {
+        "key": "field_tfj_screenshot_image",
+        "label": "Screenshot Image",
+        "name": "tfj_screenshot_image",
+        "type": "image",
+        "instructions": "",
+        "required": 0,
+        "conditional_logic": 0,
+        "wrapper": {
+          "width": "",
+          "class": "",
+          "id": ""
+        },
+        "return_format": "url",
+        "preview_size": "medium",
+        "library": "all",
+        "min_width": "",
+        "min_height": "",
+        "min_size": "",
+        "max_width": "",
+        "max_height": "",
+        "max_size": "",
+        "mime_types": ""
+      }
+    ],
+    "location": [
+      [
+        {
+          "param": "post_type",
+          "operator": "==",
+          "value": "tfj_screenshot"
+        }
+      ]
+    ],
+    "menu_order": 0,
+    "position": "side",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": ""
+  }
+]

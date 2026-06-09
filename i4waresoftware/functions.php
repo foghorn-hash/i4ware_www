@@ -7,6 +7,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 require_once( get_template_directory() . '/google-ai-shortcode.php' );
+require_once( get_template_directory() . '/jira-timesheet-shortcode.php' );
 
 // Theme setup
 function i4waresoftware_setup() {
@@ -1085,9 +1086,16 @@ function i4ware_saas_order_form_shortcode() {
     // Oletustuntihinta (muokkaa tarvittaessa)
     $hourly_rate = 95;
 
+    $current_lang = 'en';
+    if ( function_exists( 'pll_current_language' ) ) {
+        $current_lang = pll_current_language();
+    }
+    $terms_link = get_theme_mod("wp_quote_terms_link_$current_lang", '#');
+    $privacy_link = get_theme_mod("wp_quote_privacy_link_$current_lang", '#');
+
     ob_start();
     ?>
-    <form id="i4ware-saas-form" class="i4ware-saas-form">
+    <form id="i4ware-saas-form" class="i4ware-saas-form" data-hourly-rate="<?php echo (int) $hourly_rate; ?>">
         <?php wp_nonce_field('i4ware_saas_order', 'i4ware_nonce'); ?>
         <input type="hidden" name="action" value="i4ware_submit_order">
 
@@ -1222,7 +1230,8 @@ function i4ware_saas_order_form_shortcode() {
 
     <script>
 function i4wareCalcPrice(hours) {
-    const rate = <?php echo (int) $hourly_rate; ?>;
+    const form = document.getElementById('i4ware-saas-form');
+    const rate = parseInt(form.getAttribute('data-hourly-rate')) || 95;
     const totalEl = document.getElementById('i4ware-total-price');
 
     hours = parseFloat(hours) || 0;
@@ -1264,7 +1273,8 @@ jQuery(document).ready(function($){
                     messageEl.text(textSuccess);
 
                     const hours = parseInt(form.find('input[name="estimated_hours"]').val() || 0, 10);
-                    const totalValue = hours * <?php echo (int) $hourly_rate; ?>;
+                    const rate = parseInt(form.attr('data-hourly-rate')) || 95;
+                    const totalValue = hours * rate;
 
                     if (typeof window.i4wareTrackSaasOrderSuccess === 'function') {
                         window.i4wareTrackSaasOrderSuccess(totalValue);
