@@ -1393,11 +1393,11 @@ function tfj_register_screenshot_cpt_pll( $post_types ) {
 
 /**
  * One-time Content Importer Utility
- * Trigger by visiting: /wp-admin/?import_tfj_content=1&page_id=YOUR_PAGE_ID&lang=en_or_fi
+ * Trigger by visiting: /wp-admin/?import_tfj_content=1&page_id=YOUR_PAGE_ID&import_lang=en_or_fi
  */
 add_action( 'admin_init', 'tfj_import_landing_content_utility' );
 function tfj_import_landing_content_utility() {
-    if ( ! isset( $_GET['import_tfj_content'] ) || ! isset( $_GET['page_id'] ) || ! isset( $_GET['lang'] ) ) {
+    if ( ! isset( $_GET['import_tfj_content'] ) ) {
         return;
     }
 
@@ -1405,84 +1405,135 @@ function tfj_import_landing_content_utility() {
         wp_die( 'Unauthorized access.' );
     }
 
-    $page_id = (int) $_GET['page_id'];
-    $lang    = sanitize_key( $_GET['lang'] ); // 'en' or 'fi'
+    // 1. Debug Mode
+    if ( $_GET['import_tfj_content'] === 'debug' ) {
+        $pages = get_posts( array(
+            'post_type'      => 'page',
+            'posts_per_page' => -1,
+            'post_status'    => 'any',
+        ) );
 
-    if ( ! get_post( $page_id ) ) {
-        wp_die( 'Target page ID does not exist.' );
-    }
+        $output = '<h2>All Pages Debug Info</h2>';
+        $output .= '<p>This tool lists all pages, their statuses, and their Polylang language. Use this to locate your English page.</p>';
+        $output .= '<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">';
+        $output .= '<tr><th>ID</th><th>Title</th><th>Status</th><th>Polylang Language</th></tr>';
 
-    $json_path = get_template_directory() . '/timesheet-landing-content.json';
-    if ( ! file_exists( $json_path ) ) {
-        wp_die( 'Content JSON file not found at: ' . esc_html( $json_path ) );
-    }
-
-    $json_data = file_get_contents( $json_path );
-    $data = json_decode( $json_data, true );
-
-    if ( json_last_error() !== JSON_ERROR_NONE ) {
-        wp_die( 'Invalid JSON in: ' . esc_html( $json_path ) );
-    }
-
-    if ( ! isset( $data[$lang] ) ) {
-        wp_die( 'Language key "' . esc_html( $lang ) . '" not found in JSON data.' );
-    }
-
-    $count = 0;
-    foreach ( $data[$lang] as $key => $val ) {
-        // Skip static screenshots gallery fields since we use CPT screenshots
-        if ( strpos( $key, 'tfj_gallery_img_' ) === 0 ) {
-            continue;
+        foreach ( $pages as $p ) {
+            $p_lang = function_exists( 'pll_get_post_language' ) ? pll_get_post_language( $p->ID ) : 'Polylang not active / no lang';
+            if ( ! $p_lang ) {
+                $p_lang = '<span style="color:red; font-weight: bold;">None (Hidden from language lists!)</span>';
+            }
+            $output .= sprintf(
+                '<tr><td><strong>%d</strong></td><td>%s</td><td>%s</td><td>%s</td></tr>',
+                $p->ID,
+                esc_html( $p->post_title ),
+                esc_html( $p->post_status ),
+                $p_lang
+            );
         }
-        
-        // update_field works with either field key or field name
-        if ( function_exists( 'update_field' ) ) {
-            update_field( $key, $val, $page_id );
-            $count++;
+        $output .= '</table>';
+        $output .= '<p><strong>To fix a missing page language</strong>, visit: <code>/wp-admin/?import_tfj_content=set_lang&page_id=ID&import_lang=en</code></p>';
+        $output .= '<p><a href="' . esc_url( admin_url() ) . '">Return to Dashboard</a></p>';
+        wp_die( $output );
+    }
+
+    // 2. Set Language Mode (Recovery)
+    if ( $_GET['import_tfj_content'] === 'set_lang' ) {
+        if ( ! isset( $_GET['page_id'] ) || ! isset( $_GET['import_lang'] ) ) {
+            wp_die( 'Missing page_id or import_lang parameters.' );
+        }
+        $page_id = (int) $_GET['page_id'];
+        $lang    = sanitize_key( $_GET['import_lang'] );
+
+        if ( function_exists( 'pll_set_post_language' ) ) {
+            pll_set_post_language( $page_id, $lang );
+            wp_die( sprintf( 'Success! Force-set page ID %d language to "%s". It should now be visible under that language in your admin panel.', $page_id, esc_html( $lang ) ) );
+        } else {
+            wp_die( 'Polylang is not active.' );
         }
     }
 
-    // Auto-seed CPT screenshots for this language
-    for ( $i = 1; $i <= 8; $i++ ) {
-        $url_key = "tfj_gallery_img_{$i}_url";
-        $cap_key = "tfj_gallery_img_{$i}_caption";
-        $cat_key = "tfj_gallery_img_{$i}_category";
-        
-        if ( isset( $data[$lang][$url_key] ) ) {
-            $img_url  = $data[$lang][$url_key];
-            $caption  = isset( $data[$lang][$cap_key] ) ? $data[$lang][$cap_key] : '';
-            $category = isset( $data[$lang][$cat_key] ) ? $data[$lang][$cat_key] : 'dev';
+    // 3. Import Mode
+    if ( $_GET['import_tfj_content'] === '1' ) {
+        if ( ! isset( $_GET['page_id'] ) || ! isset( $_GET['import_lang'] ) ) {
+            wp_die( 'Missing page_id or import_lang parameters.' );
+        }
+
+        $page_id = (int) $_GET['page_id'];
+        $lang    = sanitize_key( $_GET['import_lang'] ); // 'en' or 'fi'
+
+        if ( ! get_post( $page_id ) ) {
+            wp_die( 'Target page ID does not exist.' );
+        }
+
+        $json_path = get_template_directory() . '/timesheet-landing-content.json';
+        if ( ! file_exists( $json_path ) ) {
+            wp_die( 'Content JSON file not found at: ' . esc_html( $json_path ) );
+        }
+
+        $json_data = file_get_contents( $json_path );
+        $data = json_decode( $json_data, true );
+
+        if ( json_last_error() !== JSON_ERROR_NONE ) {
+            wp_die( 'Invalid JSON in: ' . esc_html( $json_path ) );
+        }
+
+        if ( ! isset( $data[$lang] ) ) {
+            wp_die( 'Language key "' . esc_html( $lang ) . '" not found in JSON data.' );
+        }
+
+        $count = 0;
+        foreach ( $data[$lang] as $key => $val ) {
+            if ( strpos( $key, 'tfj_gallery_img_' ) === 0 ) {
+                continue;
+            }
+            if ( function_exists( 'update_field' ) ) {
+                update_field( $key, $val, $page_id );
+                $count++;
+            }
+        }
+
+        // Auto-seed CPT screenshots for this language
+        for ( $i = 1; $i <= 8; $i++ ) {
+            $url_key = "tfj_gallery_img_{$i}_url";
+            $cap_key = "tfj_gallery_img_{$i}_caption";
+            $cat_key = "tfj_gallery_img_{$i}_category";
             
-            // Check if this screenshot post already exists (by title and language) to avoid duplicates
-            $existing = get_posts( array(
-                'post_type'   => 'tfj_screenshot',
-                'title'       => $caption,
-                'post_status' => 'any',
-                'lang'        => $lang,
-                'suppress_filters' => false,
-            ) );
-            
-            if ( empty( $existing ) ) {
-                $post_id = wp_insert_post( array(
-                    'post_title'   => $caption,
-                    'post_status'  => 'publish',
-                    'post_type'    => 'tfj_screenshot',
-                    'menu_order'   => $i,
+            if ( isset( $data[$lang][$url_key] ) ) {
+                $img_url  = $data[$lang][$url_key];
+                $caption  = isset( $data[$lang][$cap_key] ) ? $data[$lang][$cap_key] : '';
+                $category = isset( $data[$lang][$cat_key] ) ? $data[$lang][$cat_key] : 'dev';
+                
+                $existing = get_posts( array(
+                    'post_type'   => 'tfj_screenshot',
+                    'title'       => $caption,
+                    'post_status' => 'any',
+                    'lang'        => $lang,
+                    'suppress_filters' => false,
                 ) );
                 
-                if ( $post_id && ! is_wp_error( $post_id ) ) {
-                    if ( function_exists( 'pll_set_post_language' ) ) {
-                        pll_set_post_language( $post_id, $lang );
+                if ( empty( $existing ) ) {
+                    $post_id = wp_insert_post( array(
+                        'post_title'   => $caption,
+                        'post_status'  => 'publish',
+                        'post_type'    => 'tfj_screenshot',
+                        'menu_order'   => $i,
+                    ) );
+                    
+                    if ( $post_id && ! is_wp_error( $post_id ) ) {
+                        if ( function_exists( 'pll_set_post_language' ) ) {
+                            pll_set_post_language( $post_id, $lang );
+                        }
+                        if ( function_exists( 'update_field' ) ) {
+                            update_field( 'tfj_screenshot_category', $category, $post_id );
+                            update_field( 'tfj_screenshot_image', $img_url, $post_id );
+                        }
+                        $count++;
                     }
-                    if ( function_exists( 'update_field' ) ) {
-                        update_field( 'tfj_screenshot_category', $category, $post_id );
-                        update_field( 'tfj_screenshot_image', $img_url, $post_id );
-                    }
-                    $count++;
                 }
             }
         }
-    }
 
-    wp_die( sprintf( 'Success! Imported %d items (page fields and CPT screenshot posts) for language "%s" on page ID %d.', $count, esc_html( $lang ), $page_id ) );
+        wp_die( sprintf( 'Success! Imported %d items (page fields and CPT screenshot posts) for language "%s" on page ID %d.', $count, esc_html( $lang ), $page_id ) );
+    }
 }

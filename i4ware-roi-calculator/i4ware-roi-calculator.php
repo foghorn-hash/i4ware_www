@@ -14,10 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 class I4ware_ROI_Calculator {
     const VERSION = '1.0.0';
     const SHORTCODE = 'i4ware_roi_calculator';
+    const TS_SHORTCODE = 'timesheet_roi_calculator';
 
     public function __construct() {
         add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ) );
         add_action( 'init', array( $this, 'register_shortcode' ) );
+        add_action( 'init', array( $this, 'register_ts_shortcode' ) );
     }
 
     public function register_assets() {
@@ -41,10 +43,23 @@ class I4ware_ROI_Calculator {
             file_exists( $js_file ) ? filemtime( $js_file ) : self::VERSION,
             true
         );
+
+        $ts_js_file = $base_path . 'timesheet-roi.js';
+        wp_register_script(
+            'i4ware-timesheet-roi-app',
+            $base_url . 'timesheet-roi.js',
+            array( 'wp-element' ),
+            file_exists( $ts_js_file ) ? filemtime( $ts_js_file ) : self::VERSION,
+            true
+        );
     }
 
     public function register_shortcode() {
         add_shortcode( self::SHORTCODE, array( $this, 'shortcode' ) );
+    }
+
+    public function register_ts_shortcode() {
+        add_shortcode( self::TS_SHORTCODE, array( $this, 'ts_shortcode' ) );
     }
 
     public function shortcode() {
@@ -62,6 +77,25 @@ class I4ware_ROI_Calculator {
         ob_start();
         ?>
         <div id="i4ware-roi-calculator-root"></div>
+        <?php
+        return ob_get_clean();
+    }
+
+    public function ts_shortcode() {
+        wp_enqueue_style( 'i4ware-roi-calculator-style' );
+        wp_enqueue_script( 'i4ware-timesheet-roi-app' );
+
+        wp_localize_script(
+            'i4ware-timesheet-roi-app',
+            'i4wareRoiCalculator',
+            array(
+                'lang' => $this->get_language_code(),
+            )
+        );
+
+        ob_start();
+        ?>
+        <div id="i4ware-timesheet-roi-root"></div>
         <?php
         return ob_get_clean();
     }

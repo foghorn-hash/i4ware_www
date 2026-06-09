@@ -1,4 +1,5 @@
-#i4ware-roi-calculator-root {
+#i4ware-roi-calculator-root,
+#i4ware-timesheet-roi-root {
   width: 100%;
 }
 
@@ -169,5 +170,67 @@
   .i4ware-roi-pricing-table td {
     font-size: 12px;
     padding: 7px 8px;
+  }
+}
+
+/* Select dropdown styling */
+.i4ware-roi-field select {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 18px;
+  line-height: 1.2;
+  box-sizing: border-box;
+  background: #f4f6f8;
+  color: #10233e;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Editable pricing table inputs */
+.i4ware-roi-pricing-table td input[type="number"] {
+  width: 80px;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+  background: #1a2332;
+  color: #e4edf8;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.i4ware-roi-pricing-table td input[type="number"]:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.i4ware-roi-pricing-table td input[type="number"]::-webkit-inner-spin-button,
+.i4ware-roi-pricing-table td input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+/* Results separator */
+.i4ware-roi-results hr {
+  border: none;
+  border-top: 1px solid #334155;
+  margin: 16px 0;
+}
+
+@media (max-width: 768px) {
+  .i4ware-roi-field select {
+    font-size: 16px;
+    padding: 12px;
+  }
+
+  .i4ware-roi-pricing-table td input[type="number"] {
+    width: 65px;
+    font-size: 12px;
+    padding: 5px 6px;
   }
 }

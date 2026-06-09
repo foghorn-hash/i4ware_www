@@ -11,7 +11,7 @@
 
   var translations = {
     fi: {
-      title: 'ROI / Tuntipohjainen Hintalaskuri',
+      title: 'Timesheet for Jira ROI / Tuntipohjainen Hintalaskuri',
       hourlyRate: 'Tuntihinta (EUR)',
       vatRate: 'ALV-kanta (%)',
       projectHours: 'Tunteja projektissa',
@@ -37,7 +37,7 @@
       perUserPerMonth: '/ kayttaja / kk'
     },
     en: {
-      title: 'ROI / Hourly Pricing Calculator',
+      title: 'Timesheet for Jira ROI / Hourly Pricing Calculator',
       hourlyRate: 'Hourly rate (EUR)',
       vatRate: 'VAT rate (%)',
       projectHours: 'Project hours',
