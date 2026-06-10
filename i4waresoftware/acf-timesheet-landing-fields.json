@@ -766,28 +766,35 @@
         "label": "\"All Features\" Tab Label",
         "name": "tfj_gallery_tab_all",
         "type": "text",
-        "wrapper": { "width": "25" }
+        "wrapper": { "width": "20" }
       },
       {
         "key": "field_tfj_gallery_tab_dev",
         "label": "\"For Developers\" Tab Label",
         "name": "tfj_gallery_tab_dev",
         "type": "text",
-        "wrapper": { "width": "25" }
+        "wrapper": { "width": "20" }
       },
       {
         "key": "field_tfj_gallery_tab_mgr",
         "label": "\"For Managers\" Tab Label",
         "name": "tfj_gallery_tab_mgr",
         "type": "text",
-        "wrapper": { "width": "25" }
+        "wrapper": { "width": "20" }
       },
       {
         "key": "field_tfj_gallery_tab_billing",
         "label": "\"Billing & JSM\" Tab Label",
         "name": "tfj_gallery_tab_billing",
         "type": "text",
-        "wrapper": { "width": "25" }
+        "wrapper": { "width": "20" }
+      },
+      {
+        "key": "field_tfj_gallery_tab_customers",
+        "label": "\"For Customers\" Tab Label",
+        "name": "tfj_gallery_tab_customers",
+        "type": "text",
+        "wrapper": { "width": "20" }
       },
 
       {
@@ -947,7 +954,8 @@
         "choices": {
           "dev": "For Developers",
           "mgr": "For Managers",
-          "billing": "Billing & JSM"
+          "billing": "Billing & JSM",
+          "customers": "For Customers"
         },
         "default_value": "dev",
         "allow_null": 0,

@@ -74,6 +74,7 @@ $tfj_defaults = array(
         'gallery_tab_dev' => 'For Developers',
         'gallery_tab_mgr' => 'For Managers',
         'gallery_tab_billing' => 'Billing & JSM',
+        'gallery_tab_customers' => 'For Customers',
         
         'gallery_img_1_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Dashboard-7-1024x576.png',
         'gallery_img_1_caption' => 'Admin Dashboard — Weekly Team Overview',
@@ -190,6 +191,7 @@ $tfj_defaults = array(
         'gallery_tab_dev' => 'Kehittäjille',
         'gallery_tab_mgr' => 'Esihenkilöille',
         'gallery_tab_billing' => 'Laskutus & JSM',
+        'gallery_tab_customers' => 'Asiakkaille',
         
         'gallery_img_1_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Dashboard-7-1024x576.png',
         'gallery_img_1_caption' => 'Ylläpidon työpöytä — Tiimin viikkonäkymä',
@@ -559,28 +561,35 @@ function tfj_register_acf_fields() {
         'label' => '"All Features" Tab Label',
         'name' => 'tfj_gallery_tab_all',
         'type' => 'text',
-        'wrapper' => array('width' => '25'),
+        'wrapper' => array('width' => '20'),
     );
     $fields[] = array(
         'key' => 'field_tfj_gallery_tab_dev',
         'label' => '"For Developers" Tab Label',
         'name' => 'tfj_gallery_tab_dev',
         'type' => 'text',
-        'wrapper' => array('width' => '25'),
+        'wrapper' => array('width' => '20'),
     );
     $fields[] = array(
         'key' => 'field_tfj_gallery_tab_mgr',
         'label' => '"For Managers" Tab Label',
         'name' => 'tfj_gallery_tab_mgr',
         'type' => 'text',
-        'wrapper' => array('width' => '25'),
+        'wrapper' => array('width' => '20'),
     );
     $fields[] = array(
         'key' => 'field_tfj_gallery_tab_billing',
         'label' => '"Billing & JSM" Tab Label',
         'name' => 'tfj_gallery_tab_billing',
         'type' => 'text',
-        'wrapper' => array('width' => '25'),
+        'wrapper' => array('width' => '20'),
+    );
+    $fields[] = array(
+        'key' => 'field_tfj_gallery_tab_customers',
+        'label' => '"For Customers" Tab Label',
+        'name' => 'tfj_gallery_tab_customers',
+        'type' => 'text',
+        'wrapper' => array('width' => '20'),
     );
 
     // CTA
@@ -673,6 +682,7 @@ function tfj_register_acf_fields() {
                     'dev' => 'For Developers',
                     'mgr' => 'For Managers',
                     'billing' => 'Billing & JSM',
+                    'customers' => 'For Customers',
                 ),
                 'default_value' => 'dev',
                 'allow_null' => 0,
@@ -785,6 +795,7 @@ function jira_timesheet_landing_shortcode( $atts ) {
     $gallery_tab_dev     = get_tfj_landing_field( 'tfj_gallery_tab_dev', $lang );
     $gallery_tab_mgr     = get_tfj_landing_field( 'tfj_gallery_tab_mgr', $lang );
     $gallery_tab_billing = get_tfj_landing_field( 'tfj_gallery_tab_billing', $lang );
+    $gallery_tab_customers = get_tfj_landing_field( 'tfj_gallery_tab_customers', $lang );
 
     // Query custom screenshots from the CPT
     $screenshot_args = array(
@@ -1135,6 +1146,7 @@ function jira_timesheet_landing_shortcode( $atts ) {
             <button class="tfj-tab-btn" data-category="dev"><?php echo esc_html( $gallery_tab_dev ); ?></button>
             <button class="tfj-tab-btn" data-category="mgr"><?php echo esc_html( $gallery_tab_mgr ); ?></button>
             <button class="tfj-tab-btn" data-category="billing"><?php echo esc_html( $gallery_tab_billing ); ?></button>
+            <button class="tfj-tab-btn" data-category="customers"><?php echo esc_html( $gallery_tab_customers ); ?></button>
           </div>
 
           <div class="tfj-gallery-grid" id="tfjGallery">
