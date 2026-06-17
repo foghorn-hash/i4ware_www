@@ -1143,7 +1143,7 @@ function i4ware_saas_order_form_shortcode() {
         </div>
 
         <!-- Financing -->
-        <label><?php pll_e('Financing'); ?></label>
+        <label class="i4ware-section-title i4ware-section-title--financing"><?php pll_e('Financing'); ?></label>
 
         <div class="i4ware-checkbox-group">
             <label>
@@ -1171,22 +1171,22 @@ function i4ware_saas_order_form_shortcode() {
         <div class="i4ware-checkbox-group">
             <label>
                 <input type="checkbox" name="additional_services[]" value="pitch_deck">
-                <?php if (pll_current_language() == 'fi') { echo 'Pitch Deck -suunnittelu VC/Angel-sijoittajille'; } else { echo 'Pitch Deck design for VC/Angel investors'; } ?>
+                <?php echo function_exists('pll__') ? pll__('Pitch Deck design for VC/Angel investors') : 'Pitch Deck design for VC/Angel investors'; ?>
             </label>
 
             <label>
                 <input type="checkbox" name="additional_services[]" value="financing_consultation">
-                <?php if (pll_current_language() == 'fi') { echo 'Konsultaatio muista rahoitusmalleista (Business Finland, ELY-keskus, EU-apurahat)'; } else { echo 'Consultation on other financing models (Business Finland, ELY-center, EU-funds)'; } ?>
+                <?php echo function_exists('pll__') ? pll__('Consultation on other financing models (Business Finland, ELY-center, EU-funds)') : 'Consultation on other financing models (Business Finland, ELY-center, EU-funds)'; ?>
             </label>
 
             <label>
                 <input type="checkbox" name="additional_services[]" value="finvera_loan">
-                <?php if (pll_current_language() == 'fi') { echo 'Miksi ei liian aikaisin hakea Finveran takaamaa pankkilainaa'; } else { echo "Why not too early apply for Finvera's guaranteed bank loan"; } ?>
+                <?php echo function_exists('pll__') ? pll__("Why not too early apply for Finvera's guaranteed bank loan") : "Why not too early apply for Finvera's guaranteed bank loan"; ?>
             </label>
 
             <label>
                 <input type="checkbox" name="additional_services[]" value="organizations_advice">
-                <?php if (pll_current_language() == 'fi') { echo 'Organisaatioiden listaaminen mistä saa lisäneuvoja, markkinatutkimus'; } else { echo 'Listing organizations for additional advice, market research'; } ?>
+                <?php echo function_exists('pll__') ? pll__('Listing organizations for additional advice, market research') : 'Listing organizations for additional advice, market research'; ?>
             </label>
         </div>
 
@@ -1195,7 +1195,7 @@ function i4ware_saas_order_form_shortcode() {
         <input type="number" name="company_founding_year" min="1800" max="<?php echo date('Y'); ?>">
 
         <!-- Contact details -->
-        <h3 style="margin-top:30px;"><?php pll_e('Orderer contact details'); ?></h3>
+        <label style="margin-top:30px !important; margin-bottom:30px !important;"><?php pll_e('Orderer contact details'); ?></label>
 
         <label><?php pll_e('Company name'); ?></label>
         <input type="text" name="company_name" required>
@@ -1320,6 +1320,12 @@ jQuery(document).ready(function($){
             color: #ccc;
         }
 
+        /* Extra top padding for the Financing / "Rahoitus" header */
+        .i4ware-section-title--financing {
+            padding-top: 18px;
+            display: block;
+        }
+
         .i4ware-saas-form select,
         .i4ware-saas-form input[type="number"],
         .i4ware-saas-form input[type="text"],
@@ -1430,6 +1436,20 @@ add_shortcode('i4ware_saas_order_form', 'i4ware_saas_order_form_shortcode');
 
 add_action('wp_ajax_i4ware_submit_order', 'i4ware_submit_order');
 add_action('wp_ajax_nopriv_i4ware_submit_order', 'i4ware_submit_order');
+
+/**
+ * Register Polylang strings on init so they appear in WP admin -> Strings translations
+ */
+function i4ware_register_polylang_strings() {
+    if ( function_exists( 'pll_register_string' ) ) {
+        pll_register_string('i4ware_pitch_deck', 'Pitch Deck design for VC/Angel investors', 'i4ware-saas');
+        pll_register_string('i4ware_financing_consultation', 'Consultation on other financing models (Business Finland, ELY-center, EU-funds)', 'i4ware-saas');
+        pll_register_string('i4ware_finvera_loan', "Why not too early apply for Finvera's guaranteed bank loan", 'i4ware-saas');
+        pll_register_string('i4ware_organizations_advice', 'Listing organizations for additional advice, market research', 'i4ware-saas');
+        pll_register_string('i4ware_additional_services', 'Additional services', 'i4ware-saas');
+    }
+}
+add_action('init', 'i4ware_register_polylang_strings');
 
 function i4ware_submit_order() {
 
