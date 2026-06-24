@@ -296,14 +296,45 @@ function i4ware_partnerships_shortcode() {
     );
     $output = '<div id="partners">';
     foreach ($groups as $group => $info) {
-        $args = array(
-            'post_type' => 'partner_logo',
-            'posts_per_page' => -1,
-            'meta_key' => 'logo_group',
-            'meta_value' => $group,
-            'orderby' => 'menu_order',
-            'order' => 'ASC'
-        );
+        if ($group === 'main') {
+            $args = array(
+                'post_type'      => 'partner_logo',
+                'posts_per_page' => -1,
+                'orderby'        => 'menu_order',
+                'order'          => 'ASC',
+                'meta_query'     => array(
+                    'relation' => 'OR',
+                    array(
+                        'key'     => 'logo_group',
+                        'value'   => 'main',
+                        'compare' => '='
+                    ),
+                    array(
+                        'key'     => 'logo_group',
+                        'compare' => 'NOT EXISTS'
+                    ),
+                    array(
+                        'key'     => 'logo_group',
+                        'value'   => '',
+                        'compare' => '='
+                    )
+                )
+            );
+        } else {
+            $args = array(
+                'post_type'      => 'partner_logo',
+                'posts_per_page' => -1,
+                'orderby'        => 'menu_order',
+                'order'          => 'ASC',
+                'meta_query'     => array(
+                    array(
+                        'key'     => 'logo_group',
+                        'value'   => $group,
+                        'compare' => '='
+                    )
+                )
+            );
+        }
         $logos = get_posts($args);
         $output .= '<div class="' . esc_attr($info['container']) . '">';
         foreach ($logos as $logo) {

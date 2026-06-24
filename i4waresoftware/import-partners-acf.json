@@ -26,6 +26,26 @@
                 "type": "text",
                 "instructions": "Alt text in English.",
                 "required": 0
+            },
+            {
+                "key": "field_logo_group",
+                "label": "Logo ryhmä",
+                "name": "logo_group",
+                "type": "select",
+                "instructions": "Valitse mihin ryhmään partner-logo kuuluu.",
+                "required": 0,
+                "choices": {
+                    "top": "Ylin",
+                    "main": "Pääosa",
+                    "bottom": "Alin"
+                },
+                "default_value": "main",
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 0,
+                "return_format": "value",
+                "ajax": 0,
+                "placeholder": ""
             }
         ],
         "location": [
