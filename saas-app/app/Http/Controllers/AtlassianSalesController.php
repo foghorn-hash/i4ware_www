@@ -132,7 +132,7 @@ class AtlassianSalesController extends Controller
             }
 
             // --- Fetch WooCommerce sales (if requested) ---
-            $normalizedWooCommerceSales = [];
+            /*$normalizedWooCommerceSales = [];
             if ($source === 'all' || $source === 'woocommerce') {
                 $wooSales = $this->fetchWooCommerceTransactions();
                 $normalizedWooCommerceSales = array_map(function ($tx) {
@@ -142,7 +142,7 @@ class AtlassianSalesController extends Controller
                         'revenueSource' => 'WooCommerce',
                     ];
                 }, $wooSales['root'] ?? []);
-            }
+            }*/
 
             // --- Fetch local sales (if requested) ---
             $localSales = collect();
@@ -184,7 +184,7 @@ class AtlassianSalesController extends Controller
 
             // --- Merge and keep only the requested year ---
             $merged = collect($normalizedAtlassianSales)
-                ->merge($normalizedWooCommerceSales)
+                //->merge($normalizedWooCommerceSales)
                 ->merge($localSales)
                 ->filter(function ($row) use ($year) {
                     try {
@@ -261,7 +261,7 @@ class AtlassianSalesController extends Controller
             }
 
             // Fetch WooCommerce sales if needed
-            $normalizedWooCommerceSales = [];
+            /*$normalizedWooCommerceSales = [];
             if ($source === 'all' || $source === 'woocommerce') {
                 $wooSales = $this->fetchWooCommerceTransactions();
                 $normalizedWooCommerceSales = array_map(function ($transaction) {
@@ -271,7 +271,7 @@ class AtlassianSalesController extends Controller
                         'revenueSource' => 'WooCommerce',
                     ];
                 }, $wooSales['root'] ?? []);
-            }
+            }*/
 
             // Fetch local sales (from invoices) if needed
             $localSales = collect();
@@ -313,7 +313,7 @@ class AtlassianSalesController extends Controller
 
             // Merge sales data
             $mergedSales = collect($normalizedAtlassianSales)
-                ->merge($normalizedWooCommerceSales)
+                //->merge($normalizedWooCommerceSales)
                 ->merge($localSales)
                 ->sortBy('saleDate')
                 ->values()
@@ -336,13 +336,13 @@ class AtlassianSalesController extends Controller
         $atlassianSales = $this->fetchTransactions()['root'];
 
         // Step 3: Fetch WooCommerce sales
-        $wooCommerceSales = $this->fetchWooCommerceTransactions()['root'];
+        //$wooCommerceSales = $this->fetchWooCommerceTransactions()['root'];
 
         // Step 4: Combine data
         $combinedSales = [
             'localSales' => $localSales,
             'atlassianSales' => $atlassianSales,
-            'wooCommerceSales' => $wooCommerceSales,
+            //'wooCommerceSales' => $wooCommerceSales,
         ];
 
         // Step 5: Return combined data
@@ -417,7 +417,7 @@ class AtlassianSalesController extends Controller
         }
 
         // Fetch WooCommerce sales data if needed
-        if ($source === 'all' || $source === 'woocommerce') {
+        /*if ($source === 'all' || $source === 'woocommerce') {
             $wooSales = $this->fetchWooCommerceTransactions();
             foreach ($wooSales['root'] ?? [] as $transaction) {
                 $vendorAmount = (float)($transaction['vendorAmount'] ?? 0);
@@ -433,7 +433,7 @@ class AtlassianSalesController extends Controller
                     $json['root'][$saleYear]['balanceVendor'] += $vendorAmount;
                 }
             }
-        }
+        }*/
 
         // Fetch local sales data if needed
             if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents' || $source === 'student') {
@@ -554,7 +554,7 @@ class AtlassianSalesController extends Controller
             }
 
             // Process WooCommerce sales if needed
-            if ($source === 'all' || $source === 'woocommerce') {
+            /*if ($source === 'all' || $source === 'woocommerce') {
                 $wooSales = $this->fetchWooCommerceTransactions();
                 foreach ($wooSales['root'] ?? [] as $transaction) {
                     $saleDate = $transaction['saleDate'] ?? null;
@@ -565,7 +565,7 @@ class AtlassianSalesController extends Controller
                         $salesByDate[$formattedDate] = ($salesByDate[$formattedDate] ?? 0) + $vendorAmount;
                     }
                 }
-            }
+            }*/
 
             // Process local sales if needed
             if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents' || $source === 'student') {
@@ -648,7 +648,7 @@ class AtlassianSalesController extends Controller
                 }
             }
             // --- WooCommerce (if requested) ---
-            $wooRows = [];
+            /*$wooRows = [];
             if ($source === 'all' || $source === 'woocommerce') {
                 $woo = $this->fetchWooCommerceTransactions();
                 foreach (($woo['root'] ?? []) as $tx) {
@@ -657,7 +657,7 @@ class AtlassianSalesController extends Controller
                         'vendorAmount' => (float) ($tx['vendorAmount'] ?? 0),
                     ];
                 }
-            }
+            }*/
 
             // --- Local invoices (if requested) ---
             $localRows = collect();
@@ -698,7 +698,7 @@ class AtlassianSalesController extends Controller
             }
 
             // --- Merge + keep only requested year ---
-            $merged = collect($atlRows)->merge($wooRows)->merge($localRows)
+            $merged = collect($atlRows)->merge($localRows)
                 ->filter(function ($r) use ($year) {
                     try { return CarbonImmutable::parse($r['saleDate'])->year === $year; }
                     catch (\Throwable $e) { return false; }
@@ -789,7 +789,7 @@ class AtlassianSalesController extends Controller
             }
 
             // ---- WooCommerce (optional) ----
-            $wooYears = [];
+            /*$wooYears = [];
             if ($source === 'all' || $source === 'woocommerce') {
                 $woo = $this->fetchWooCommerceTransactions();
                 foreach (($woo['root'] ?? []) as $tx) {
@@ -802,12 +802,12 @@ class AtlassianSalesController extends Controller
                         }
                     }
                 }
-            }
+            }*/
 
             // ---- Merge, unique, sort ----
             $years = collect($invoiceYears)
                 ->merge($atlassianYears)
-                ->merge($wooYears)
+                //->merge($wooYears)
                 ->unique()
                 ->sort()
                 ->values()
@@ -828,7 +828,7 @@ class AtlassianSalesController extends Controller
         }
     }
 
-    private function fetchWooCommerceTransactions()
+    /*private function fetchWooCommerceTransactions()
     {
         $url = env('WOOCOMMERCE_API_URL', 'https://www.i4ware.fi/wp-json/woo-rest/v1/orders');
         
@@ -862,7 +862,7 @@ class AtlassianSalesController extends Controller
             // Log error if needed: \Log::error('WooCommerce API Error: ' . $e->getMessage());
             return ['root' => []];
         }
-    }
+    }*/
 
 }
 

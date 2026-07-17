@@ -208,6 +208,23 @@ add_shortcode('i4ware_team', function() {
                 </label>
                 <textarea id="contact-message" name="message" placeholder="<?php echo ($lang === 'fi') ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis at lectus tortor.' : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis at lectus tortor.'; ?>" required></textarea>
 
+                <?php
+                $recaptcha_site_key = '';
+                if (defined('I4WARE_RECAPTCHA_SITE_KEY')) {
+                    $recaptcha_site_key = I4WARE_RECAPTCHA_SITE_KEY;
+                } elseif (defined('RECAPTCHA_SITE_KEY')) {
+                    $recaptcha_site_key = RECAPTCHA_SITE_KEY;
+                } elseif (defined('GOOGLE_RECAPTCHA_SITE_KEY')) {
+                    $recaptcha_site_key = GOOGLE_RECAPTCHA_SITE_KEY;
+                } else {
+                    $recaptcha_site_key = get_option('i4ware_recaptcha_site_key', '');
+                }
+
+                if (!empty($recaptcha_site_key)) : ?>
+                    <div class="g-recaptcha" data-sitekey="<?php echo esc_attr($recaptcha_site_key); ?>" style="margin-bottom: 20px;"></div>
+                    <script src="https://www.google.com/recaptcha/api.js?hl=<?php echo $lang; ?>" async defer></script>
+                <?php endif; ?>
+
                 <button type="submit">
                     <?php echo ($lang === 'fi') ? 'Lähetä viesti' : 'Send Message'; ?>
                 </button>
@@ -247,6 +264,55 @@ function i4ware_contact_form_handler() {
     $message = sanitize_textarea_field($_POST['message'] ?? '');
 
     $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+
+    // Verify reCAPTCHA
+    $recaptcha_site_key = '';
+    if (defined('I4WARE_RECAPTCHA_SITE_KEY')) {
+        $recaptcha_site_key = I4WARE_RECAPTCHA_SITE_KEY;
+    } elseif (defined('RECAPTCHA_SITE_KEY')) {
+        $recaptcha_site_key = RECAPTCHA_SITE_KEY;
+    } elseif (defined('GOOGLE_RECAPTCHA_SITE_KEY')) {
+        $recaptcha_site_key = GOOGLE_RECAPTCHA_SITE_KEY;
+    } else {
+        $recaptcha_site_key = get_option('i4ware_recaptcha_site_key', '');
+    }
+
+    $recaptcha_secret_key = '';
+    if (defined('I4WARE_RECAPTCHA_SECRET_KEY')) {
+        $recaptcha_secret_key = I4WARE_RECAPTCHA_SECRET_KEY;
+    } elseif (defined('RECAPTCHA_SECRET_KEY')) {
+        $recaptcha_secret_key = RECAPTCHA_SECRET_KEY;
+    } elseif (defined('GOOGLE_RECAPTCHA_SECRET_KEY')) {
+        $recaptcha_secret_key = GOOGLE_RECAPTCHA_SECRET_KEY;
+    } else {
+        $recaptcha_secret_key = get_option('i4ware_recaptcha_secret_key', '');
+    }
+
+    if (!empty($recaptcha_site_key) && !empty($recaptcha_secret_key)) {
+        $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
+        if (empty($recaptcha_response)) {
+            wp_send_json_error(($lang === 'fi') ? 'Ole hyvä ja vahvista reCAPTCHA.' : 'Please verify the reCAPTCHA.');
+        }
+
+        $response = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
+            'body' => array(
+                'secret' => $recaptcha_secret_key,
+                'response' => $recaptcha_response,
+                'remoteip' => $_SERVER['REMOTE_ADDR']
+            )
+        ));
+
+        if (is_wp_error($response)) {
+            wp_send_json_error('reCAPTCHA verification server error.');
+        }
+
+        $response_body = wp_remote_retrieve_body($response);
+        $result = json_decode($response_body, true);
+
+        if (empty($result['success'])) {
+            wp_send_json_error(($lang === 'fi') ? 'Ole hyvä ja vahvista reCAPTCHA.' : 'Please verify the reCAPTCHA.');
+        }
+    }
 
     $errors = array(
         'fi' => array(
