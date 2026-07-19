@@ -1,0 +1,54 @@
+[
+    {
+        "key": "group_team_member_details",
+        "title": "Team Member Details",
+        "fields": [
+            {
+                "key": "field_team_position",
+                "label": "Position",
+                "name": "position",
+                "type": "text",
+                "instructions": "Job title or position (e.g. Senior Software Engineer)",
+                "required": 1
+            },
+            {
+                "key": "field_team_linkedin",
+                "label": "LinkedIn Profile URL",
+                "name": "linkedin_url",
+                "type": "url",
+                "instructions": "URL to the team member's LinkedIn profile",
+                "required": 0
+            },
+            {
+                "key": "field_team_phone",
+                "label": "Mobile Phone",
+                "name": "mobile_phone",
+                "type": "text",
+                "instructions": "Mobile phone number",
+                "required": 0
+            },
+            {
+                "key": "field_team_email",
+                "label": "Email",
+                "name": "email",
+                "type": "email",
+                "instructions": "Email address",
+                "required": 0
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "team_member"
+                }
+            ]
+        ],
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "active": true
+    }
+]

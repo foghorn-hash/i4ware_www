@@ -179,6 +179,54 @@
     text-transform: uppercase;
 }
 
+.team-member-contact {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin: 24px 0 28px 0;
+}
+
+.contact-icon-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    font-size: 1.2rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none !important;
+}
+
+.contact-icon-link:hover {
+    transform: translateY(-3px);
+    border-color: #6366f1;
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+    text-decoration: none !important;
+}
+
+.contact-icon-link.linkedin-link:hover {
+    background: #0077b5;
+    border-color: #0077b5;
+    box-shadow: 0 5px 15px rgba(0, 119, 181, 0.4);
+}
+
+.contact-icon-link.email-link:hover {
+    background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+    border-color: #6366f1;
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+}
+
+.contact-icon-link.phone-link:hover {
+    background: #10b981;
+    border-color: #10b981;
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+}
+
 .certificate-container {
     display: flex;
     justify-content: center;
@@ -197,6 +245,75 @@
 
 .certificate-container img:hover {
     transform: scale(1.08);
+}
+
+.team-members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 32px;
+    width: 100%;
+    margin-top: 40px;
+}
+
+.team-member-card {
+    background: linear-gradient(180deg, rgba(22, 22, 32, 0.6) 0%, rgba(15, 15, 19, 0.9) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 24px;
+    padding: 32px 24px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s, box-shadow 0.4s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.team-member-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.1), 0 0 30px rgba(0, 0, 0, 0.4);
+}
+
+.team-member-card img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid rgba(99, 102, 241, 0.3);
+    margin-bottom: 20px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), border-color 0.3s;
+}
+
+.team-member-card img:hover {
+    transform: scale(1.06);
+    border-color: #6366f1;
+}
+
+.team-member-card h3 {
+    font-family: 'Outfit', sans-serif;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.team-member-card p {
+    color: #94a3b8;
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+
+.team-member-card p strong {
+    color: #a855f7;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 /* Responsiveness */

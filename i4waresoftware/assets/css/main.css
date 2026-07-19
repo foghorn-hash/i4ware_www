@@ -759,7 +759,7 @@ footer div p {
 }
 
 /* Responsive nav */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .nav-links {
     position: absolute;
     top: 70px;
@@ -782,6 +782,29 @@ footer div p {
 
   .burger {
     display: flex;
+  }
+
+  .logo img {
+    height: 50px;
+  }
+
+  .space-container {
+    height: 90px;
+  }
+
+  .language-switcher {
+    gap: 8px;
+  }
+
+  .language-switcher li a {
+    font-size: 0;
+    padding: 4px;
+  }
+
+  .language-switcher li img {
+    margin-right: 0;
+    width: 24px;
+    height: 17px;
   }
 }
 

@@ -8,6 +8,7 @@ if (!defined('ABSPATH')) {
 
 require_once(get_template_directory() . '/google-ai-shortcode.php');
 require_once(get_template_directory() . '/jira-timesheet-shortcode.php');
+require_once(get_template_directory() . '/wordpress-kehitys-shortcode.php');
 
 // Theme setup
 function i4waresoftware_setup()
@@ -3041,6 +3042,152 @@ add_shortcode('i4ware_sdk_page', function() {
     </div>
     <?php
     return ob_get_clean();
+});
+
+// Vanilla JS/CSS Lightbox for Certificate Images in [i4ware_team] / [i4ware_team_members]
+add_action('wp_footer', function() {
+    ?>
+    <style>
+    /* i4ware Lightbox Styles */
+    .i4ware-lightbox {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(10, 10, 15, 0.95);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 999999;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .i4ware-lightbox.active {
+        opacity: 1;
+        visibility: visible;
+    }
+    .i4ware-lightbox-content {
+        max-width: 90%;
+        max-height: 90%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .i4ware-lightbox-img {
+        max-width: 100%;
+        max-height: 80vh;
+        object-fit: contain;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .i4ware-lightbox.active .i4ware-lightbox-img {
+        transform: scale(1);
+    }
+    .i4ware-lightbox-close {
+        position: absolute;
+        top: -48px;
+        right: 0;
+        color: #fff;
+        font-size: 32px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s, transform 0.2s;
+    }
+    .i4ware-lightbox-close:hover {
+        color: #6366f1;
+        transform: scale(1.1);
+    }
+    .i4ware-lightbox-caption {
+        color: #94a3b8;
+        margin-top: 16px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 16px;
+        text-align: center;
+    }
+    .certificate-container img {
+        cursor: pointer;
+    }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create Lightbox Markup dynamically
+        const lightbox = document.createElement('div');
+        lightbox.className = 'i4ware-lightbox';
+        lightbox.setAttribute('role', 'dialog');
+        lightbox.setAttribute('aria-modal', 'true');
+        lightbox.innerHTML = `
+            <div class="i4ware-lightbox-content">
+                <button class="i4ware-lightbox-close" aria-label="Close">&times;</button>
+                <img class="i4ware-lightbox-img" src="" alt="" />
+                <div class="i4ware-lightbox-caption"></div>
+            </div>
+        `;
+        document.body.appendChild(lightbox);
+
+        const lightboxImg = lightbox.querySelector('.i4ware-lightbox-img');
+        const lightboxClose = lightbox.querySelector('.i4ware-lightbox-close');
+        const lightboxCaption = lightbox.querySelector('.i4ware-lightbox-caption');
+
+        // Add click event for certificate images
+        document.body.addEventListener('click', function(e) {
+            const target = e.target;
+            // Check if the clicked element is an image inside a certificate container
+            if (target.closest('.certificate-container') && target.tagName === 'IMG') {
+                const src = target.src;
+                const alt = target.alt || '';
+                
+                // Set image source and caption
+                lightboxImg.src = src;
+                lightboxImg.alt = alt;
+                lightboxCaption.textContent = alt;
+                
+                // Open lightbox
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden'; // prevent scrolling
+            }
+        });
+
+        // Close lightbox
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+            setTimeout(() => {
+                lightboxImg.src = '';
+                lightboxImg.alt = '';
+                lightboxCaption.textContent = '';
+            }, 300);
+        }
+
+        lightboxClose.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox || e.target.classList.contains('i4ware-lightbox-content')) {
+                closeLightbox();
+            }
+        });
+
+        // Close with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+    });
+    </script>
+    <?php
 });
 
 ?>
