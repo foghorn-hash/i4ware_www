@@ -2633,6 +2633,23 @@ body.i4ware-blue-theme a:hover {
   color: var(--accent-cyan);
 }
 
+/* Keep header navigation, mega menu, CTA, language switcher, and overlay menu links white */
+body.i4ware-blue-theme .tk-nav a,
+body.i4ware-blue-theme .cta-button,
+body.i4ware-blue-theme .language-switcher a,
+body.i4ware-blue-theme .nav-links a,
+body.i4ware-blue-theme .overlay-menu a {
+  color: #fff !important;
+}
+
+body.i4ware-blue-theme .tk-nav a:hover,
+body.i4ware-blue-theme .language-switcher a:hover,
+body.i4ware-blue-theme .nav-links a:hover,
+body.i4ware-blue-theme .overlay-menu a:hover,
+body.i4ware-blue-theme .cta-button:hover {
+  color: #fff !important;
+}
+
 /* Layout spacing */
 body.i4ware-blue-theme .main {
   background-color: var(--dark-bg);
