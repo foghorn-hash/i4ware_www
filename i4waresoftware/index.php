@@ -2,7 +2,7 @@
 <?php
 $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
 ?>
-<body>
+<body <?php body_class( (is_home() || is_archive() || is_single()) ? 'i4ware-blue-theme' : '' ); ?>>
  <header>
   <div class="container">
     <nav>
