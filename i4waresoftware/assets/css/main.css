@@ -696,6 +696,7 @@ img.partner-logo {
 .entry-header {
   margin-bottom: 1rem;
   background-color: transparent;
+  width: 100% !important;
 }
 
 /* Nain & footer */
@@ -726,20 +727,23 @@ footer .legal-nav-links li {
   margin: 0 8px;
 }
 
+footer a,
 footer .legal-nav-links a {
   color: #fff;
   text-decoration: none;
   padding: 4px 8px;
   border-radius: 3px;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
+footer a:hover,
+footer a:focus,
 footer .legal-nav-links a:hover,
 footer .legal-nav-links a:focus {
-  background: #444;
-  color: #ffd700;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 footer p {
@@ -1704,8 +1708,8 @@ h2.wp-block-heading {
 
 .footer-social a:hover,
 .footer-social a:focus {
-  background: #444;
-  color: #ffd700;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
   text-decoration: none;
 }
 
@@ -2618,6 +2622,9 @@ body.i4ware-blue-theme {
   --dark: #0d0d0d;
   --accent: #ff005b;
   --light: #fafafa;
+  --orange: #ff7300;
+  --pink: #ff005b;
+  --accent-blue: #0000ff;
   --accent-cyan: #0ea5e9;
   /* Sky Blue */
   --dark-bg: #080b11;
@@ -2629,39 +2636,24 @@ body.i4ware-blue-theme {
   --text-muted: #94a3b8;
   --text-light: #cbd5e1;
 
-  background-color: var(--dark-bg);
-  color: var(--text-main);
+  background-color: var(--dark);
+  color: var(--light);
 }
 
-/* Base link color override */
-body.i4ware-blue-theme a {
-  color: var(--accent);
-}
-
-body.i4ware-blue-theme a:hover {
+/* Content link colors for blue theme */
+body.i4ware-blue-theme .main-content a,
+body.i4ware-blue-theme .entry-content a {
   color: var(--accent-cyan);
 }
 
-/* Keep header navigation, mega menu, CTA, language switcher, and overlay menu links white */
-body.i4ware-blue-theme .tk-nav a,
-body.i4ware-blue-theme .cta-button,
-body.i4ware-blue-theme .language-switcher a,
-body.i4ware-blue-theme .nav-links a,
-body.i4ware-blue-theme .overlay-menu a {
-  color: #fff !important;
-}
-
-body.i4ware-blue-theme .tk-nav a:hover,
-body.i4ware-blue-theme .language-switcher a:hover,
-body.i4ware-blue-theme .nav-links a:hover,
-body.i4ware-blue-theme .overlay-menu a:hover,
-body.i4ware-blue-theme .cta-button:hover {
-  color: #fff !important;
+body.i4ware-blue-theme .main-content a:hover,
+body.i4ware-blue-theme .entry-content a:hover {
+  color: var(--accent);
 }
 
 /* Layout spacing */
 body.i4ware-blue-theme .main {
-  background-color: var(--dark-bg);
+  background-color: var(--dark);
   padding: 80px 0;
 }
 
@@ -2719,7 +2711,7 @@ body.i4ware-blue-theme .entry-header h1 a {
 
 body.i4ware-blue-theme .entry-header h2 a:hover,
 body.i4ware-blue-theme .entry-header h1 a:hover {
-  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent) 100%);
+  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-decoration: none;
@@ -2739,11 +2731,11 @@ body.i4ware-blue-theme .entry-meta span {
 }
 
 body.i4ware-blue-theme .entry-meta a {
-  color: var(--accent-cyan);
+  color: var(--accent-blue);
 }
 
 body.i4ware-blue-theme .entry-meta a:hover {
-  color: var(--accent);
+  color: var(--accent-cyan);
 }
 
 body.i4ware-blue-theme .entry-summary {
@@ -2782,7 +2774,7 @@ body.i4ware-blue-theme .pagination a:focus,
 .pagination .page-numbers:focus,
 .pagination a:hover,
 .pagination a:focus {
-  background: linear-gradient(135deg, var(--accent), #a855f7);
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
   border-color: transparent;
   color: #fff;
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
@@ -2850,14 +2842,12 @@ body.i4ware-blue-theme .sidebar .widget ul li:last-child {
 }
 
 body.i4ware-blue-theme .sidebar .widget a {
-  color: var(--text-muted);
   font-weight: 500;
   font-size: 14.5px;
   transition: color 0.2s;
 }
 
 body.i4ware-blue-theme .sidebar .widget a:hover {
-  color: var(--accent);
   text-decoration: none;
 }
 
@@ -2914,7 +2904,6 @@ body.i4ware-blue-theme .comment .comment {
 body.i4ware-blue-theme .comment-author a,
 body.i4ware-blue-theme .comment-meta a,
 body.i4ware-blue-theme .comment-reply-link {
-  color: var(--accent);
   font-weight: 600;
   text-decoration: none;
 }
@@ -2922,7 +2911,6 @@ body.i4ware-blue-theme .comment-reply-link {
 body.i4ware-blue-theme .comment-author a:hover,
 body.i4ware-blue-theme .comment-meta a:hover,
 body.i4ware-blue-theme .comment-reply-link:hover {
-  color: var(--accent-cyan);
   text-decoration: underline;
 }
 
