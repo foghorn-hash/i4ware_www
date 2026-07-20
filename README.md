@@ -1,156 +1,155 @@
 # i4ware_www
 
-Website of i4ware Software - A WordPress-based project featuring custom themes and plugins for business management solutions.
+i4ware Software -verkkosivuston ja siihen liittyvien liiketoimintasovellusten päärepo. Repo sisältää räätälöidyn WordPress-teeman, useita WordPress-lisäosia, erillisiä React-sovelluksia sekä Laravel-pohjaisen SaaS-sovelluksen.
 
-## Project Overview
+## 📁 Projektin Hakemistorakenne
 
-This is a WordPress website project for i4ware Software, containing a custom WordPress theme and several custom plugins that provide various functionalities for the website, including job applications, ROI calculators, testimonials, contact forms, and more. The project also includes React-based applications and a Laravel application integrated into the WordPress ecosystem.
+### 🎨 WordPress-teema: [i4waresoftware/](i4waresoftware/)
+i4ware Softwaren virallinen mukautettu WordPress-teema.
 
-## Folder Structure
+- **Pääkomponentit ja tiedostot:**
+  - [functions.php](i4waresoftware/functions.php) – Teeman pääfunktiot, asetukset, tyylien/skriptien lataukset ja valikkorekisteröinnit.
+  - [jira-timesheet-shortcode.php](i4waresoftware/jira-timesheet-shortcode.php) – `[jira_timesheet]`-lyhytkoodi Jira-työaikakirjausten ja raportoinnin hallintaan.
+  - [google-ai-shortcode.php](i4waresoftware/google-ai-shortcode.php) – Google AI -pohjaiset integraatiot ja lyhytkoodit.
+  - [web-hotellipalvelu-shortcode.php](i4waresoftware/web-hotellipalvelu-shortcode.php) – Web-hotellipalveluiden esittely- ja tilauskomponentit.
+  - [wordpress-kehitys-shortcode.php](i4waresoftware/wordpress-kehitys-shortcode.php) – WordPress-kehityspalvelujen esittelykomponentit.
+  - [index.php](i4waresoftware/index.php) & [style.css](i4waresoftware/style.css) – Teeman pääsivu ja tyylit.
+  - [assets/](i4waresoftware/assets/) – Teeman JavaScript-, CSS- ja kuvaresurssit (mm. `dropdown-menu.js`, `main.js`, `site.webmanifest`).
+  - [template-parts/](i4waresoftware/template-parts/) – Uudelleenkäytettävät pohjaosat:
+    - [header.php](i4waresoftware/template-parts/header.php) – Sivuston ylätunniste ja navigaatio.
+    - [footer.php](i4waresoftware/template-parts/footer.php) – Sivuston alatunniste.
+    - [blog.php](i4waresoftware/template-parts/blog.php) – Blogiartikkeleiden esityspohja.
+    - [content.php](i4waresoftware/template-parts/content.php) – Sisältösivujen mallipohja.
+  - **ACF (Advanced Custom Fields) JSON -vientialustukset:**
+    - `acf-timesheet-landing-fields.json`
+    - `import-customers-acf.json`
+    - `import-partners-acf.json`
+    - `import-team-members-acf.json`
+    - `timesheet-landing-content.json`
 
-### Root Files
-- `composer.json` - PHP dependencies (includes PHPMailer for email functionality)
-- `LICENSE` - Project license file
-- `README.md` - This file
+---
 
-### Theme: i4waresoftware/
-Custom WordPress theme for the i4ware website.
+### 🔌 WordPress-lisäosat (Plugins)
 
-**Key Files:**
-- `functions.php` - Theme functions including:
-  - Theme setup (title tag support, navigation menus, post thumbnails)
-  - Enqueueing styles and scripts (main.css, main.js, dropdown-menu.js)
-  - Menu registration (primary and footer menus)
-- `index.php` - Main template file
-- `style.css` - Main stylesheet
-- `assets/` - Theme assets
-  - `css/` - Stylesheets
-  - `js/` - JavaScript files
-  - `site.webmanifest` - Web app manifest
-- `template-parts/` - Reusable template parts
-  - `blog.php` - Blog template
-  - `content.php` - Content template
-  - `footer.php` - Footer template
-  - `header.php` - Header template
+#### 1. [ats_job_application/](ats_job_application/) (MH ATS Job Application)
+- Rekrytointi- ja hakijaseurantajärjestelmä (ATS).
+- Hyödyntää OpenAI-tekoälyä hakijoiden ansioluetteloiden (CV) analysointiin ja automaattiseen pisteytykseen.
+- Luo omat tietokantataulukot hakijoille, dokumenteille ja pisteille.
+- Sisältää REST API -päätepisteet lomakehakemusten käsittelyyn sekä WordPress-hallintasivun OpenAI API -avaimen säätöön.
 
-### Plugins
+#### 2. [cv-openai-polylang-translator/](cv-openai-polylang-translator/) (CV OpenAI Polylang Translator)
+- Tekoälypohjainen käännöslisäosa suomenkielisten blogikirjoitusten kääntämiseen englanniksi OpenAI API:n ja Polylang-monikielisyyslisäosan avulla.
+- Sisältää hallintasivun muokattaville käännöskomennoille (prompt) ja asetuksille.
 
-#### ats_job_application/
-**MH ATS Job Application Plugin**
-- Provides an open job application form for WordPress
-- Features ATS (Applicant Tracking System) filtering
-- CV data storage using OpenAI integration
-- Creates custom database tables for applicants, documents, and scores
-- Includes REST API endpoints for form submission
-- Admin settings page for OpenAI API key configuration
+#### 3. [i4ware-roi-calculator/](i4ware-roi-calculator/) (I4ware ROI Calculator)
+- React-pohjainen sijoitetun pääoman tuoton (ROI) ja tuntihinnoittelun laskuri.
+- Upotettavissa mihin tahansa sivuun lyhytkoodilla `[i4ware_roi_calculator]`.
 
-#### i4ware_job_application_form/
-**Job Application Form Plugin**
-- Custom job application form functionality
+#### 4. [i4ware-team-contact/](i4ware-team-contact/) (Team Contact)
+- Tiimin yhteystieto- ja yhteydenottolomakelisäosa.
+- Sisältää JavaScript-resurssit interaktiivista lomakekäsittelyä varten.
 
-#### i4ware-roi-calculator/
-**I4ware ROI Calculator Plugin**
-- React-based ROI and hourly pricing calculator
-- Provides shortcode `[i4ware_roi_calculator]` for embedding
-- Includes CSS and JavaScript assets for the calculator interface
+#### 5. [i4ware-testimonials/](i4ware-testimonials/) (Testimonials)
+- Asiakassuositteluiden ja -palautteiden hallintajärjestelmä.
+- Rekisteröi mukautetun artikkelityypin (`testimonial`).
+- Google reCAPTCHA -roskapostisuojaus sekä hallintaliittymä suositusten tarkistamiseen ja julkaisuun.
 
-#### i4ware-team-contact/
-**Team Contact Plugin**
-- Contact form functionality for team members
-- Includes JavaScript files for contact handling
+#### 6. [i4ware_job_application_form/](i4ware_job_application_form/) (Job Application Form)
+- Kevyt työhakemuslomakkeen käsittelijälisäosa.
 
-#### i4ware-testimonials/
-**Testimonials Plugin**
-- Adds anonymous customer testimonials
-- Shortcode-based form with Google reCAPTCHA spam protection
-- Custom post type for testimonials
-- Admin interface for managing testimonials
+#### 7. [job-application-form/](job-application-form/) (Job Application Form Extended)
+- Laajennettu työhakemuslomakelisäosa staattisilla resursseilla ja kehittyneillä hakemusohjausmekanismeilla.
 
-#### job-application-form/
-**Job Application Form Plugin**
-- Additional job application form functionality
+#### 8. [legal-react-app/](legal-react-app/) (Legal React App)
+- React-pohjainen lisäosa lakisääteisten ehtojen ja dokumentaation esittämiseen WordPress-ympäristössä.
 
-#### legal-react-app/
-**Legal React App Plugin**
-- React-based legal application
-- Includes static CSS and JavaScript files
+#### 9. [revenue-react-app/](revenue-react-app/) (Revenue React App)
+- React-pohjainen liikevaihto- ja analytiikkanäkymä (dashboard) WordPress-sivustolle.
 
-#### revenue-react-app/
-**Revenue React App Plugin**
-- React-based revenue tracking application
-- Includes static assets (CSS, JS, media files)
+#### 10. [woo-rest/](woo-rest/) (WooCommerce REST Integration)
+- WooCommerce REST API -laajennus mukautettujen päätepisteiden ja verkkokauppadatan käsittelyyn.
 
-#### woo-rest/
-**WooCommerce REST Plugin**
-- WooCommerce REST API integration
+#### 11. [word-to-blog-ai/](word-to-blog-ai/) (Word to Blog AI)
+- AI-avusteinen lisäosa, joka muuntaa Word-dokumentit (.docx) automaattisesti muotoilluiksi WordPress-blogiartikkeleiksi.
+- Käyttää Composer-riippuvuuksia (mm. PHPWord) sekä OpenAI-integraatiota.
 
-#### word-to-blog-ai/
-**Word to Blog AI Plugin**
-- AI-powered blog post generation from Word documents
-- Uses Composer for PHP dependencies
-- Includes templates and custom CSS/JS
+---
 
-### React Applications
+### ⚛️ Erilliset React-sovellukset
 
-#### job_application/
-**Job Application React App**
-- Standalone React application for job applications
-- Built with Create React App
-- Includes build and public directories
-- Source code in `src/` with components and constants
+#### 1. [job_application/](job_application/)
+- Erillinen React-pohjainen rekrytointisovellus (Create React App).
+- Sisältää lähdekoodin ([src/](job_application/src/)), komponentit ja valmiiksi käännetyt `build/`-tiedostot.
 
-#### my-invoicing-app/
-**My Invoicing App**
-- React-based invoicing application
-- TypeScript configuration
-- Similar structure to job_application
+#### 2. [my-invoicing-app/](my-invoicing-app/)
+- TypeScriptillä toteutettu erillinen React-laskutussovellus laskujen hallintaan ja luontiin.
 
-### Laravel Application
+---
 
-#### saas-app/
-**SaaS Application**
-- Laravel-based Software as a Service application
-- Full Laravel framework structure with:
-  - `app/` - Application code (Models, Controllers, etc.)
-  - `config/` - Configuration files
-  - `database/` - Database migrations and seeds
-  - `public/` - Public assets
-  - `resources/` - Views and assets
-  - `routes/` - Route definitions
-  - `storage/` - File storage
-  - `tests/` - Test files
-- Includes webpack.mix.js for asset compilation
-- PHPUnit configuration for testing
+### 🚀 Laravel SaaS -sovellus: [saas-app/](saas-app/)
+- Täysiverinen Laravel-pohjainen SaaS-ohjelmistoalusta.
+- **Rakenne:**
+  - `app/` – Sovelluksen logiikka (Modelit, Controllerit jne.)
+  - `config/` – Konfiguraatiotiedostot
+  - `database/` – Tietokantamigraatiot ja seederit
+  - `public/` & `resources/` – Julkiset resurssit, näkymät ja assetit
+  - `routes/` – Reititykset (`web.php`, `api.php`)
+  - `storage/` & `tests/` – Tiedostovarasto ja PHPUnit-testit
+  - `webpack.mix.js` – Assetien kääntäminen
 
-### Static Assets
+---
 
-#### css/
-Global CSS stylesheets
+### 🌐 Staattiset Sivut ja Resurssit
 
-#### js/
-Global JavaScript files
+- [css/](css/) – Yleiset CSS-tyylitiedostot.
+- [static/](static/) – Yhteiset staattiset kuva- ja tyylitiedostot.
+- [css-time.css](css-time.css) – Työajanseurannan mukautetut tyylit.
+- [html-en.html](html-en.html) – Englanninkielinen staattinen landing-sivu.
+- [html-fi.html](html-fi.html) – Suomenkielinen staattinen landing-sivu.
 
-#### static/
-Additional static assets (CSS, JS, media files)
+---
 
-## Installation and Setup
+### 📄 Juuritiedostot
 
-1. Ensure WordPress is installed and configured
-2. Copy the theme folder `i4waresoftware/` to `wp-content/themes/`
-3. Copy plugin folders to `wp-content/plugins/`
-4. Activate the theme and required plugins through WordPress admin
-5. Configure plugin settings (API keys, etc.) as needed
-6. For React apps, build them using `npm run build` in their respective directories
-7. For the Laravel app, run `composer install` and configure environment variables
+- [composer.json](composer.json) & [composer.lock](composer.lock) – PHP-riippuvuudet (mm. PHPMailer sähköpostien lähetykseen).
+- [LICENSE](LICENSE) – Lisenssiehdot.
+- [README.md](README.md) – Tämä dokumentaatio.
 
-## Dependencies
+---
 
-- WordPress 6.0+
-- PHP 7.4+
-- Node.js and npm (for React apps)
-- Composer (for PHP dependencies)
-- Laravel (for saas-app)
+## 🛠️ Asennus ja Käyttöönotto
 
-## License
+1. **WordPress-teema:**
+   - Kopioi `i4waresoftware/`-hakemisto WordPress-asennuksen teemahakemistoon: `wp-content/themes/i4waresoftware/`.
+   - Aktivoi teema WordPressin hallintapaneelista (*Ulkoasu > Teemat*).
 
-See LICENSE file for details.
+2. **WordPress-lisäosat:**
+   - Kopioi haluamasi lisäosahakemistot (esim. `ats_job_application`, `cv-openai-polylang-translator`, `word-to-blog-ai` jne.) WordPressin lisäosahakemistoon: `wp-content/plugins/`.
+   - Aktivoi lisäosat hallintapaneelista (*Lisäosat > Asennetut lisäosat*).
+   - Määritä tarvittavat API-avaimet (esim. OpenAI API Key) lisäosien asetussivuilla.
+
+3. **React-sovellukset (`job_application`, `my-invoicing-app`):**
+   - Siirry sovellushakemistoon (`cd job_application` tai `cd my-invoicing-app`).
+   - Asenna riippuvuudet: `npm install`
+   - Käännä tuotantoversio: `npm run build`
+
+4. **Laravel SaaS -sovellus (`saas-app`):**
+   - Siirry hakemistoon `cd saas-app`.
+   - Asenna PHP-riippuvuudet: `composer install`
+   - Määritä `.env`-ympäristötiedosto ja aja migraatiot: `php artisan migrate`
+
+---
+
+## ⚙️ Järjestelmävaatimukset
+
+- **WordPress:** 6.0 tai uudempi
+- **PHP:** 7.4 / 8.0+
+- **Node.js & npm:** (React-sovellusten kääntämiseen)
+- **Composer:** (PHP-riippuvuuksien hallintaan)
+- **MySQL / MariaDB:** Tietokanta WordPressille ja Laravelille
+
+---
+
+## 📜 Lisenssi
+
+Katso tarkemmat lisenssitiedot [LICENSE](LICENSE)-tiedostosta.
