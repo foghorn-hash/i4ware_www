@@ -6,20 +6,23 @@ Version: 1.0
 Author: Matti Kiviharju
 */
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+if (!defined('ABSPATH'))
+    exit;
 
 // Enqueue React build assets
-function revenue_react_app_enqueue_assets() {
-    $plugin_url = plugin_dir_url( __FILE__ ) . 'static/';
+function revenue_react_app_enqueue_assets()
+{
+    $plugin_url = plugin_dir_url(__FILE__) . 'static/';
     // Adjust filenames if your build uses hashes
-    wp_enqueue_style( 'revenue-react-app-css', $plugin_url . 'css/main.5c421f80.css', array(), null );
-    wp_enqueue_script( 'revenue-react-app-js', $plugin_url . 'js/main.9318d080.js', array(), null, true );
+    wp_enqueue_style('revenue-react-app-css', $plugin_url . 'css/main.5c421f80.css', array(), null);
+    wp_enqueue_script('revenue-react-app-js', $plugin_url . 'js/main.fa234665.js', array(), null, true);
 }
-add_action( 'wp_enqueue_scripts', 'revenue_react_app_enqueue_assets' );
+add_action('wp_enqueue_scripts', 'revenue_react_app_enqueue_assets');
 
 // Shortcode to render the React app
-function revenue_react_app_shortcode() {
+function revenue_react_app_shortcode()
+{
     // The React app will mount to this div
     return '<div id="root"></div>';
 }
-add_shortcode( 'revenue_react_app', 'revenue_react_app_shortcode' );
+add_shortcode('revenue_react_app', 'revenue_react_app_shortcode');

@@ -13,30 +13,41 @@ let strings = new LocalizedStrings({
     all: "All Sources",
     atlassian: "Atlassian Pty Ltd",
     kela: "KELA/VARMA/Insurance",
+    tyomarkkinatuki: "Employment support",
     student: "Student Income Support",
     hourly: "Hourly Rate Customers",
     grandparents: "Grandparents' Inheritance",
     woocommerce: "WooCommerce",
+    capital: "Capital Income",
+    tax: "Tax Return",
     year: "Year",
   },
   fi: {
     all: "Kaikki lähteet",
     atlassian: "Atlassian Pty Ltd",
     kela: "KELA/VARMA/Vakuutus",
+    tyomarkkinatuki: "Työmarkkinatuki",
+    toimeentulotuki: "Toimeentulotuki",
     student: "Opiskelijan opintotuki",
     hourly: "Tuntiveloitusasiakkaat",
     grandparents: "Isovanhempien perintö",
     woocommerce: "WooCommerce",
+    capital: "Pääomatulot",
+    tax: "Veronpalautus",
     year: "Vuosi",
   },
   sv: {
     all: "Alla källor",
     atlassian: "Atlassian Pty Ltd",
     kela: "KELA/VARMA/Försäkring",
+    tyomarkkinatuki: "Arbetsmarknadsstöd",
+    toimeentulotuki: "Existensstöd",
     student: "Studentinkomststöd",
     hourly: "Timdebiterade kunder",
     grandparents: "Mor- och farföräldrars arv",
     woocommerce: "WooCommerce",
+    capital: "Kapitalinkomster",
+    tax: "Skatter",
     year: "År",
   },
 });
@@ -58,36 +69,36 @@ const Charts = () => {
   useEffect(() => strings.setLanguage(lang), [lang]);
 
   // fetch list of years whenever the source changes
-useEffect(() => {
-  let cancelled = false;
+  useEffect(() => {
+    let cancelled = false;
 
-  (async () => {
-    try {
-      const url = `${API_BASE_URL}/api/reports/income-years?source=${encodeURIComponent(revenueSource)}`;
-      const resp = await axios.get(url);
-      const years = Array.isArray(resp?.data?.years) ? resp.data.years : [];
-      if (cancelled) return;
+    (async () => {
+      try {
+        const url = `${API_BASE_URL}/api/reports/income-years?source=${encodeURIComponent(revenueSource)}`;
+        const resp = await axios.get(url);
+        const years = Array.isArray(resp?.data?.years) ? resp.data.years : [];
+        if (cancelled) return;
 
-      if (years.length) {
-        const sorted = years.slice().sort((a, b) => a - b);
-        setAvailableYears(sorted);
-        // keep current year if still available, otherwise pick latest
-        setYear(prev => (sorted.includes(prev) ? prev : sorted[sorted.length - 1]));
-      } else {
+        if (years.length) {
+          const sorted = years.slice().sort((a, b) => a - b);
+          setAvailableYears(sorted);
+          // keep current year if still available, otherwise pick latest
+          setYear(prev => (sorted.includes(prev) ? prev : sorted[sorted.length - 1]));
+        } else {
+          const cur = new Date().getFullYear();
+          setAvailableYears([cur]);
+          setYear(cur);
+        }
+      } catch {
+        if (cancelled) return;
         const cur = new Date().getFullYear();
         setAvailableYears([cur]);
         setYear(cur);
       }
-    } catch {
-      if (cancelled) return;
-      const cur = new Date().getFullYear();
-      setAvailableYears([cur]);
-      setYear(cur);
-    }
-  })();
+    })();
 
-  return () => { cancelled = true; };
-}, [revenueSource]);
+    return () => { cancelled = true; };
+  }, [revenueSource]);
 
   return (
     <div>
@@ -101,10 +112,12 @@ useEffect(() => {
           <option value="all">{strings.all}</option>
           <option value="atlassian">{strings.atlassian}</option>
           <option value="hourly">{strings.hourly}</option>
-          <option value="woocommerce">{strings.woocommerce}</option>
           <option value="kela">{strings.kela}</option>
+          <option value="tyomarkkinatuki">{strings.tyomarkkinatuki}</option>
+          <option value="toimeentulotuki">{strings.toimeentulotuki}</option>
           <option value="student">{strings.student}</option>
           <option value="grandparents">{strings.grandparents}</option>
+          <option value="capital">{strings.capital}</option>
         </select>
       </div>
 
