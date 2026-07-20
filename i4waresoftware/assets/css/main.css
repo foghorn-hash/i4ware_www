@@ -195,19 +195,19 @@ nav {
   margin-right: 10px;
 }
 
-.nav-links {
+header .nav-links {
   display: flex;
   gap: 2rem;
   list-style: none;
 }
 
-.nav-links a {
+header .nav-links a {
   color: var(--light);
   text-decoration: none;
   position: relative;
 }
 
-.nav-links a::after {
+header .nav-links a::after {
   content: "";
   position: absolute;
   width: 0;
@@ -218,8 +218,8 @@ nav {
   transition: width .3s;
 }
 
-.nav-links a:hover::after,
-.nav-links a:focus::after {
+header .nav-links a:hover::after,
+header .nav-links a:focus::after {
   width: 100%;
 }
 
@@ -1155,21 +1155,26 @@ article[class^="post-"]:hover {
   margin: 2.5rem 0 1.5rem 0;
 }
 
-.pagination .page-numbers {
+.pagination .page-numbers,
+.pagination a {
   display: inline-block;
   margin: 0 0.3em;
   padding: 0.5em 1em;
   background: #f5f5f5;
   color: #3949ab;
   border-radius: 6px;
-  text-decoration: none;
+  text-decoration: none !important;
   transition: background 0.2s;
 }
 
 .pagination .page-numbers.current,
-.pagination .page-numbers:hover {
+.pagination .page-numbers:hover,
+.pagination .page-numbers:focus,
+.pagination a:hover,
+.pagination a:focus {
   background: #3949ab;
   color: #fff;
+  text-decoration: none !important;
 }
 
 .container-comments {
@@ -2610,8 +2615,11 @@ p#form-message {
    ========================================================================== */
 
 body.i4ware-blue-theme {
-  --accent: #6366f1; /* Indigo */
-  --accent-cyan: #0ea5e9; /* Sky Blue */
+  --dark: #0d0d0d;
+  --accent: #ff005b;
+  --light: #fafafa;
+  --accent-cyan: #0ea5e9;
+  /* Sky Blue */
   --dark-bg: #080b11;
   --panel-bg: #0e1320;
   --panel-hover: #141c2f;
@@ -2629,6 +2637,7 @@ body.i4ware-blue-theme {
 body.i4ware-blue-theme a {
   color: var(--accent);
 }
+
 body.i4ware-blue-theme a:hover {
   color: var(--accent-cyan);
 }
@@ -2748,7 +2757,10 @@ body.i4ware-blue-theme .pagination {
   margin: 40px 0;
 }
 
-body.i4ware-blue-theme .pagination .page-numbers {
+body.i4ware-blue-theme .pagination .page-numbers,
+body.i4ware-blue-theme .pagination a,
+.pagination .page-numbers,
+.pagination a {
   background-color: var(--panel-bg);
   border: 1px solid var(--border-color);
   color: var(--text-muted);
@@ -2756,14 +2768,40 @@ body.i4ware-blue-theme .pagination .page-numbers {
   border-radius: 10px;
   font-weight: 600;
   transition: all 0.2s;
+  text-decoration: none !important;
+  border-bottom: none !important;
 }
 
 body.i4ware-blue-theme .pagination .page-numbers.current,
-body.i4ware-blue-theme .pagination .page-numbers:hover {
+body.i4ware-blue-theme .pagination .page-numbers:hover,
+body.i4ware-blue-theme .pagination .page-numbers:focus,
+body.i4ware-blue-theme .pagination a:hover,
+body.i4ware-blue-theme .pagination a:focus,
+.pagination .page-numbers.current,
+.pagination .page-numbers:hover,
+.pagination .page-numbers:focus,
+.pagination a:hover,
+.pagination a:focus {
   background: linear-gradient(135deg, var(--accent), #a855f7);
   border-color: transparent;
   color: #fff;
   box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+.pagination a::after,
+.pagination a:hover::after,
+.pagination a:focus::after,
+.pagination .page-numbers::after,
+.pagination .page-numbers:hover::after,
+.pagination .page-numbers:focus::after,
+.pagination .nav-links a::after,
+.pagination .nav-links a:hover::after,
+.pagination .nav-links a:focus::after {
+  display: none !important;
+  content: none !important;
+  width: 0 !important;
 }
 
 /* Sidebar Widgets */
@@ -2955,6 +2993,7 @@ body.i4ware-blue-theme .submit:hover {
     flex-direction: column;
     gap: 32px;
   }
+
   body.i4ware-blue-theme .sidebar {
     width: 100%;
     flex: none;
