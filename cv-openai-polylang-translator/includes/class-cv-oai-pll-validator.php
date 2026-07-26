@@ -148,8 +148,9 @@ class CV_OAI_PLL_Validator {
                     'Microsoft Teams'
                 ];
                 foreach ($product_names as $product) {
-                    if (stripos($source_val_clean, $product) !== false) {
-                        if (stripos($trans_val_clean, $product) === false) {
+                    $pattern = '/(?<!\p{L})' . preg_quote($product, '/') . '(?!\p{L})/iu';
+                    if (preg_match($pattern, $source_val_clean)) {
+                        if (!preg_match($pattern, $trans_val_clean)) {
                             return new WP_Error(
                                 'validation_missing_product',
                                 sprintf(__('Validation failed: Product name or trademark "%s" was missing or altered in translation.', 'cv-openai-polylang-translator'), $product)
