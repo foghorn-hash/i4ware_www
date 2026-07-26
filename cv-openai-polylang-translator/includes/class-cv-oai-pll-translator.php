@@ -88,6 +88,16 @@ class CV_OAI_PLL_Translator {
                 throw new Exception(__('No translatable content found for the selected options.', 'cv-openai-polylang-translator'));
             }
 
+            // Preprocess: Replace URLs and Emails with safe HTML placeholders
+            $url_map = [];
+            $email_map = [];
+            foreach ($payload as $key => &$item) {
+                if (isset($item['content']) && is_string($item['content'])) {
+                    $item['content'] = self::replace_urls_with_placeholders($item['content'], $url_map);
+                    $item['content'] = self::replace_emails_with_placeholders($item['content'], $email_map);
+                }
+            }
+
             // 5. Chunk the payload for resource-safety
             $chunks = CV_OAI_PLL_Content_Extractor::chunk_payload($payload);
             $translated_results = [];
@@ -139,6 +149,22 @@ class CV_OAI_PLL_Translator {
                 // Merge successfully translated keys
                 $translated_results = array_merge($translated_results, $decoded_chunk);
                 $chunk_index++;
+            }
+
+            // Restore placeholders in translated_results
+            foreach ($translated_results as $key => &$val) {
+                if (is_string($val)) {
+                    // Restore URLs
+                    foreach ($url_map as $placeholder => $url) {
+                        $pl_pattern = '/<' . preg_quote(rtrim($placeholder, ' />'), '/') . '\s*\/>/i';
+                        $val = preg_replace($pl_pattern, $url, $val);
+                    }
+                    // Restore Emails
+                    foreach ($email_map as $placeholder => $email) {
+                        $pl_pattern = '/<' . preg_quote(rtrim($placeholder, ' />'), '/') . '\s*\/>/i';
+                        $val = preg_replace($pl_pattern, $email, $val);
+                    }
+                }
             }
 
             // 7. Compile translated elements
@@ -240,5 +266,42 @@ class CV_OAI_PLL_Translator {
         }
 
         return ucfirst($code);
+    }
+
+    /**
+     * Replaces URLs in text with placeholders.
+     */
+    public static function replace_urls_with_placeholders($text, &$url_map) {
+        $pattern = '/https?:\/\/[^\s\'"<>\(\)]+/i';
+        return preg_replace_callback($pattern, function($matches) use (&$url_map) {
+            $url = $matches[0];
+            $clean_url = rtrim($url, '.,;:!?');
+            $punctuation = substr($url, strlen($clean_url));
+            
+            $placeholder = array_search($clean_url, $url_map, true);
+            if ($placeholder === false) {
+                $index = count($url_map);
+                $placeholder = '<url-' . $index . ' />';
+                $url_map[$placeholder] = $clean_url;
+            }
+            return $placeholder . $punctuation;
+        }, $text);
+    }
+
+    /**
+     * Replaces emails in text with placeholders.
+     */
+    public static function replace_emails_with_placeholders($text, &$email_map) {
+        $pattern = '/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i';
+        return preg_replace_callback($pattern, function($matches) use (&$email_map) {
+            $email = $matches[0];
+            $placeholder = array_search($email, $email_map, true);
+            if ($placeholder === false) {
+                $index = count($email_map);
+                $placeholder = '<email-' . $index . ' />';
+                $email_map[$placeholder] = $email;
+            }
+            return $placeholder;
+        }, $text);
     }
 }

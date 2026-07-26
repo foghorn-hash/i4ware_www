@@ -66,39 +66,47 @@ class CV_OAI_PLL_Validator {
                     return new WP_Error('validation_security_iframe', __('Security check failed: The translation introduced an unauthorized <iframe> tag.', 'cv-openai-polylang-translator'));
                 }
 
-                // Extract URLs and verify presence
-                $source_urls = self::extract_urls($source_val_clean);
-                $trans_urls  = self::extract_urls($trans_val_clean);
-                foreach ($source_urls as $url) {
-                    if (!in_array($url, $trans_urls, true)) {
-                        return new WP_Error(
-                            'validation_missing_url',
-                            sprintf(__('Validation failed: URL "%s" was missing or altered in translation.', 'cv-openai-polylang-translator'), $url)
-                        );
+                // Extract and verify URL placeholders
+                preg_match_all('/<url-\d+\s*\/>/i', $source_val_clean, $source_url_pls);
+                preg_match_all('/<url-\d+\s*\/>/i', $trans_val_clean, $trans_url_pls);
+                if (is_array($source_url_pls) && !empty($source_url_pls[0])) {
+                    foreach ($source_url_pls[0] as $pl) {
+                        $norm_pl = preg_replace('/\s+/', '', strtolower($pl));
+                        $found = false;
+                        foreach ($trans_url_pls[0] as $tpl) {
+                            if (preg_replace('/\s+/', '', strtolower($tpl)) === $norm_pl) {
+                                $found = true;
+                                break;
+                            }
+                        }
+                        if (!$found) {
+                            return new WP_Error(
+                                'validation_missing_url',
+                                sprintf(__('Validation failed: URL was missing or altered in translation.', 'cv-openai-polylang-translator'))
+                            );
+                        }
                     }
                 }
 
-                // Verify no unknown external domains are introduced
-                $source_hosts = array_filter(array_map(function($url) { return parse_url($url, PHP_URL_HOST); }, $source_urls));
-                $trans_hosts  = array_filter(array_map(function($url) { return parse_url($url, PHP_URL_HOST); }, $trans_urls));
-                foreach ($trans_hosts as $host) {
-                    if ($host && !in_array($host, $source_hosts, true)) {
-                        return new WP_Error(
-                            'validation_new_domain',
-                            sprintf(__('Validation failed: Unknown domain name "%s" was introduced in translation.', 'cv-openai-polylang-translator'), $host)
-                        );
-                    }
-                }
-
-                // Extract and verify Email addresses
-                $source_emails = self::extract_emails($source_val_clean);
-                $trans_emails  = self::extract_emails($trans_val_clean);
-                foreach ($source_emails as $email) {
-                    if (!in_array($email, $trans_emails, true)) {
-                        return new WP_Error(
-                            'validation_missing_email',
-                            sprintf(__('Validation failed: Email address "%s" was missing or altered in translation.', 'cv-openai-polylang-translator'), $email)
-                        );
+                // Extract and verify Email placeholders
+                preg_match_all('/<email-\d+\s*\/>/i', $source_val_clean, $source_email_pls);
+                preg_match_all('/<email-\d+\s*\/>/i', $trans_val_clean, $trans_email_pls);
+                if (is_array($source_email_pls) && !empty($source_email_pls[0])) {
+                    foreach ($source_email_pls[0] as $pl) {
+                        $norm_pl = preg_replace('/\s+/', '', strtolower($pl));
+                        $found = false;
+                        foreach ($trans_email_pls[0] as $tpl) {
+                            if (preg_replace('/\s+/', '', strtolower($tpl)) === $norm_pl) {
+                                $found = true;
+                                break;
+                            }
+                        }
+                        if (!$found) {
+                            return new WP_Error(
+                                'validation_missing_email',
+                                sprintf(__('Validation failed: Email address was missing or altered in translation.', 'cv-openai-polylang-translator'))
+                            );
+                        }
                     }
                 }
 
