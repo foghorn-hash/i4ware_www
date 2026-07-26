@@ -115,7 +115,7 @@ class CV_OAI_PLL_Translator {
                         ],
                         [
                             'role'    => 'user',
-                            'content' => wp_json_encode($chunk),
+                            'content' => "Translate the following JSON object translatable fields into " . $target_language_name . ". IMPORTANT: Do not translate or transliterate trademark names, product names, or technology identifiers (such as i4ware, Atlassian, Jira, WordPress, OpenAI, Microsoft, SAP, ERP, SaaS, Polylang, ACF, Freshworks, Freshchat, Microsoft Teams). They must remain in Latin (English) characters exactly as written. Return only the translated JSON matching the structure:\n\n" . wp_json_encode($chunk),
                         ],
                     ],
                 ];
