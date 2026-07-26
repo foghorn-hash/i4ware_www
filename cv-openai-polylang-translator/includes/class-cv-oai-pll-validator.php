@@ -207,8 +207,9 @@ class CV_OAI_PLL_Validator {
      * Helper: Extract phone numbers from text.
      */
     private static function extract_phone_numbers($text) {
-        // Matches typical phone formats, e.g. +358 40 1234567, or 040-1234567, etc.
-        preg_match_all('/\+?[0-9][0-9\s\-]{4,}[0-9]/', $text, $matches);
+        // Matches typical phone formats starting with + (international) or 0 (local Finnish), e.g. +358 40 123 4567 or 040-1234567.
+        // Prevents matching generic numbers with spaces like "300 000" or dates like "2026-07-26".
+        preg_match_all('/(?:\+[0-9\s\-]{6,15}|0[0-9\s\-]{5,12})[0-9]/', $text, $matches);
         return is_array($matches) && !empty($matches[0]) ? array_unique(array_map('trim', $matches[0])) : [];
     }
 
