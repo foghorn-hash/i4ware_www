@@ -67,14 +67,13 @@ class CV_OAI_PLL_Validator {
                 }
 
                 // Extract and verify URL placeholders
-                preg_match_all('/<url-\d+\s*\/>/i', $source_val_clean, $source_url_pls);
-                preg_match_all('/<url-\d+\s*\/>/i', $trans_val_clean, $trans_url_pls);
+                preg_match_all('/URLPLACEHOLDER_\d+/i', $source_val_clean, $source_url_pls);
+                preg_match_all('/URLPLACEHOLDER_\d+/i', $trans_val_clean, $trans_url_pls);
                 if (is_array($source_url_pls) && !empty($source_url_pls[0])) {
                     foreach ($source_url_pls[0] as $pl) {
-                        $norm_pl = preg_replace('/\s+/', '', strtolower($pl));
                         $found = false;
                         foreach ($trans_url_pls[0] as $tpl) {
-                            if (preg_replace('/\s+/', '', strtolower($tpl)) === $norm_pl) {
+                            if (strcasecmp($tpl, $pl) === 0) {
                                 $found = true;
                                 break;
                             }
@@ -89,14 +88,13 @@ class CV_OAI_PLL_Validator {
                 }
 
                 // Extract and verify Email placeholders
-                preg_match_all('/<email-\d+\s*\/>/i', $source_val_clean, $source_email_pls);
-                preg_match_all('/<email-\d+\s*\/>/i', $trans_val_clean, $trans_email_pls);
+                preg_match_all('/EMAILPLACEHOLDER_\d+/i', $source_val_clean, $source_email_pls);
+                preg_match_all('/EMAILPLACEHOLDER_\d+/i', $trans_val_clean, $trans_email_pls);
                 if (is_array($source_email_pls) && !empty($source_email_pls[0])) {
                     foreach ($source_email_pls[0] as $pl) {
-                        $norm_pl = preg_replace('/\s+/', '', strtolower($pl));
                         $found = false;
                         foreach ($trans_email_pls[0] as $tpl) {
-                            if (preg_replace('/\s+/', '', strtolower($tpl)) === $norm_pl) {
+                            if (strcasecmp($tpl, $pl) === 0) {
                                 $found = true;
                                 break;
                             }

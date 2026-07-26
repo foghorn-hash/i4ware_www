@@ -156,13 +156,11 @@ class CV_OAI_PLL_Translator {
                 if (is_string($val)) {
                     // Restore URLs
                     foreach ($url_map as $placeholder => $url) {
-                        $pl_pattern = '/<' . preg_quote(rtrim($placeholder, ' />'), '/') . '\s*\/>/i';
-                        $val = preg_replace($pl_pattern, $url, $val);
+                        $val = str_replace($placeholder, $url, $val);
                     }
                     // Restore Emails
                     foreach ($email_map as $placeholder => $email) {
-                        $pl_pattern = '/<' . preg_quote(rtrim($placeholder, ' />'), '/') . '\s*\/>/i';
-                        $val = preg_replace($pl_pattern, $email, $val);
+                        $val = str_replace($placeholder, $email, $val);
                     }
                 }
             }
@@ -281,7 +279,7 @@ class CV_OAI_PLL_Translator {
             $placeholder = array_search($clean_url, $url_map, true);
             if ($placeholder === false) {
                 $index = count($url_map);
-                $placeholder = '<url-' . $index . ' />';
+                $placeholder = 'URLPLACEHOLDER_' . $index;
                 $url_map[$placeholder] = $clean_url;
             }
             return $placeholder . $punctuation;
@@ -298,7 +296,7 @@ class CV_OAI_PLL_Translator {
             $placeholder = array_search($email, $email_map, true);
             if ($placeholder === false) {
                 $index = count($email_map);
-                $placeholder = '<email-' . $index . ' />';
+                $placeholder = 'EMAILPLACEHOLDER_' . $index;
                 $email_map[$placeholder] = $email;
             }
             return $placeholder;
