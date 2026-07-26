@@ -214,10 +214,23 @@ class CV_OAI_PLL_Validator {
     }
 
     /**
+     * Helper: Convert Eastern Arabic/Persian Indic digits to Western Latin digits.
+     */
+    private static function normalize_indic_digits($text) {
+        $eastern = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        $persian = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+        $western = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        $text = str_replace($eastern, $western, $text);
+        return str_replace($persian, $western, $text);
+    }
+
+    /**
      * Helper: Extract numbers (integers and decimals) from text.
+     * Ignores single digits (0-9) to allow natural translations to words (like "one").
      */
     private static function extract_numbers($text) {
-        preg_match_all('/\b\d+(?:[\.,]\d+)?\b/', $text, $matches);
+        $text = self::normalize_indic_digits($text);
+        preg_match_all('/\b(?:\d{2,}|\d+[\.,]\d+)\b/', $text, $matches);
         return is_array($matches) && !empty($matches[0]) ? array_unique($matches[0]) : [];
     }
 
