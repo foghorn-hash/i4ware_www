@@ -53,7 +53,7 @@ function i4ware_breadcrumbs() {
 }
 
 ?>
-<html lang="<?php echo esc_attr($lang); ?>">
+<html <?php language_attributes(); ?>>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
