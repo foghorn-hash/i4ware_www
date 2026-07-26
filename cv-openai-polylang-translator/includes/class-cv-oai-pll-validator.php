@@ -137,8 +137,6 @@ class CV_OAI_PLL_Validator {
                     'OpenAI',
                     'Microsoft',
                     'SAP',
-                    'ERP',
-                    'SaaS',
                     'WordPress',
                     'Polylang',
                     'Advanced Custom Fields',
