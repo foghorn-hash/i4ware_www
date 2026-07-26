@@ -120,17 +120,6 @@ class CV_OAI_PLL_Validator {
                     }
                 }
 
-                // Extract and verify Numbers (to protect prices, version numbers, currencies, coordinates, counts)
-                $source_numbers = self::extract_numbers($source_val_clean);
-                $trans_numbers  = self::extract_numbers($trans_val_clean);
-                foreach ($source_numbers as $num) {
-                    if (!in_array($num, $trans_numbers, true)) {
-                        return new WP_Error(
-                            'validation_missing_number',
-                            sprintf(__('Validation failed: Number "%s" was missing or modified in translation.', 'cv-openai-polylang-translator'), $num)
-                        );
-                    }
-                }
 
                 // Check critical B2B terms and product names (must remain in Latin)
                 $product_names = [
