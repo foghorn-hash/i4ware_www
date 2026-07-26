@@ -80,7 +80,7 @@ class CV_OAI_PLL_OpenAI_Client {
             "Translate only the human-readable text that is explicitly marked as translatable.\n\n" .
             "Do not add, remove or invent facts.\n\n" .
             "Do not invent product features, customer references, prices, legal claims, security claims, compliance claims or business promises.\n\n" .
-            "Preserve product names, trademarks, URLs, email addresses, phone numbers, currencies, dates, numbers, version numbers and technical identifiers.\n\n" .
+            "Preserve product names and trademarks (they must remain in Latin/English characters and not be translated or transliterated, e.g.: i4ware, i4ware Software, i4ware®, Timesheet for Jira, Jira, Atlassian, OpenAI, Microsoft, SAP, ERP, SaaS, WordPress, Polylang, Advanced Custom Fields, ACF, Freshworks, Freshchat, Microsoft Teams), URLs, email addresses, phone numbers, currencies, dates, numbers, version numbers and technical identifiers.\n\n" .
             "Preserve HTML tags, Gutenberg block structure, shortcodes, JSON metadata, CSS classes, attachment IDs, image URLs, video URLs, YouTube embeds and iframe sources.\n\n" .
             "Images, featured images, galleries, videos, audio files and embedded YouTube videos must remain original.\n\n" .
             "Do not translate code, JavaScript, CSS, PHP, JSON, shortcode attributes or URL parameters.\n\n" .
