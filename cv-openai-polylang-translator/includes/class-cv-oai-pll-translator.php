@@ -216,6 +216,9 @@ class CV_OAI_PLL_Translator {
                 pll_save_post_translations($translations);
             }
 
+            // Synchronize and translate post categories and tags
+            self::sync_post_taxonomies($post_id, $new_post_id, $target_lang, $api_key, $model);
+
             // 12. Save post meta details
             update_post_meta($new_post_id, '_cv_oai_source_post_id', (int) $post_id);
             update_post_meta($new_post_id, '_cv_oai_source_language', sanitize_text_field($source_lang));
@@ -301,5 +304,93 @@ class CV_OAI_PLL_Translator {
             }
             return $placeholder;
         }, $text);
+    }
+
+    /**
+     * Synchronizes and translates categories and tags from the source post to the translated post.
+     */
+    private static function sync_post_taxonomies($source_post_id, $translated_post_id, $target_lang, $api_key, $model) {
+        $taxonomies = ['category', 'post_tag'];
+        
+        foreach ($taxonomies as $taxonomy) {
+            $source_terms = wp_get_object_terms($source_post_id, $taxonomy);
+            if (is_wp_error($source_terms) || empty($source_terms)) {
+                continue;
+            }
+            
+            $target_term_ids = [];
+            
+            foreach ($source_terms as $source_term) {
+                // Check if a translation already exists in Polylang
+                $translated_term_id = 0;
+                if (function_exists('pll_get_term')) {
+                    $translated_term_id = pll_get_term($source_term->term_id, $target_lang);
+                }
+                
+                if ($translated_term_id) {
+                    $target_term_ids[] = (int) $translated_term_id;
+                } else {
+                    // Translate the term using OpenAI
+                    $term_name = $source_term->name;
+                    $target_language_name = self::get_language_name_by_code($target_lang);
+                    
+                    $prompt = [
+                        'model'       => $model,
+                        'temperature' => 0.1,
+                        'messages'    => [
+                            [
+                                'role'    => 'system',
+                                'content' => sprintf("You are a professional localization translator. Translate the following WordPress %s name from Finnish to %s. Return only the translated name, nothing else.", $taxonomy, $target_language_name),
+                            ],
+                            [
+                                'role'    => 'user',
+                                'content' => $term_name,
+                            ]
+                        ]
+                    ];
+                    
+                    $translated_name = CV_OAI_PLL_OpenAI_Client::translate_payload($prompt, $api_key);
+                    if (!is_wp_error($translated_name)) {
+                        $translated_name = trim(strip_tags($translated_name));
+                        // Create the new term in the target language
+                        $new_term = wp_insert_term($translated_name, $taxonomy);
+                        if (!is_wp_error($new_term) && isset($new_term['term_id'])) {
+                            $new_term_id = (int) $new_term['term_id'];
+                            
+                            // Link term in Polylang
+                            if (function_exists('pll_set_term_language')) {
+                                pll_set_term_language($new_term_id, $target_lang);
+                            }
+                            if (function_exists('pll_save_term_translations') && function_exists('pll_get_term')) {
+                                $source_lang = 'fi'; // Source is always Finnish
+                                $translations = [
+                                    $source_lang => $source_term->term_id,
+                                    $target_lang => $new_term_id,
+                                ];
+                                // Add other language links if available
+                                if (function_exists('pll_languages_list')) {
+                                    $langs = pll_languages_list();
+                                    foreach ($langs as $l) {
+                                        if ($l !== $source_lang && $l !== $target_lang) {
+                                            $existing_lang_term = pll_get_term($source_term->term_id, $l);
+                                            if ($existing_lang_term) {
+                                                $translations[$l] = $existing_lang_term;
+                                            }
+                                        }
+                                    }
+                                }
+                                pll_save_term_translations($translations);
+                            }
+                            
+                            $target_term_ids[] = $new_term_id;
+                        }
+                    }
+                }
+            }
+            
+            if (!empty($target_term_ids)) {
+                wp_set_object_terms($translated_post_id, $target_term_ids, $taxonomy);
+            }
+        }
     }
 }
