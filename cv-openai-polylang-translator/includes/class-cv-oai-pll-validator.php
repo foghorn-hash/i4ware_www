@@ -179,7 +179,14 @@ class CV_OAI_PLL_Validator {
      */
     private static function extract_urls($text) {
         preg_match_all('/https?:\/\/[^\s\'"<>\(\)]+/i', $text, $matches);
-        return is_array($matches) && !empty($matches[0]) ? array_unique($matches[0]) : [];
+        if (is_array($matches) && !empty($matches[0])) {
+            $urls = [];
+            foreach ($matches[0] as $url) {
+                $urls[] = rtrim($url, '.,;:!?');
+            }
+            return array_unique($urls);
+        }
+        return [];
     }
 
     /**
