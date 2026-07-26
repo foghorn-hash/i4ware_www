@@ -13,7 +13,8 @@ let strings = new LocalizedStrings({
     all: "All Sources",
     atlassian: "Atlassian Pty Ltd",
     kela: "KELA/VARMA/Insurance",
-    tyomarkkinatuki: "Employment support",
+    tyomarkkinatuki: "KELA/Employment support",
+    toimtuki: "KELA/Toimeentulotuki",
     student: "Student Income Support",
     hourly: "Hourly Rate Customers",
     grandparents: "Grandparents' Inheritance",
@@ -26,8 +27,8 @@ let strings = new LocalizedStrings({
     all: "Kaikki lähteet",
     atlassian: "Atlassian Pty Ltd",
     kela: "KELA/VARMA/Vakuutus",
-    tyomarkkinatuki: "Työmarkkinatuki",
-    toimeentulotuki: "Toimeentulotuki",
+    tyomarkkinatuki: "KELA/Työmarkkinatuki",
+    toimtuki: "KELA/Toimeentulotuki",
     student: "Opiskelijan opintotuki",
     hourly: "Tuntiveloitusasiakkaat",
     grandparents: "Isovanhempien perintö",
@@ -40,8 +41,8 @@ let strings = new LocalizedStrings({
     all: "Alla källor",
     atlassian: "Atlassian Pty Ltd",
     kela: "KELA/VARMA/Försäkring",
-    tyomarkkinatuki: "Arbetsmarknadsstöd",
-    toimeentulotuki: "Existensstöd",
+    tyomarkkinatuki: "KELA/Arbetsmarknadsstöd",
+    toimtuki: "KELA/Existensstöd",
     student: "Studentinkomststöd",
     hourly: "Timdebiterade kunder",
     grandparents: "Mor- och farföräldrars arv",
@@ -114,7 +115,7 @@ const Charts = () => {
           <option value="hourly">{strings.hourly}</option>
           <option value="kela">{strings.kela}</option>
           <option value="tyomarkkinatuki">{strings.tyomarkkinatuki}</option>
-          <option value="toimeentulotuki">{strings.toimeentulotuki}</option>
+          <option value="toimtuki">{strings.toimtuki}</option>
           <option value="student">{strings.student}</option>
           <option value="grandparents">{strings.grandparents}</option>
           <option value="capital">{strings.capital}</option>
