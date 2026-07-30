@@ -3,7 +3,7 @@
  * Class CV_OAI_PLL_Admin
  *
  * Handles WordPress admin settings, post editing meta boxes, asset enqueuing,
- * and AJAX translation request handling.
+ * settings tabs, and AJAX translation request handling (single post & queue system).
  *
  * @package CV_OpenAI_Polylang_Translator
  */
@@ -23,7 +23,16 @@ class CV_OAI_PLL_Admin {
         add_action('add_meta_boxes', [$this, 'add_meta_boxes']);
         add_action('save_post', [$this, 'save_meta_box_data']);
         add_action('admin_enqueue_scripts', [$this, 'enqueue_assets']);
+        
+        // Single post AJAX handler
         add_action('wp_ajax_cv_oai_pll_translate', [$this, 'handle_ajax_translation']);
+
+        // Queue AJAX handlers
+        add_action('wp_ajax_cv_oai_pll_scan_content', [$this, 'handle_ajax_scan_content']);
+        add_action('wp_ajax_cv_oai_pll_process_queue_batch', [$this, 'handle_ajax_process_queue_batch']);
+        add_action('wp_ajax_cv_oai_pll_get_queue_stats', [$this, 'handle_ajax_get_queue_stats']);
+        add_action('wp_ajax_cv_oai_pll_retry_failed', [$this, 'handle_ajax_retry_failed']);
+        add_action('wp_ajax_cv_oai_pll_clear_queue', [$this, 'handle_ajax_clear_queue']);
     }
 
     /**
@@ -35,6 +44,7 @@ class CV_OAI_PLL_Admin {
         register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_post_types');
         register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_acf_fields');
         register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_cooldown');
+        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_custom_fields');
     }
 
     /**
@@ -51,16 +61,20 @@ class CV_OAI_PLL_Admin {
     }
 
     /**
-     * Renders the options settings page.
+     * Renders the options settings page with two tabs.
      */
     public function render_settings_page() {
         if (!current_user_can('manage_options')) {
             return;
         }
 
-        $api_key    = get_option('cv_oai_pll_api_key', '');
-        $model      = get_option('cv_oai_pll_model', 'gpt-4o-mini');
-        $cooldown   = get_option('cv_oai_pll_cooldown', '0');
+        $active_tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'settings';
+
+        $api_key       = get_option('cv_oai_pll_api_key', '');
+        $model         = get_option('cv_oai_pll_model', 'gpt-4o-mini');
+        $cooldown      = get_option('cv_oai_pll_cooldown', '0');
+        $custom_fields = get_option('cv_oai_pll_custom_fields', "_yoast_wpseo_title\n_yoast_wpseo_metadesc\n_rank_math_title\n_rank_math_description");
+        
         $post_types = get_option('cv_oai_pll_post_types', ['post', 'page']);
         if (!is_array($post_types)) {
             $post_types = ['post', 'page'];
@@ -93,154 +107,296 @@ class CV_OAI_PLL_Admin {
                 }
             }
         }
+
+        // Polylang target languages list
+        $target_languages = [];
+        if (function_exists('pll_languages_list')) {
+            $pll_languages = pll_languages_list(['fields' => null]);
+            if (is_array($pll_languages)) {
+                foreach ($pll_languages as $l) {
+                    if ($l->slug !== 'fi') {
+                        $target_languages[] = $l;
+                    }
+                }
+            }
+        }
         ?>
         <div class="wrap cv-oai-pll-settings-wrap">
-            <h1><?php esc_html_e('OpenAI Polylang Translator Settings', 'cv-openai-polylang-translator'); ?></h1>
-            <form method="post" action="options.php">
-                <?php settings_fields('cv_oai_pll_settings_group'); ?>
-                
-                <table class="form-table" role="presentation">
-                    <!-- OpenAI API Key -->
-                    <tr>
-                        <th scope="row">
-                            <label for="cv_oai_pll_api_key"><?php esc_html_e('OpenAI API Key', 'cv-openai-polylang-translator'); ?></label>
-                        </th>
-                        <td>
-                            <input type="password" id="cv_oai_pll_api_key" name="cv_oai_pll_api_key" value="<?php echo esc_attr($api_key); ?>" class="regular-text" autocomplete="off" />
-                            <p class="description"><?php esc_html_e('Your confidential API key remains hidden on load and is never logged.', 'cv-openai-polylang-translator'); ?></p>
-                        </td>
-                    </tr>
+            <h1><?php esc_html_e('OpenAI Polylang Translator Dashboard', 'cv-openai-polylang-translator'); ?></h1>
+            
+            <h2 class="nav-tab-wrapper" style="margin-bottom: 20px;">
+                <a href="?page=cv-oai-polylang-translator&tab=settings" class="nav-tab <?php echo $active_tab === 'settings' ? 'nav-tab-active' : ''; ?>">
+                    <?php esc_html_e('Settings', 'cv-openai-polylang-translator'); ?>
+                </a>
+                <a href="?page=cv-oai-polylang-translator&tab=queue" class="nav-tab <?php echo $active_tab === 'queue' ? 'nav-tab-active' : ''; ?>">
+                    <?php esc_html_e('Translation Queue & Worker', 'cv-openai-polylang-translator'); ?>
+                </a>
+            </h2>
 
-                    <!-- OpenAI Model -->
-                    <tr>
-                        <th scope="row">
-                            <label for="cv_oai_pll_model"><?php esc_html_e('OpenAI Model', 'cv-openai-polylang-translator'); ?></label>
-                        </th>
-                        <td>
-                            <input type="text" id="cv_oai_pll_model" name="cv_oai_pll_model" value="<?php echo esc_attr($model); ?>" class="regular-text" placeholder="gpt-4o-mini" />
-                            <p class="description"><?php esc_html_e('Recommended: gpt-4o-mini or gpt-4o for best structural adherence and B2B translation quality.', 'cv-openai-polylang-translator'); ?></p>
-                        </td>
-                    </tr>
-
-                    <!-- Cooldown -->
-                    <tr>
-                        <th scope="row">
-                            <label for="cv_oai_pll_cooldown"><?php esc_html_e('Translation Cooldown (seconds)', 'cv-openai-polylang-translator'); ?></label>
-                        </th>
-                        <td>
-                            <input type="number" id="cv_oai_pll_cooldown" name="cv_oai_pll_cooldown" value="<?php echo esc_attr($cooldown); ?>" class="small-text" min="0" max="60" />
-                            <p class="description"><?php esc_html_e('Optional delay (cooldown) between consecutive OpenAI API chunk requests (0 to disable). Helps avoid API rate limit triggers.', 'cv-openai-polylang-translator'); ?></p>
-                        </td>
-                    </tr>
-
-                    <!-- Post Types -->
-                    <tr>
-                        <th scope="row"><?php esc_html_e('Supported Post Types', 'cv-openai-polylang-translator'); ?></th>
-                        <td>
-                            <fieldset>
-                                <?php foreach ($all_post_types as $pt_slug => $pt_obj) : ?>
-                                    <label style="display:block; margin-bottom: 5px;">
-                                        <input type="checkbox" name="cv_oai_pll_post_types[]" value="<?php echo esc_attr($pt_slug); ?>" <?php checked(in_array($pt_slug, $post_types, true)); ?> />
-                                        <?php echo esc_html($pt_obj->label); ?> (<code><?php echo esc_html($pt_slug); ?></code>)
-                                    </label>
-                                <?php endforeach; ?>
-                            </fieldset>
-                        </td>
-                    </tr>
-
-                    <!-- Translate ACF Fields Option -->
-                    <tr>
-                        <th scope="row"><?php esc_html_e('Translate ACF fields', 'cv-openai-polylang-translator'); ?></th>
-                        <td>
-                            <?php if (empty($all_acf_fields)) : ?>
-                                <p class="description">
-                                    <?php if (!function_exists('acf_get_field_groups')) : ?>
-                                        <?php esc_html_e('Advanced Custom Fields is not active.', 'cv-openai-polylang-translator'); ?>
-                                    <?php else : ?>
-                                        <?php esc_html_e('No Advanced Custom Fields registered.', 'cv-openai-polylang-translator'); ?>
-                                    <?php endif; ?>
-                                </p>
-                            <?php else : ?>
-                                <p class="description" style="margin-bottom: 10px;"><?php esc_html_e('Choose which ACF field names are enabled for translation. Only textual sub-fields of repeaters, flexible layouts, groups, or text areas will be parsed.', 'cv-openai-polylang-translator'); ?></p>
-                                <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: #fff; max-width: 500px;">
-                                    <?php foreach ($all_acf_fields as $field) : ?>
-                                        <label style="display:block; margin-bottom: 5px;">
-                                            <input type="checkbox" name="cv_oai_pll_acf_fields[]" value="<?php echo esc_attr($field['name']); ?>" <?php checked(in_array($field['name'], $acf_fields, true)); ?> />
-                                            <strong><?php echo esc_html($field['label']); ?></strong> (<code><?php echo esc_html($field['name']); ?></code>) - <span class="description"><?php echo esc_html($field['type']); ?></span>
-                                        </label>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                </table>
-                
-                <?php submit_button(__('Save settings', 'cv-openai-polylang-translator')); ?>
-            </form>
-
-            <hr style="margin: 30px 0;" />
-
-            <h2><?php esc_html_e('Translation Run Logs & History', 'cv-openai-polylang-translator'); ?></h2>
-            <?php
-            $history = CV_OAI_PLL_Logger::get_global_history();
-            if (empty($history)) :
-                echo '<p>' . esc_html__('No translation history logged yet.', 'cv-openai-polylang-translator') . '</p>';
-            else :
-                ?>
-                <table class="wp-list-table widefat fixed striped">
-                    <thead>
-                        <tr>
-                            <th><?php esc_html_e('Date', 'cv-openai-polylang-translator'); ?></th>
-                            <th><?php esc_html_e('Source ID', 'cv-openai-polylang-translator'); ?></th>
-                            <th><?php esc_html_e('Draft ID', 'cv-openai-polylang-translator'); ?></th>
-                            <th><?php esc_html_e('Target Language', 'cv-openai-polylang-translator'); ?></th>
-                            <th><?php esc_html_e('Model', 'cv-openai-polylang-translator'); ?></th>
-                            <th><?php esc_html_e('Fields', 'cv-openai-polylang-translator'); ?></th>
-                            <th><?php esc_html_e('Duration', 'cv-openai-polylang-translator'); ?></th>
-                            <th><?php esc_html_e('Result', 'cv-openai-polylang-translator'); ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($history as $log) : ?>
+            <div class="tab-content">
+                <?php if ($active_tab === 'settings') : ?>
+                    <!-- Settings Tab Content -->
+                    <form method="post" action="options.php">
+                        <?php settings_fields('cv_oai_pll_settings_group'); ?>
+                        
+                        <table class="form-table" role="presentation">
+                            <!-- OpenAI API Key -->
                             <tr>
-                                <td><?php echo esc_html($log['date']); ?></td>
+                                <th scope="row">
+                                    <label for="cv_oai_pll_api_key"><?php esc_html_e('OpenAI API Key', 'cv-openai-polylang-translator'); ?></label>
+                                </th>
                                 <td>
-                                    <?php
-                                    $src_title = get_the_title($log['source_post_id']);
-                                    $src_title = $src_title ? $src_title : '#' . $log['source_post_id'];
-                                    echo '<a href="' . esc_url(get_edit_post_link($log['source_post_id'])) . '">' . esc_html($src_title) . '</a>';
-                                    ?>
+                                    <input type="password" id="cv_oai_pll_api_key" name="cv_oai_pll_api_key" value="<?php echo esc_attr($api_key); ?>" class="regular-text" autocomplete="off" />
+                                    <p class="description"><?php esc_html_e('Your confidential API key remains hidden on load and is never logged.', 'cv-openai-polylang-translator'); ?></p>
                                 </td>
+                            </tr>
+
+                            <!-- OpenAI Model -->
+                            <tr>
+                                <th scope="row">
+                                    <label for="cv_oai_pll_model"><?php esc_html_e('OpenAI Model', 'cv-openai-polylang-translator'); ?></label>
+                                </th>
                                 <td>
-                                    <?php
-                                    if ($log['success'] && $log['draft_id']) {
-                                        $draft_title = get_the_title($log['draft_id']);
-                                        $draft_title = $draft_title ? $draft_title : '#' . $log['draft_id'];
-                                        echo '<a href="' . esc_url(get_edit_post_link($log['draft_id'])) . '">' . esc_html($draft_title) . '</a>';
-                                    } else {
-                                        echo '-';
-                                    }
-                                    ?>
+                                    <input type="text" id="cv_oai_pll_model" name="cv_oai_pll_model" value="<?php echo esc_attr($model); ?>" class="regular-text" placeholder="gpt-4o-mini" />
+                                    <p class="description"><?php esc_html_e('Recommended: gpt-4o-mini or gpt-4o for best structural adherence and B2B translation quality.', 'cv-openai-polylang-translator'); ?></p>
                                 </td>
-                                <td><code><?php echo esc_html($log['target_lang']); ?></code></td>
-                                <td><?php echo esc_html($log['model']); ?></td>
-                                <td><?php echo esc_html($log['num_fields']); ?></td>
-                                <td><?php echo esc_html($log['duration']); ?>s</td>
+                            </tr>
+
+                            <!-- Cooldown -->
+                            <tr>
+                                <th scope="row">
+                                    <label for="cv_oai_pll_cooldown"><?php esc_html_e('Translation Cooldown (seconds)', 'cv-openai-polylang-translator'); ?></label>
+                                </th>
                                 <td>
-                                    <?php if ($log['success']) : ?>
-                                        <span style="color: green; font-weight: bold;"><?php esc_html_e('Success', 'cv-openai-polylang-translator'); ?></span>
+                                    <input type="number" id="cv_oai_pll_cooldown" name="cv_oai_pll_cooldown" value="<?php echo esc_attr($cooldown); ?>" class="small-text" min="0" max="60" />
+                                    <p class="description"><?php esc_html_e('Optional delay (cooldown) between consecutive OpenAI API chunk requests (0 to disable). Helps avoid API rate limit triggers.', 'cv-openai-polylang-translator'); ?></p>
+                                </td>
+                            </tr>
+
+                            <!-- Post Types -->
+                            <tr>
+                                <th scope="row"><?php esc_html_e('Supported Post Types', 'cv-openai-polylang-translator'); ?></th>
+                                <td>
+                                    <fieldset>
+                                        <?php foreach ($all_post_types as $pt_slug => $pt_obj) : ?>
+                                            <label style="display:block; margin-bottom: 5px;">
+                                                <input type="checkbox" name="cv_oai_pll_post_types[]" value="<?php echo esc_attr($pt_slug); ?>" <?php checked(in_array($pt_slug, $post_types, true)); ?> />
+                                                <?php echo esc_html($pt_obj->label); ?> (<code><?php echo esc_html($pt_slug); ?></code>)
+                                            </label>
+                                        <?php endforeach; ?>
+                                    </fieldset>
+                                </td>
+                            </tr>
+
+                            <!-- Custom / SEO Fields -->
+                            <tr>
+                                <th scope="row">
+                                    <label for="cv_oai_pll_custom_fields"><?php esc_html_e('Custom Fields to Translate', 'cv-openai-polylang-translator'); ?></label>
+                                </th>
+                                <td>
+                                    <textarea id="cv_oai_pll_custom_fields" name="cv_oai_pll_custom_fields" rows="5" class="regular-text" style="font-family: monospace;"><?php echo esc_textarea($custom_fields); ?></textarea>
+                                    <p class="description"><?php esc_html_e('Enter custom field meta keys (e.g. Yoast SEO or RankMath keys) to extract and translate from posts, one per line.', 'cv-openai-polylang-translator'); ?></p>
+                                </td>
+                            </tr>
+
+                            <!-- Translate ACF Fields Option -->
+                            <tr>
+                                <th scope="row"><?php esc_html_e('Translate ACF fields', 'cv-openai-polylang-translator'); ?></th>
+                                <td>
+                                    <?php if (empty($all_acf_fields)) : ?>
+                                        <p class="description">
+                                            <?php if (!function_exists('acf_get_field_groups')) : ?>
+                                                <?php esc_html_e('Advanced Custom Fields is not active.', 'cv-openai-polylang-translator'); ?>
+                                            <?php else : ?>
+                                                <?php esc_html_e('No Advanced Custom Fields registered.', 'cv-openai-polylang-translator'); ?>
+                                            <?php endif; ?>
+                                        </p>
                                     <?php else : ?>
-                                        <span style="color: red; font-weight: bold;"><?php esc_html_e('Failed', 'cv-openai-polylang-translator'); ?></span>
-                                        <div style="font-size: 11px; color: #666; margin-top: 3px; max-width: 250px; white-space: normal; word-break: break-all;">
-                                            <?php echo esc_html($log['error_message']); ?>
+                                        <p class="description" style="margin-bottom: 10px;"><?php esc_html_e('Choose which ACF field names are enabled for translation. Only textual sub-fields of repeaters, flexible layouts, groups, or text areas will be parsed.', 'cv-openai-polylang-translator'); ?></p>
+                                        <div style="max-height: 250px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; background: #fff; max-width: 500px;">
+                                            <?php foreach ($all_acf_fields as $field) : ?>
+                                                <label style="display:block; margin-bottom: 5px;">
+                                                    <input type="checkbox" name="cv_oai_pll_acf_fields[]" value="<?php echo esc_attr($field['name']); ?>" <?php checked(in_array($field['name'], $acf_fields, true)); ?> />
+                                                    <strong><?php echo esc_html($field['label']); ?></strong> (<code><?php echo esc_html($field['name']); ?></code>) - <span class="description"><?php echo esc_html($field['type']); ?></span>
+                                                </label>
+                                            <?php endforeach; ?>
                                         </div>
                                     <?php endif; ?>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            <?php endif; ?>
+                        </table>
+                        
+                        <?php submit_button(__('Save settings', 'cv-openai-polylang-translator')); ?>
+                    </form>
+
+                    <hr style="margin: 30px 0;" />
+
+                    <h2><?php esc_html_e('Translation Run Logs & History', 'cv-openai-polylang-translator'); ?></h2>
+                    <?php
+                    $history = CV_OAI_PLL_Logger::get_global_history();
+                    if (empty($history)) :
+                        echo '<p>' . esc_html__('No translation history logged yet.', 'cv-openai-polylang-translator') . '</p>';
+                    else :
+                        ?>
+                        <table class="wp-list-table widefat fixed striped">
+                            <thead>
+                                <tr>
+                                    <th><?php esc_html_e('Date', 'cv-openai-polylang-translator'); ?></th>
+                                    <th><?php esc_html_e('Source ID', 'cv-openai-polylang-translator'); ?></th>
+                                    <th><?php esc_html_e('Draft ID', 'cv-openai-polylang-translator'); ?></th>
+                                    <th><?php esc_html_e('Target Language', 'cv-openai-polylang-translator'); ?></th>
+                                    <th><?php esc_html_e('Model', 'cv-openai-polylang-translator'); ?></th>
+                                    <th><?php esc_html_e('Fields', 'cv-openai-polylang-translator'); ?></th>
+                                    <th><?php esc_html_e('Duration', 'cv-openai-polylang-translator'); ?></th>
+                                    <th><?php esc_html_e('Result', 'cv-openai-polylang-translator'); ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($history as $log) : ?>
+                                    <tr>
+                                        <td><?php echo esc_html($log['date']); ?></td>
+                                        <td>
+                                            <?php
+                                            $src_title = get_the_title($log['source_post_id']);
+                                            $src_title = $src_title ? $src_title : '#' . $log['source_post_id'];
+                                            echo '<a href="' . esc_url(get_edit_post_link($log['source_post_id'])) . '">' . esc_html($src_title) . '</a>';
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php
+                                            if ($log['success'] && $log['draft_id']) {
+                                                $draft_title = get_the_title($log['draft_id']);
+                                                $draft_title = $draft_title ? $draft_title : '#' . $log['draft_id'];
+                                                echo '<a href="' . esc_url(get_edit_post_link($log['draft_id'])) . '">' . esc_html($draft_title) . '</a>';
+                                            } else {
+                                                echo '-';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><code><?php echo esc_html($log['target_lang']); ?></code></td>
+                                        <td><?php echo esc_html($log['model']); ?></td>
+                                        <td><?php echo esc_html($log['num_fields']); ?></td>
+                                        <td><?php echo esc_html($log['duration']); ?>s</td>
+                                        <td>
+                                            <?php if ($log['success']) : ?>
+                                                <span style="color: green; font-weight: bold;"><?php esc_html_e('Success', 'cv-openai-polylang-translator'); ?></span>
+                                            <?php else : ?>
+                                                <span style="color: red; font-weight: bold;"><?php esc_html_e('Failed', 'cv-openai-polylang-translator'); ?></span>
+                                                <div style="font-size: 11px; color: #666; margin-top: 3px; max-width: 250px; white-space: normal; word-break: break-all;">
+                                                    <?php echo esc_html($log['error_message']); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+
+                <?php else : ?>
+                    <!-- Queue Tab Content -->
+                    <div id="cv-oai-pll-queue-panel">
+                        <?php wp_nonce_field('cv_oai_pll_queue_nonce', 'cv_oai_pll_queue_token'); ?>
+                        
+                        <div style="display: flex; gap: 20px; margin-bottom: 25px;">
+                            <!-- Queue Setup Controls Card -->
+                            <div style="flex: 1; background: #fff; border: 1px solid #ccd0d4; padding: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <h3><?php esc_html_e('Queue Setup & Scanner', 'cv-openai-polylang-translator'); ?></h3>
+                                <p><?php esc_html_e('Choose a target language, then scan and add contents to the queue.', 'cv-openai-polylang-translator'); ?></p>
+                                
+                                <p>
+                                    <label for="cv_oai_pll_queue_target_lang"><strong><?php esc_html_e('Target Language:', 'cv-openai-polylang-translator'); ?></strong></label><br />
+                                    <select id="cv_oai_pll_queue_target_lang" style="width: 100%; margin-top: 5px; max-width: 300px;">
+                                        <option value=""><?php esc_html_e('-- Select Target Language --', 'cv-openai-polylang-translator'); ?></option>
+                                        <?php foreach ($target_languages as $l) : ?>
+                                            <option value="<?php echo esc_attr($l->slug); ?>"><?php echo esc_html($l->name); ?> (<code><?php echo esc_html($l->slug); ?></code>)</option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </p>
+
+                                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                                    <button type="button" id="cv-oai-pll-scan-btn" class="button button-secondary" disabled>
+                                        <?php esc_html_e('Scan & Add All Finnish Content', 'cv-openai-polylang-translator'); ?>
+                                    </button>
+                                    <button type="button" id="cv-oai-pll-scan-strings-btn" class="button button-secondary" disabled>
+                                        <?php esc_html_e('Scan & Add Missing Strings Only', 'cv-openai-polylang-translator'); ?>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Live Dashboard Info Card -->
+                            <div style="flex: 1; background: #fff; border: 1px solid #ccd0d4; padding: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                                <h3><?php esc_html_e('Queue Status & Worker', 'cv-openai-polylang-translator'); ?></h3>
+                                
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span><strong><?php esc_html_e('Total Queue items:', 'cv-openai-polylang-translator'); ?></strong></span>
+                                    <span id="cv-oai-pll-stat-total">0</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span><strong><?php esc_html_e('Pending:', 'cv-openai-polylang-translator'); ?></strong></span>
+                                    <span id="cv-oai-pll-stat-pending" style="color: #007cba;">0</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span><strong><?php esc_html_e('Processing:', 'cv-openai-polylang-translator'); ?></strong></span>
+                                    <span id="cv-oai-pll-stat-processing" style="color: #cca300;">0</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span><strong><?php esc_html_e('Completed:', 'cv-openai-polylang-translator'); ?></strong></span>
+                                    <span id="cv-oai-pll-stat-completed" style="color: green;">0</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                                    <span><strong><?php esc_html_e('Failed:', 'cv-openai-polylang-translator'); ?></strong></span>
+                                    <span id="cv-oai-pll-stat-failed" style="color: red;">0</span>
+                                </div>
+
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="button" id="cv-oai-pll-worker-toggle-btn" class="button button-primary" style="flex: 1;" disabled>
+                                        <?php esc_html_e('Resume Queue Worker', 'cv-openai-polylang-translator'); ?>
+                                    </button>
+                                    <button type="button" id="cv-oai-pll-clear-queue-btn" class="button button-link-delete" style="color: red;">
+                                        <?php esc_html_e('Clear Queue', 'cv-openai-polylang-translator'); ?>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Progress Bar Card -->
+                        <div style="background: #fff; border: 1px solid #ccd0d4; padding: 20px; border-radius: 4px; margin-bottom: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                            <h3 style="margin-top: 0;"><?php esc_html_e('Translation Progress', 'cv-openai-polylang-translator'); ?></h3>
+                            
+                            <div class="progress-bar-wrapper" style="background:#f0f0f1; border-radius:4px; height:24px; width:100%; overflow:hidden; border: 1px solid #c3c4c7; margin: 15px 0; position: relative;">
+                                <div id="cv-oai-pll-progress-bar" style="background:#2271b1; height:100%; width:0%; transition: width 0.3s ease;"></div>
+                                <div id="cv-oai-pll-progress-text" style="position: absolute; width: 100%; text-align: center; top: 0; line-height: 24px; font-weight: 600; color: #1d2327;">0% (0 / 0)</div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 40px; margin-top: 15px;">
+                                <div>
+                                    <span style="font-weight: 600; font-size: 13px; text-transform: uppercase; color: #646970; display: block;"><?php esc_html_e('API Tokens Used', 'cv-openai-polylang-translator'); ?></span>
+                                    <span id="cv-oai-pll-stat-tokens" style="font-size: 20px; font-weight: bold;">0</span>
+                                </div>
+                                <div>
+                                    <span style="font-weight: 600; font-size: 13px; text-transform: uppercase; color: #646970; display: block;"><?php esc_html_e('Cost Estimate', 'cv-openai-polylang-translator'); ?></span>
+                                    <span id="cv-oai-pll-stat-cost" style="font-size: 20px; font-weight: bold; color: green;">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error Logs and Retry Section -->
+                        <div id="cv-oai-pll-error-logs-container" style="background: #fff; border: 1px solid #ccd0d4; padding: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h3 style="margin: 0;"><?php esc_html_e('Queue Error Logs', 'cv-openai-polylang-translator'); ?></h3>
+                                <button type="button" id="cv-oai-pll-retry-all-btn" class="button button-secondary" style="display: none;">
+                                    <?php esc_html_e('Retry All Failed Items', 'cv-openai-polylang-translator'); ?>
+                                </button>
+                            </div>
+                            
+                            <div id="cv-oai-pll-error-log-table-wrap">
+                                <p class="description"><?php esc_html_e('No failed items logged in the queue.', 'cv-openai-polylang-translator'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
         <?php
     }
@@ -470,8 +626,6 @@ class CV_OAI_PLL_Admin {
         $review_required = get_post_meta($post->ID, '_cv_oai_review_required', true);
         $source_post_id  = get_post_meta($post->ID, '_cv_oai_source_post_id', true);
         $target_lang     = get_post_meta($post->ID, '_cv_oai_target_language', true);
-
-        // Render review warning notice
         ?>
         <div class="cv-oai-pll-review-box-inner" data-is-translation-draft="1" data-review-required="<?php echo esc_attr($review_required); ?>">
             <p style="background: #fff8e5; border-left: 4px solid #f0b840; padding: 10px; color: #2c3338; font-size:12px; margin:0 0 12px 0;">
@@ -502,18 +656,13 @@ class CV_OAI_PLL_Admin {
      * Saves the meta box data when a post/page is saved.
      */
     public function save_meta_box_data($post_id) {
-        // Prevent saving during autosave or revision
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
         }
 
-        // Verify nonce is NOT required here as we only save custom review status checkbox from editor
         if (isset($_POST['cv_oai_review_completed'])) {
-            // Checked: review completed, meaning NOT required anymore
             update_post_meta($post_id, '_cv_oai_review_required', '0');
         } else {
-            // Unchecked: review required
-            // Only update if it is an OpenAI translation post (it has source_post_id)
             $source_post_id = get_post_meta($post_id, '_cv_oai_source_post_id', true);
             if ($source_post_id) {
                 update_post_meta($post_id, '_cv_oai_review_required', '1');
@@ -543,17 +692,40 @@ class CV_OAI_PLL_Admin {
                 true
             );
 
-            // Localize text variables for JS
             wp_localize_script('cv-oai-pll-admin-js', 'cvOaiPllL10n', [
-                'ajax_url'                  => admin_url('admin-ajax.php'),
+                'ajax_url'                 => admin_url('admin-ajax.php'),
                 'confirm_publish_warning'  => __('This translation has not been marked as human-reviewed. Are you sure you want to publish it?', 'cv-openai-polylang-translator'),
-                'translating_msg'           => __('Translating with OpenAI... Please wait, processing content chunks sequentially.', 'cv-openai-polylang-translator'),
-                'success_msg'               => __('Translation completed successfully! Draft created.', 'cv-openai-polylang-translator'),
-                'open_draft_lbl'            => __('Open Draft Translation', 'cv-openai-polylang-translator'),
-                'select_lang_error'         => __('Please select a target language first.', 'cv-openai-polylang-translator'),
-                'confirm_overwrite_error'   => __('Please check the confirm box to overwrite the existing draft translation.', 'cv-openai-polylang-translator'),
-                'translation_failed_lbl'    => __('Translation failed: ', 'cv-openai-polylang-translator'),
+                'translating_msg'          => __('Translating with OpenAI... Please wait, processing content chunks sequentially.', 'cv-openai-polylang-translator'),
+                'success_msg'              => __('Translation completed successfully! Draft created.', 'cv-openai-polylang-translator'),
+                'open_draft_lbl'           => __('Open Draft Translation', 'cv-openai-polylang-translator'),
+                'select_lang_error'        => __('Please select a target language first.', 'cv-openai-polylang-translator'),
+                'confirm_overwrite_error'  => __('Please check the confirm box to overwrite the existing draft translation.', 'cv-openai-polylang-translator'),
+                'translation_failed_lbl'   => __('Translation failed: ', 'cv-openai-polylang-translator'),
             ]);
+
+            // Queue JavaScript loader (only on our settings tabs pages)
+            if ($hook === 'settings_page_cv-oai-polylang-translator') {
+                wp_enqueue_script(
+                    'cv-oai-pll-admin-queue-js',
+                    plugins_url('assets/js/admin-queue.js', dirname(__FILE__)),
+                    ['jquery'],
+                    '1.0.0',
+                    true
+                );
+
+                wp_localize_script('cv-oai-pll-admin-queue-js', 'cvOaiPllQueueL10n', [
+                    'ajax_url'            => admin_url('admin-ajax.php'),
+                    'nonce'               => wp_create_nonce('cv_oai_pll_queue_nonce'),
+                    'scanning_msg'        => __('Scanning and populating queue...', 'cv-openai-polylang-translator'),
+                    'processing_msg'      => __('Processing batch of 10 items...', 'cv-openai-polylang-translator'),
+                    'clearing_msg'        => __('Clearing queue...', 'cv-openai-polylang-translator'),
+                    'retrying_msg'        => __('Retrying failed items...', 'cv-openai-polylang-translator'),
+                    'no_lang_error'       => __('Please select a target language.', 'cv-openai-polylang-translator'),
+                    'confirm_clear_queue' => __('Are you sure you want to clear the entire translation queue?', 'cv-openai-polylang-translator'),
+                    'worker_running_lbl'  => __('Pause Queue Worker', 'cv-openai-polylang-translator'),
+                    'worker_paused_lbl'   => __('Resume Queue Worker', 'cv-openai-polylang-translator'),
+                ]);
+            }
         }
     }
 
@@ -573,7 +745,6 @@ class CV_OAI_PLL_Admin {
             wp_send_json_error(['message' => __('Please specify a target language.', 'cv-openai-polylang-translator')]);
         }
 
-        // Get extraction options from AJAX payload
         $options = [
             'title'   => !empty($_POST['opt_title']),
             'excerpt' => !empty($_POST['opt_excerpt']),
@@ -585,7 +756,6 @@ class CV_OAI_PLL_Admin {
 
         $overwrite_draft = !empty($_POST['confirm_overwrite']);
 
-        // Run translation
         $result = CV_OAI_PLL_Translator::translate_post($post_id, $target_lang, $options, $overwrite_draft);
 
         if (is_wp_error($result)) {
@@ -597,5 +767,208 @@ class CV_OAI_PLL_Admin {
             'draft_id'  => $result,
             'draft_url' => $draft_url,
         ]);
+    }
+
+    // ==========================================
+    // QUEUE DASHBOARD AJAX HANDLERS
+    // ==========================================
+
+    /**
+     * AJAX: Scan website and populate the translation queue.
+     */
+    public function handle_ajax_scan_content() {
+        try {
+            check_ajax_referer('cv_oai_pll_queue_nonce', 'nonce');
+            
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => __('Insufficient permissions.', 'cv-openai-polylang-translator')]);
+            }
+
+            $target_lang = isset($_POST['target_lang']) ? sanitize_text_field($_POST['target_lang']) : '';
+            if (empty($target_lang)) {
+                wp_send_json_error(['message' => __('Please select a target language.', 'cv-openai-polylang-translator')]);
+            }
+
+            require_once dirname(__FILE__) . '/class-cv-oai-pll-queue.php';
+            
+            $scan_type = isset($_POST['scan_type']) ? sanitize_text_field($_POST['scan_type']) : 'all';
+            
+            if ($scan_type === 'strings') {
+                $added = CV_OAI_PLL_Queue::populate_missing_strings($target_lang);
+            } else {
+                $added = CV_OAI_PLL_Queue::populate_queue($target_lang);
+            }
+
+            wp_send_json_success([
+                'added'   => $added,
+                'message' => sprintf(__('%d items successfully added to the queue.', 'cv-openai-polylang-translator'), $added)
+            ]);
+        } catch (\Throwable $t) {
+            wp_send_json_error(['message' => 'PHP Fatal Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine()]);
+        } catch (\Exception $e) {
+            wp_send_json_error(['message' => 'PHP Exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine()]);
+        }
+    }
+
+    /**
+     * AJAX: Processes a single batch of 10 items from the queue.
+     */
+    public function handle_ajax_process_queue_batch() {
+        try {
+            check_ajax_referer('cv_oai_pll_queue_nonce', 'nonce');
+            
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => __('Insufficient permissions.', 'cv-openai-polylang-translator')]);
+            }
+
+            require_once dirname(__FILE__) . '/class-cv-oai-pll-queue.php';
+            
+            $results = CV_OAI_PLL_Queue::process_batch(10);
+            wp_send_json_success($results);
+        } catch (\Throwable $t) {
+            wp_send_json_error(['message' => 'PHP Fatal Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine()]);
+        } catch (\Exception $e) {
+            wp_send_json_error(['message' => 'PHP Exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine()]);
+        }
+    }
+
+    /**
+     * AJAX: Fetches queue statistics and API cost estimation.
+     */
+    public function handle_ajax_get_queue_stats() {
+        try {
+            check_ajax_referer('cv_oai_pll_queue_nonce', 'nonce');
+            
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => __('Insufficient permissions.', 'cv-openai-polylang-translator')]);
+            }
+
+            require_once dirname(__FILE__) . '/class-cv-oai-pll-db.php';
+            
+            $stats = CV_OAI_PLL_DB::get_queue_stats();
+            $usage = CV_OAI_PLL_DB::get_api_usage_stats();
+            $failed_items = CV_OAI_PLL_DB::get_failed_items(50);
+
+            // Build HTML table output for error log
+            ob_start();
+            if (empty($failed_items)) {
+                echo '<p class="description">' . esc_html__('No failed items logged in the queue.', 'cv-openai-polylang-translator') . '</p>';
+            } else {
+                ?>
+                <table class="wp-list-table widefat fixed striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;"><?php esc_html_e('Type', 'cv-openai-polylang-translator'); ?></th>
+                            <th style="width: 120px;"><?php esc_html_e('Item ID / Name', 'cv-openai-polylang-translator'); ?></th>
+                            <th style="width: 80px;"><?php esc_html_e('Language', 'cv-openai-polylang-translator'); ?></th>
+                            <th><?php esc_html_e('Error Details', 'cv-openai-polylang-translator'); ?></th>
+                            <th style="width: 80px;"><?php esc_html_e('Attempts', 'cv-openai-polylang-translator'); ?></th>
+                            <th style="width: 100px;"><?php esc_html_e('Action', 'cv-openai-polylang-translator'); ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($failed_items as $item) : ?>
+                            <tr>
+                                <td><code><?php echo esc_html($item->item_type); ?></code></td>
+                                <td>
+                                    <?php
+                                    if ($item->item_type === 'post') {
+                                        $title = get_the_title($item->item_id);
+                                        echo '<a href="' . esc_url(get_edit_post_link($item->item_id)) . '">' . esc_html($title ? $title : '#' . $item->item_id) . '</a>';
+                                    } elseif ($item->item_type === 'term') {
+                                        $term = get_term($item->item_id);
+                                        echo esc_html($term && !is_wp_error($term) ? $term->name : '#' . $item->item_id);
+                                    } else {
+                                        // String ID (show truncated hash/value)
+                                        echo '<span title="' . esc_attr($item->item_id) . '">' . esc_html(substr($item->item_id, 0, 10)) . '...</span>';
+                                    }
+                                    ?>
+                                </td>
+                                <td><code><?php echo esc_html($item->target_language); ?></code></td>
+                                <td style="color: #d63638; font-size: 11px; line-height: 1.4; white-space: normal; word-break: break-all;"><?php echo esc_html($item->error_message); ?></td>
+                                <td><?php echo (int) $item->attempts; ?></td>
+                                <td>
+                                    <button type="button" class="button button-small cv-oai-pll-retry-single-btn" data-id="<?php echo (int) $item->id; ?>">
+                                        <?php esc_html_e('Retry', 'cv-openai-polylang-translator'); ?>
+                                    </button>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+                <?php
+            }
+            $error_log_html = ob_get_clean();
+
+            wp_send_json_success([
+                'stats'          => $stats,
+                'tokens_total'   => $usage['prompt_tokens'] + $usage['completion_tokens'],
+                'cost_total'     => sprintf('$%s', number_format($usage['cost_estimate'], 4)),
+                'error_log_html' => $error_log_html
+            ]);
+        } catch (\Throwable $t) {
+            wp_send_json_error(['message' => 'PHP Fatal Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine()]);
+        } catch (\Exception $e) {
+            wp_send_json_error(['message' => 'PHP Exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine()]);
+        }
+    }
+
+    /**
+     * AJAX: Reset failed items status back to pending.
+     */
+    public function handle_ajax_retry_failed() {
+        try {
+            check_ajax_referer('cv_oai_pll_queue_nonce', 'nonce');
+            
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => __('Insufficient permissions.', 'cv-openai-polylang-translator')]);
+            }
+
+            require_once dirname(__FILE__) . '/class-cv-oai-pll-db.php';
+            
+            $item_id = isset($_POST['item_id']) ? (int) $_POST['item_id'] : null;
+            
+            if ($item_id) {
+                $res = CV_OAI_PLL_DB::retry_failed_items($item_id);
+            } else {
+                $res = CV_OAI_PLL_DB::retry_failed_items(null);
+            }
+
+            if ($res) {
+                wp_send_json_success(['message' => __('Items successfully reset to pending.', 'cv-openai-polylang-translator')]);
+            } else {
+                wp_send_json_error(['message' => __('No failed items found or reset failed.', 'cv-openai-polylang-translator')]);
+            }
+        } catch (\Throwable $t) {
+            wp_send_json_error(['message' => 'PHP Fatal Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine()]);
+        } catch (\Exception $e) {
+            wp_send_json_error(['message' => 'PHP Exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine()]);
+        }
+    }
+
+    /**
+     * AJAX: Clear entire queue table.
+     */
+    public function handle_ajax_clear_queue() {
+        try {
+            check_ajax_referer('cv_oai_pll_queue_nonce', 'nonce');
+            
+            if (!current_user_can('manage_options')) {
+                wp_send_json_error(['message' => __('Insufficient permissions.', 'cv-openai-polylang-translator')]);
+            }
+
+            require_once dirname(__FILE__) . '/class-cv-oai-pll-db.php';
+            
+            $res = CV_OAI_PLL_DB::clear_queue();
+            if ($res) {
+                wp_send_json_success(['message' => __('Queue successfully cleared.', 'cv-openai-polylang-translator')]);
+            } else {
+                wp_send_json_error(['message' => __('Failed to clear queue.', 'cv-openai-polylang-translator')]);
+            }
+        } catch (\Throwable $t) {
+            wp_send_json_error(['message' => 'PHP Fatal Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine()]);
+        } catch (\Exception $e) {
+            wp_send_json_error(['message' => 'PHP Exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ' on line ' . $e->getLine()]);
+        }
     }
 }

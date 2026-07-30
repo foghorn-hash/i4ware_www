@@ -88,82 +88,137 @@ class CV_OAI_PLL_Translator {
                 throw new Exception(__('No translatable content found for the selected options.', 'cv-openai-polylang-translator'));
             }
 
-            // Preprocess: Replace URLs and Emails with safe HTML placeholders
+            // 4.5. Check Cache / Translation Memory
+            require_once dirname(__FILE__) . '/class-cv-oai-pll-db.php';
+            $cached_results = [];
+            $uncached_payload = [];
+
+            foreach ($payload as $key => $item) {
+                if (isset($item['content']) && is_string($item['content']) && trim($item['content']) !== '') {
+                    $cached = CV_OAI_PLL_DB::get_cached_translation($item['content'], $target_lang);
+                    if ($cached !== false) {
+                        $cached_results[$key] = $cached;
+                    } else {
+                        $uncached_payload[$key] = $item;
+                    }
+                } else {
+                    $uncached_payload[$key] = $item;
+                }
+            }
+
+            // Preprocess uncached items: Replace URLs and Emails with safe HTML placeholders
             $url_map = [];
             $email_map = [];
-            foreach ($payload as $key => &$item) {
+            foreach ($uncached_payload as $key => &$item) {
                 if (isset($item['content']) && is_string($item['content'])) {
                     $item['content'] = self::replace_urls_with_placeholders($item['content'], $url_map);
                     $item['content'] = self::replace_emails_with_placeholders($item['content'], $email_map);
                 }
             }
 
-            // 5. Chunk the payload for resource-safety
-            $chunks = CV_OAI_PLL_Content_Extractor::chunk_payload($payload);
             $translated_results = [];
-            $cooldown = (int) get_option('cv_oai_pll_cooldown', 0);
+            $total_prompt_tokens = 0;
+            $total_completion_tokens = 0;
 
-            // Get target language label (e.g. "Arabic", "English")
-            $target_language_name = self::get_language_name_by_code($target_lang);
+            if (!empty($uncached_payload)) {
+                // 5. Chunk the payload for resource-safety
+                $chunks = CV_OAI_PLL_Content_Extractor::chunk_payload($uncached_payload);
+                $cooldown = (int) get_option('cv_oai_pll_cooldown', 0);
 
-            // 6. Sequential API calls and validations
-            $chunk_index = 0;
-            foreach ($chunks as $chunk) {
-                // Apply optional cooldown between chunks
-                if ($chunk_index > 0 && $cooldown > 0) {
-                    sleep($cooldown);
-                }
+                // Get target language label (e.g. "Arabic", "English")
+                $target_language_name = self::get_language_name_by_code($target_lang);
 
-                $chat_payload = [
-                    'model'       => $model,
-                    'temperature' => 0.2,
-                    'response_format' => ['type' => 'json_object'],
-                    'messages'    => [
-                        [
-                            'role'    => 'system',
-                            'content' => CV_OAI_PLL_OpenAI_Client::get_system_prompt($target_language_name),
+                // 6. Sequential API calls and validations
+                $chunk_index = 0;
+                foreach ($chunks as $chunk) {
+                    // Apply optional cooldown between chunks
+                    if ($chunk_index > 0 && $cooldown > 0) {
+                        sleep($cooldown);
+                    }
+
+                    $chat_payload = [
+                        'model'       => $model,
+                        'temperature' => 0.2,
+                        'response_format' => ['type' => 'json_object'],
+                        'messages'    => [
+                            [
+                                'role'    => 'system',
+                                'content' => CV_OAI_PLL_OpenAI_Client::get_system_prompt($target_language_name),
+                            ],
+                            [
+                                'role'    => 'user',
+                                'content' => "Translate the following JSON object translatable fields into " . $target_language_name . ". IMPORTANT: Do not translate or transliterate trademark names, product names, or technology identifiers (such as i4ware, Atlassian, Jira, WordPress, OpenAI, Microsoft, SAP, ERP, SaaS, Polylang, ACF, Freshworks, Freshchat, Microsoft Teams). They must remain in Latin (English) characters exactly as written. Return only the translated JSON matching the structure:\n\n" . wp_json_encode($chunk),
+                            ],
                         ],
-                        [
-                            'role'    => 'user',
-                            'content' => "Translate the following JSON object translatable fields into " . $target_language_name . ". IMPORTANT: Do not translate or transliterate trademark names, product names, or technology identifiers (such as i4ware, Atlassian, Jira, WordPress, OpenAI, Microsoft, SAP, ERP, SaaS, Polylang, ACF, Freshworks, Freshchat, Microsoft Teams). They must remain in Latin (English) characters exactly as written. Return only the translated JSON matching the structure:\n\n" . wp_json_encode($chunk),
-                        ],
-                    ],
-                ];
+                    ];
 
-                $response_content = CV_OAI_PLL_OpenAI_Client::translate_payload($chat_payload, $api_key);
-                if (is_wp_error($response_content)) {
-                    throw new Exception($response_content->get_error_message());
+                    $response_data = CV_OAI_PLL_OpenAI_Client::translate_payload_with_usage($chat_payload, $api_key);
+                    if (is_wp_error($response_data)) {
+                        throw new Exception($response_data->get_error_message());
+                    }
+
+                    $response_content = $response_data['content'];
+                    $total_prompt_tokens += isset($response_data['usage']['prompt_tokens']) ? (int) $response_data['usage']['prompt_tokens'] : 0;
+                    $total_completion_tokens += isset($response_data['usage']['completion_tokens']) ? (int) $response_data['usage']['completion_tokens'] : 0;
+
+                    $decoded_chunk = json_decode($response_content, true);
+                    if (!is_array($decoded_chunk)) {
+                        throw new Exception(__('Failed to parse translation chunk as JSON.', 'cv-openai-polylang-translator'));
+                    }
+
+                    // Validate chunk response for quality and integrity
+                    $validation_res = CV_OAI_PLL_Validator::validate($chunk, $decoded_chunk);
+                    if (is_wp_error($validation_res)) {
+                        throw new Exception(sprintf(__('Validation failed on chunk %d: %s', 'cv-openai-polylang-translator'), $chunk_index + 1, $validation_res->get_error_message()));
+                    }
+
+                    // Merge successfully translated keys
+                    $translated_results = array_merge($translated_results, $decoded_chunk);
+                    $chunk_index++;
                 }
 
-                $decoded_chunk = json_decode($response_content, true);
-                if (!is_array($decoded_chunk)) {
-                    throw new Exception(__('Failed to parse translation chunk as JSON.', 'cv-openai-polylang-translator'));
+                // Restore placeholders in translated_results
+                foreach ($translated_results as $key => &$val) {
+                    if (is_string($val)) {
+                        // Restore URLs
+                        foreach ($url_map as $placeholder => $url) {
+                            $val = str_replace($placeholder, $url, $val);
+                        }
+                        // Restore Emails
+                        foreach ($email_map as $placeholder => $email) {
+                            $val = str_replace($placeholder, $email, $val);
+                        }
+                    }
                 }
 
-                // Validate chunk response for quality and integrity
-                $validation_res = CV_OAI_PLL_Validator::validate($chunk, $decoded_chunk);
-                if (is_wp_error($validation_res)) {
-                    throw new Exception(sprintf(__('Validation failed on chunk %d: %s', 'cv-openai-polylang-translator'), $chunk_index + 1, $validation_res->get_error_message()));
+                // Reassemble for caching
+                $reassembled_translated = [];
+                $split_groups = [];
+                foreach ($translated_results as $k => $v) {
+                    if (preg_match('/^(.*)_split_(\d+)$/', $k, $matches)) {
+                        $base_key = $matches[1];
+                        $index    = (int) $matches[2];
+                        $split_groups[$base_key][$index] = $v;
+                    } else {
+                        $reassembled_translated[$k] = $v;
+                    }
+                }
+                foreach ($split_groups as $base_key => $parts) {
+                    ksort($parts);
+                    $reassembled_translated[$base_key] = implode('', $parts);
                 }
 
-                // Merge successfully translated keys
-                $translated_results = array_merge($translated_results, $decoded_chunk);
-                $chunk_index++;
+                // Save new translations into translation memory (cache)
+                foreach ($reassembled_translated as $key => $translated_text) {
+                    if (isset($uncached_payload[$key]['content']) && is_string($translated_text)) {
+                        $source_text = $payload[$key]['content'];
+                        CV_OAI_PLL_DB::add_cached_translation($source_text, $target_lang, $translated_text);
+                    }
+                }
             }
 
-            // Restore placeholders in translated_results
-            foreach ($translated_results as $key => &$val) {
-                if (is_string($val)) {
-                    // Restore URLs
-                    foreach ($url_map as $placeholder => $url) {
-                        $val = str_replace($placeholder, $url, $val);
-                    }
-                    // Restore Emails
-                    foreach ($email_map as $placeholder => $email) {
-                        $val = str_replace($placeholder, $email, $val);
-                    }
-                }
-            }
+            // Merge cached results with new translated results
+            $translated_results = array_merge($translated_results, $cached_results);
 
             // 7. Compile translated elements
             $compiled = CV_OAI_PLL_Content_Extractor::compile_translated_post($post, $translated_results, $options, $enabled_acf_fields);
@@ -205,6 +260,13 @@ class CV_OAI_PLL_Translator {
                 }
             }
 
+            // 10.5. Update Custom/SEO fields
+            if (!empty($compiled['meta_data'])) {
+                foreach ($compiled['meta_data'] as $meta_key => $meta_val) {
+                    update_post_meta($new_post_id, $meta_key, $meta_val);
+                }
+            }
+
             // 11. Associate language and link Polylang translations
             if (function_exists('pll_set_post_language')) {
                 pll_set_post_language($new_post_id, $target_lang);
@@ -227,6 +289,14 @@ class CV_OAI_PLL_Translator {
             update_post_meta($new_post_id, '_cv_oai_model', sanitize_text_field($model));
             // Always set human review required to 1
             update_post_meta($new_post_id, '_cv_oai_review_required', '1');
+
+            // Store token usage in transient for the queue processor or stats
+            set_transient('cv_oai_pll_last_tokens_usage', [
+                'post_id'           => $post_id,
+                'model'             => $model,
+                'prompt_tokens'     => $total_prompt_tokens,
+                'completion_tokens' => $total_completion_tokens,
+            ], 60);
 
             // 13. Log success and release lock
             CV_OAI_PLL_Logger::log($post_id, $target_lang, $model, true, '', count($payload), $new_post_id, $start_time);
@@ -321,70 +391,9 @@ class CV_OAI_PLL_Translator {
             $target_term_ids = [];
             
             foreach ($source_terms as $source_term) {
-                // Check if a translation already exists in Polylang
-                $translated_term_id = 0;
-                if (function_exists('pll_get_term')) {
-                    $translated_term_id = pll_get_term($source_term->term_id, $target_lang);
-                }
-                
-                if ($translated_term_id) {
-                    $target_term_ids[] = (int) $translated_term_id;
-                } else {
-                    // Translate the term using OpenAI
-                    $term_name = $source_term->name;
-                    $target_language_name = self::get_language_name_by_code($target_lang);
-                    
-                    $prompt = [
-                        'model'       => $model,
-                        'temperature' => 0.1,
-                        'messages'    => [
-                            [
-                                'role'    => 'system',
-                                'content' => sprintf("You are a professional localization translator. Translate the following WordPress %s name from Finnish to %s. Return only the translated name, nothing else.", $taxonomy, $target_language_name),
-                            ],
-                            [
-                                'role'    => 'user',
-                                'content' => $term_name,
-                            ]
-                        ]
-                    ];
-                    
-                    $translated_name = CV_OAI_PLL_OpenAI_Client::translate_payload($prompt, $api_key);
-                    if (!is_wp_error($translated_name)) {
-                        $translated_name = trim(strip_tags($translated_name));
-                        // Create the new term in the target language
-                        $new_term = wp_insert_term($translated_name, $taxonomy);
-                        if (!is_wp_error($new_term) && isset($new_term['term_id'])) {
-                            $new_term_id = (int) $new_term['term_id'];
-                            
-                            // Link term in Polylang
-                            if (function_exists('pll_set_term_language')) {
-                                pll_set_term_language($new_term_id, $target_lang);
-                            }
-                            if (function_exists('pll_save_term_translations') && function_exists('pll_get_term')) {
-                                $source_lang = 'fi'; // Source is always Finnish
-                                $translations = [
-                                    $source_lang => $source_term->term_id,
-                                    $target_lang => $new_term_id,
-                                ];
-                                // Add other language links if available
-                                if (function_exists('pll_languages_list')) {
-                                    $langs = pll_languages_list();
-                                    foreach ($langs as $l) {
-                                        if ($l !== $source_lang && $l !== $target_lang) {
-                                            $existing_lang_term = pll_get_term($source_term->term_id, $l);
-                                            if ($existing_lang_term) {
-                                                $translations[$l] = $existing_lang_term;
-                                            }
-                                        }
-                                    }
-                                }
-                                pll_save_term_translations($translations);
-                            }
-                            
-                            $target_term_ids[] = $new_term_id;
-                        }
-                    }
+                $result = self::translate_term_by_id($source_term->term_id, $target_lang);
+                if (!is_wp_error($result) && isset($result['term_id'])) {
+                    $target_term_ids[] = (int) $result['term_id'];
                 }
             }
             
@@ -392,5 +401,296 @@ class CV_OAI_PLL_Translator {
                 wp_set_object_terms($translated_post_id, $target_term_ids, $taxonomy);
             }
         }
+    }
+
+    /**
+     * Translates a single taxonomy term by ID and links it.
+     *
+     * @param int    $term_id     Source term ID.
+     * @param string $target_lang Target language code.
+     * @return array|WP_Error Array with 'term_id' and 'usage', or WP_Error on failure.
+     */
+    public static function translate_term_by_id($term_id, $target_lang) {
+        $term = get_term($term_id);
+        if (!$term || is_wp_error($term)) {
+            return new WP_Error('invalid_term', __('Source term not found.', 'cv-openai-polylang-translator'));
+        }
+
+        $taxonomy = $term->taxonomy;
+        
+        // Check if translation already exists
+        $translated_term_id = 0;
+        if (function_exists('pll_get_term')) {
+            $translated_term_id = pll_get_term($term_id, $target_lang);
+        }
+
+        if ($translated_term_id) {
+            return [
+                'term_id' => (int) $translated_term_id,
+                'usage'   => ['prompt_tokens' => 0, 'completion_tokens' => 0, 'model' => 'Cache']
+            ];
+        }
+
+        $api_key = get_option('cv_oai_pll_api_key', '');
+        $model   = get_option('cv_oai_pll_model', 'gpt-4o-mini');
+        if (empty($api_key)) {
+            return new WP_Error('openai_missing_key', __('OpenAI API key is missing.', 'cv-openai-polylang-translator'));
+        }
+
+        $term_name = $term->name;
+        $target_language_name = self::get_language_name_by_code($target_lang);
+
+        $prompt = [
+            'model'       => $model,
+            'temperature' => 0.1,
+            'messages'    => [
+                [
+                    'role'    => 'system',
+                    'content' => sprintf("You are a professional localization translator. Translate the following WordPress %s name from Finnish to %s. Return only the translated name, nothing else.", $taxonomy, $target_language_name),
+                ],
+                [
+                    'role'    => 'user',
+                    'content' => $term_name,
+                ]
+            ]
+        ];
+
+        $response = CV_OAI_PLL_OpenAI_Client::translate_payload_with_usage($prompt, $api_key);
+        if (is_wp_error($response)) {
+            return $response;
+        }
+
+        $translated_name = trim(strip_tags($response['content']));
+        if (empty($translated_name)) {
+            return new WP_Error('translation_failed', __('Translated term name is empty.', 'cv-openai-polylang-translator'));
+        }
+
+        // Create the new term in the target language
+        $new_term = wp_insert_term($translated_name, $taxonomy);
+        if (is_wp_error($new_term)) {
+            if (isset($new_term->error_data['term_exists'])) {
+                $new_term_id = (int) $new_term->error_data['term_exists'];
+            } else {
+                return $new_term;
+            }
+        } else {
+            $new_term_id = (int) $new_term['term_id'];
+        }
+
+        // Link in Polylang
+        if (function_exists('pll_set_term_language')) {
+            pll_set_term_language($new_term_id, $target_lang);
+        }
+
+        if (function_exists('pll_save_term_translations')) {
+            $translations = [
+                'fi'         => $term_id,
+                $target_lang => $new_term_id,
+            ];
+            if (function_exists('pll_languages_list')) {
+                $langs = pll_languages_list();
+                foreach ($langs as $l) {
+                    if ($l !== 'fi' && $l !== $target_lang) {
+                        $existing = pll_get_term($term_id, $l);
+                        if ($existing) {
+                            $translations[$l] = $existing;
+                        }
+                    }
+                }
+            }
+            pll_save_term_translations($translations);
+        }
+
+        return [
+            'term_id' => $new_term_id,
+            'usage'   => [
+                'prompt_tokens'     => isset($response['usage']['prompt_tokens']) ? (int) $response['usage']['prompt_tokens'] : 0,
+                'completion_tokens' => isset($response['usage']['completion_tokens']) ? (int) $response['usage']['completion_tokens'] : 0,
+                'model'             => $model
+            ]
+        ];
+    }
+
+    /**
+     * Translates a WordPress navigation menu and all its menu items.
+     *
+     * @param int    $menu_id     Source menu term ID.
+     * @param string $target_lang Target language code.
+     * @return int|WP_Error Target menu term ID on success, WP_Error on failure.
+     */
+    public static function translate_menu($menu_id, $target_lang) {
+        $source_menu = wp_get_nav_menu_object($menu_id);
+        if (!$source_menu) {
+            return new WP_Error('invalid_menu', __('Source menu not found.', 'cv-openai-polylang-translator'));
+        }
+
+        // 1. Get/create translated menu term
+        $translated_menu_id = 0;
+        if (function_exists('pll_get_term')) {
+            $translated_menu_id = pll_get_term($menu_id, $target_lang);
+        }
+
+        if (!$translated_menu_id) {
+            // Translate menu name
+            $translated_name = self::translate_text_inline($source_menu->name, $target_lang);
+            if (empty($translated_name) || $translated_name === $source_menu->name) {
+                $translated_name = $source_menu->name . ' (' . strtoupper($target_lang) . ')';
+            }
+
+            // Create target menu
+            $new_menu = wp_create_nav_menu($translated_name);
+            if (is_wp_error($new_menu)) {
+                return $new_menu;
+            }
+            $translated_menu_id = (int) $new_menu;
+
+            // Set language and link translation in Polylang
+            if (function_exists('pll_set_term_language')) {
+                pll_set_term_language($translated_menu_id, $target_lang);
+            }
+            if (function_exists('pll_save_term_translations')) {
+                $translations = [
+                    'fi'         => $menu_id,
+                    $target_lang => $translated_menu_id
+                ];
+                if (function_exists('pll_languages_list')) {
+                    $langs = pll_languages_list();
+                    foreach ($langs as $l) {
+                        if ($l !== 'fi' && $l !== $target_lang) {
+                            $existing = pll_get_term($menu_id, $l);
+                            if ($existing) {
+                                $translations[$l] = $existing;
+                            }
+                        }
+                    }
+                }
+                pll_save_term_translations($translations);
+            }
+        }
+
+        // 2. Fetch source menu items
+        $source_items = wp_get_nav_menu_items($menu_id, ['post_status' => 'any']);
+        if (empty($source_items)) {
+            return $translated_menu_id;
+        }
+
+        // Fetch target menu items (clear existing to prevent duplicates on re-translation)
+        $target_items = wp_get_nav_menu_items($translated_menu_id, ['post_status' => 'any']);
+        if (!empty($target_items)) {
+            foreach ($target_items as $t_item) {
+                wp_delete_post($t_item->ID, true);
+            }
+        }
+
+        $item_id_map = [];
+
+        // 3. Replicate items and translate their references
+        foreach ($source_items as $item) {
+            $target_object_id = $item->object_id;
+            
+            // Map linked posts/pages
+            if ($item->type === 'post_type' && function_exists('pll_get_post')) {
+                $mapped_post_id = pll_get_post($item->object_id, $target_lang);
+                if ($mapped_post_id) {
+                    $target_object_id = $mapped_post_id;
+                }
+            }
+            // Map linked taxonomy terms
+            elseif ($item->type === 'taxonomy' && function_exists('pll_get_term')) {
+                $mapped_term_id = pll_get_term($item->object_id, $target_lang);
+                if ($mapped_term_id) {
+                    $target_object_id = $mapped_term_id;
+                }
+            }
+
+            // Determine target parent item
+            $target_parent = 0;
+            if ($item->menu_item_parent && isset($item_id_map[$item->menu_item_parent])) {
+                $target_parent = $item_id_map[$item->menu_item_parent];
+            }
+
+            // Translate title if custom
+            $title = $item->title;
+            $translated_title = self::translate_text_inline($title, $target_lang);
+
+            // Rebuild item args
+            $args = [
+                'menu-item-object-id'   => $target_object_id,
+                'menu-item-object'      => $item->object,
+                'menu-item-parent-id'   => $target_parent,
+                'menu-item-position'    => $item->menu_order,
+                'menu-item-type'        => $item->type,
+                'menu-item-title'       => $translated_title,
+                'menu-item-url'         => $item->url,
+                'menu-item-description' => $item->description,
+                'menu-item-attr-title'  => $item->post_excerpt,
+                'menu-item-target'      => $item->target,
+                'menu-item-classes'     => implode(' ', $item->classes),
+                'menu-item-xfn'         => $item->xfn,
+                'menu-item-status'      => 'publish',
+            ];
+
+            $new_item_id = wp_update_nav_menu_item($translated_menu_id, 0, $args);
+            if ($new_item_id && !is_wp_error($new_item_id)) {
+                $item_id_map[$item->ID] = $new_item_id;
+            }
+        }
+
+        return $translated_menu_id;
+    }
+
+    /**
+     * Translates a small block of text inline using OpenAI (checks cache first).
+     *
+     * @param string $text        Source text.
+     * @param string $target_lang Target language code.
+     * @return string Translated text.
+     */
+    public static function translate_text_inline($text, $target_lang) {
+        if (empty($text) || !is_string($text)) {
+            return $text;
+        }
+
+        require_once dirname(__FILE__) . '/class-cv-oai-pll-db.php';
+        $cached = CV_OAI_PLL_DB::get_cached_translation($text, $target_lang);
+        if ($cached !== false) {
+            return $cached;
+        }
+
+        $api_key = get_option('cv_oai_pll_api_key', '');
+        $model   = get_option('cv_oai_pll_model', 'gpt-4o-mini');
+        if (empty($api_key)) {
+            return $text;
+        }
+
+        $target_language_name = self::get_language_name_by_code($target_lang);
+
+        $prompt = [
+            'model'       => $model,
+            'temperature' => 0.1,
+            'messages'    => [
+                [
+                    'role'    => 'system',
+                    'content' => sprintf("You are a professional localization translator. Translate the following text from Finnish to %s. Return only the translated text, nothing else.", $target_language_name),
+                ],
+                [
+                    'role'    => 'user',
+                    'content' => $text,
+                ]
+            ]
+        ];
+
+        $response = CV_OAI_PLL_OpenAI_Client::translate_payload_with_usage($prompt, $api_key);
+        if (is_wp_error($response)) {
+            return $text;
+        }
+
+        $translated = trim(strip_tags($response['content']));
+        if (!empty($translated)) {
+            CV_OAI_PLL_DB::add_cached_translation($text, $target_lang, $translated);
+            return $translated;
+        }
+
+        return $text;
     }
 }

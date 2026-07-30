@@ -20,7 +20,7 @@ class CV_OAI_PLL_Validator {
      * @param array $translated_data Translated key/value array returned by OpenAI.
      * @return true|WP_Error Returns true if valid, or a WP_Error describing the failure.
      */
-    public static function validate($source_data, $translated_data) {
+    public static function validate($source_data, $translated_data, $target_lang = '') {
         if (!is_array($translated_data)) {
             return new WP_Error('validation_invalid_format', __('OpenAI response is not a valid JSON structure.', 'cv-openai-polylang-translator'));
         }
@@ -38,7 +38,7 @@ class CV_OAI_PLL_Validator {
 
             // If we have arrays (e.g. nested block content), recursively validate
             if (is_array($source_val)) {
-                $sub_validation = self::validate($source_val, $trans_val);
+                $sub_validation = self::validate($source_val, $trans_val, $target_lang);
                 if (is_wp_error($sub_validation)) {
                     return $sub_validation;
                 }
@@ -58,12 +58,27 @@ class CV_OAI_PLL_Validator {
                     );
                 }
 
+                // UTF-8 correctness check
+                if (!mb_check_encoding($trans_val_clean, 'UTF-8')) {
+                    return new WP_Error('validation_utf8_error', __('Validation failed: Translation contains invalid UTF-8 encoding.', 'cv-openai-polylang-translator'));
+                }
+
+                // Truncation check
+                if (mb_strlen($source_val_clean) > 80 && mb_strlen($trans_val_clean) < (mb_strlen($source_val_clean) * 0.15)) {
+                    return new WP_Error('validation_truncated_text', __('Validation failed: Translated text appears to be severely truncated.', 'cv-openai-polylang-translator'));
+                }
+
                 // Security check: No script or iframe added unless present in source
                 if (stripos($trans_val_clean, '<script') !== false && stripos($source_val_clean, '<script') === false) {
                     return new WP_Error('validation_security_script', __('Security check failed: The translation introduced an unauthorized <script> tag.', 'cv-openai-polylang-translator'));
                 }
                 if (stripos($trans_val_clean, '<iframe') !== false && stripos($source_val_clean, '<iframe') === false) {
                     return new WP_Error('validation_security_iframe', __('Security check failed: The translation introduced an unauthorized <iframe> tag.', 'cv-openai-polylang-translator'));
+                }
+
+                // HTML Tag Balance/Integrity check
+                if (!self::check_html_integrity($trans_val_clean)) {
+                    return new WP_Error('validation_html_imbalance', __('Validation failed: Mismatched or unclosed HTML tags in translation.', 'cv-openai-polylang-translator'));
                 }
 
                 // Extract and verify URL placeholders
@@ -75,7 +90,7 @@ class CV_OAI_PLL_Validator {
                         foreach ($trans_url_pls[0] as $tpl) {
                             if (strcasecmp($tpl, $pl) === 0) {
                                 $found = true;
-                                break;
+                               break;
                             }
                         }
                         if (!$found) {
@@ -108,6 +123,30 @@ class CV_OAI_PLL_Validator {
                     }
                 }
 
+                // Sprintf placeholders check
+                $source_sprintf = self::extract_sprintf_placeholders($source_val_clean);
+                $trans_sprintf  = self::extract_sprintf_placeholders($trans_val_clean);
+                sort($source_sprintf);
+                sort($trans_sprintf);
+                if ($source_sprintf !== $trans_sprintf) {
+                    return new WP_Error(
+                        'validation_sprintf_mismatch',
+                        __('Validation failed: sprintf placeholders (e.g. %s, %d, %1$s) do not match the source text.', 'cv-openai-polylang-translator')
+                    );
+                }
+
+                // Curly and Colon variables check (e.g. {{name}}, {count}, :attribute)
+                $source_vars = self::extract_variables($source_val_clean);
+                $trans_vars  = self::extract_variables($trans_val_clean);
+                sort($source_vars);
+                sort($trans_vars);
+                if ($source_vars !== $trans_vars) {
+                    return new WP_Error(
+                        'validation_variables_mismatch',
+                        __('Validation failed: dynamic variable placeholders (e.g. {{name}}, {count}, :attribute) do not match the source text.', 'cv-openai-polylang-translator')
+                    );
+                }
+
                 // Extract and verify Phone numbers
                 $source_phones = self::extract_phone_numbers($source_val_clean);
                 $trans_phones  = self::extract_phone_numbers($trans_val_clean);
@@ -119,7 +158,6 @@ class CV_OAI_PLL_Validator {
                         );
                     }
                 }
-
 
                 // Check critical B2B terms and product names (must remain in Latin)
                 $product_names = [
@@ -163,10 +201,91 @@ class CV_OAI_PLL_Validator {
                         );
                     }
                 }
+
+                // Arabic Script check (Modern Standard Arabic script validation)
+                if ($target_lang === 'ar' && preg_match('/\p{L}/u', $source_val_clean)) {
+                    // Filter out brand names to check if we actually have text besides brands
+                    $source_without_brands = $source_val_clean;
+                    foreach ($product_names as $p) {
+                        $source_without_brands = str_replace($p, '', $source_without_brands);
+                    }
+                    if (preg_match('/\p{L}/u', $source_without_brands)) {
+                        // Validate that at least some Arabic character blocks are present
+                        if (!preg_match('/[\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{08A0}-\x{08FF}\x{FB50}-\x{FDFF}\x{FE70}-\x{FEFF}]/u', $trans_val_clean)) {
+                            return new WP_Error(
+                                'validation_arabic_script_missing',
+                                __('Validation failed: The translation to Arabic contains no Arabic characters.', 'cv-openai-polylang-translator')
+                            );
+                        }
+                    }
+                }
             }
         }
 
         return true;
+    }
+
+    /**
+     * Checks if HTML tags are balanced and correctly closed in a text string.
+     *
+     * @param string $text HTML input.
+     * @return bool True if balanced/valid, false otherwise.
+     */
+    private static function check_html_integrity($text) {
+        preg_match_all('/<([a-zA-Z0-9]+)\b[^>]*>/', $text, $open_matches);
+        preg_match_all('/<\/([a-zA-Z0-9]+)>/', $text, $close_matches);
+        
+        $open_tags = is_array($open_matches) && !empty($open_matches[1]) ? $open_matches[1] : [];
+        $close_tags = is_array($close_matches) && !empty($close_matches[1]) ? $close_matches[1] : [];
+        
+        $open_counts = array_count_values($open_tags);
+        $close_counts = array_count_values($close_tags);
+        
+        // Self-closing HTML tags
+        $self_closing = ['img', 'br', 'hr', 'input', 'link', 'meta', 'source', 'embed'];
+        foreach ($self_closing as $tag) {
+            unset($open_counts[$tag]);
+        }
+        
+        foreach ($open_counts as $tag => $count) {
+            $close_count = isset($close_counts[$tag]) ? $close_counts[$tag] : 0;
+            if ($count !== $close_count) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Extracts sprintf placeholders from text.
+     *
+     * @param string $text Source text.
+     * @return array
+     */
+    private static function extract_sprintf_placeholders($text) {
+        preg_match_all('/%(?:\d+\$)?[-+0-9#\. ]*[a-zA-Z%]/', $text, $matches);
+        return is_array($matches) && !empty($matches[0]) ? $matches[0] : [];
+    }
+
+    /**
+     * Extracts template variables ({{name}}, {count}, :attribute).
+     *
+     * @param string $text Source text.
+     * @return array
+     */
+    private static function extract_variables($text) {
+        $variables = [];
+        // Match {{name}} and {count}
+        preg_match_all('/\{\{[a-zA-Z0-9_\-]+\}\}|\{[a-zA-Z0-9_\-]+\}/', $text, $matches_curly);
+        if (is_array($matches_curly) && !empty($matches_curly[0])) {
+            $variables = array_merge($variables, $matches_curly[0]);
+        }
+        // Match :attribute
+        preg_match_all('/(?<![a-zA-Z0-9_]):[a-zA-Z_][a-zA-Z0-9_\-]*/', $text, $matches_colon);
+        if (is_array($matches_colon) && !empty($matches_colon[0])) {
+            $variables = array_merge($variables, $matches_colon[0]);
+        }
+        return $variables;
     }
 
     /**

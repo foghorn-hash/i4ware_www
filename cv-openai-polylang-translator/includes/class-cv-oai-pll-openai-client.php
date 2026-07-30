@@ -30,6 +30,21 @@ class CV_OAI_PLL_OpenAI_Client {
      * @return string|WP_Error Translated text block (JSON string) or WP_Error on failure.
      */
     public static function translate_payload($payload, $api_key) {
+        $result = self::translate_payload_with_usage($payload, $api_key);
+        if (is_wp_error($result)) {
+            return $result;
+        }
+        return $result['content'];
+    }
+
+    /**
+     * Sends a translation payload to the OpenAI Chat Completions API and returns content and token usage.
+     *
+     * @param array  $payload Payload array (model, messages, response_format, temperature, etc.).
+     * @param string $api_key OpenAI API key.
+     * @return array|WP_Error Array with 'content' and 'usage' keys or WP_Error on failure.
+     */
+    public static function translate_payload_with_usage($payload, $api_key) {
         if (empty($api_key)) {
             return new WP_Error('openai_missing_key', __('OpenAI API key is missing.', 'cv-openai-polylang-translator'));
         }
@@ -63,7 +78,14 @@ class CV_OAI_PLL_OpenAI_Client {
             return new WP_Error('openai_invalid_response', __('OpenAI returned a response with an unexpected structure.', 'cv-openai-polylang-translator'));
         }
 
-        return trim($decoded['choices'][0]['message']['content']);
+        return [
+            'content' => trim($decoded['choices'][0]['message']['content']),
+            'usage'   => isset($decoded['usage']) ? $decoded['usage'] : [
+                'prompt_tokens'     => 0,
+                'completion_tokens' => 0,
+                'total_tokens'      => 0
+            ]
+        ];
     }
 
     /**

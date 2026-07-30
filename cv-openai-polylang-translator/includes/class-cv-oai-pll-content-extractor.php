@@ -64,6 +64,25 @@ class CV_OAI_PLL_Content_Extractor {
             }
         }
 
+        // 4. Extract Custom Fields / SEO fields
+        $custom_fields = get_option('cv_oai_pll_custom_fields', [
+            '_yoast_wpseo_title',
+            '_yoast_wpseo_metadesc',
+            '_rank_math_title',
+            '_rank_math_description'
+        ]);
+        if (is_array($custom_fields) && !empty($custom_fields)) {
+            foreach ($custom_fields as $meta_key) {
+                $meta_val = get_post_meta($post->ID, $meta_key, true);
+                if (is_string($meta_val) && trim($meta_val) !== '') {
+                    $translatable['meta_' . $meta_key] = [
+                        'type'    => 'text',
+                        'content' => $meta_val,
+                    ];
+                }
+            }
+        }
+
         return $translatable;
     }
 
@@ -437,11 +456,28 @@ class CV_OAI_PLL_Content_Extractor {
             }
         }
 
+        // 5. Reconstruct Custom/SEO Fields
+        $meta_data = [];
+        $custom_fields = get_option('cv_oai_pll_custom_fields', [
+            '_yoast_wpseo_title',
+            '_yoast_wpseo_metadesc',
+            '_rank_math_title',
+            '_rank_math_description'
+        ]);
+        if (is_array($custom_fields) && !empty($custom_fields)) {
+            foreach ($custom_fields as $meta_key) {
+                if (isset($reassembled['meta_' . $meta_key])) {
+                    $meta_data[$meta_key] = $reassembled['meta_' . $meta_key];
+                }
+            }
+        }
+
         return [
             'post_title'   => $post_title,
             'post_excerpt' => $post_excerpt,
             'post_content' => $post_content,
             'acf_data'     => $acf_data,
+            'meta_data'    => $meta_data,
         ];
     }
 

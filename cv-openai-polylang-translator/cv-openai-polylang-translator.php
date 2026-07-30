@@ -21,3 +21,11 @@ function cv_oai_pll_bootstrap() {
     $plugin->run();
 }
 cv_oai_pll_bootstrap();
+
+// 3. Register activation hook for custom tables
+register_activation_hook(__FILE__, 'cv_oai_pll_activate');
+function cv_oai_pll_activate() {
+    require_once plugin_dir_path(__FILE__) . 'includes/class-cv-oai-pll-db.php';
+    CV_OAI_PLL_DB::create_tables();
+}
+
