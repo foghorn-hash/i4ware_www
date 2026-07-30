@@ -51,6 +51,20 @@ let strings = new LocalizedStrings({
     tax: "Skatter",
     year: "År",
   },
+  ar: {
+    all: "جميع المصادر",
+    atlassian: "Atlassian Pty Ltd",
+    kela: "KELA/VARMA/التأمين",
+    tyomarkkinatuki: "KELA/دعم التوظيف",
+    toimtuki: "KELA/دعم المعيشة الأساسي",
+    student: "الدعم المالي للطلاب",
+    hourly: "عملاء السعر بالساعة",
+    grandparents: "ميراث الأجداد",
+    woocommerce: "WooCommerce",
+    capital: "دخل رأس المال",
+    tax: "الإقرار الضريبي",
+    year: "السنة",
+  },
 });
 
 const Charts = () => {

@@ -46,6 +46,16 @@ let strings = new LocalizedStrings({
     saleDate: "Försäljningsdatum",
     revenueSource: "Inkomstkälla",
     vendorAmount: "Leverantörens belopp"
+  },
+  ar: {
+    title: "المعاملات مع الرسم البياني الشريطي",
+    error: "فشل في جلب المعاملات. يرجى المحاولة مرة أخرى.",
+    loading: "جاري التحميل...",
+    name: "مبلغ المورد",
+    allTransactions: "كل المعاملات",
+    saleDate: "تاريخ البيع",
+    revenueSource: "مصدر الإيرادات",
+    vendorAmount: "مبلغ المورد"
   }
 });
 

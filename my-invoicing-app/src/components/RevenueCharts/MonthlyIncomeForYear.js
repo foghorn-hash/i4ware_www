@@ -24,6 +24,9 @@ let strings = new LocalizedStrings({
   sv: { title: "Månadsinkomst", loading: "Laddar...", error: "Misslyckades att hämta månadsinkomst.", total: "Totalt",
         src_all: "Alla källor", src_atlassian: "Atlassian Pty Ltd", src_kela: "Pensionsförsäkring",
         src_hourly: "Timdebiterade kunder", src_grandparents: "Mor- och farföräldrars arv" },
+  ar: { title: "الدخل الشهري", loading: "جاري التحميل...", error: "فشل في جلب الدخل الشهري.", total: "الإجمالي",
+        src_all: "جميع المصادر", src_atlassian: "Atlassian Pty Ltd", src_kela: "التأمين التقاعدي",
+        src_hourly: "عملاء السعر بالساعة", src_grandparents: "ميراث الأجداد" },
 });
 
 const MonthlyIncomeForYear = ({ revenueSource = "all", year = new Date().getFullYear() }) => {

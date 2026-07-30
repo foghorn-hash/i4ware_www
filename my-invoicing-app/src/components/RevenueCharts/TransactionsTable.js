@@ -37,6 +37,13 @@ let strings = new LocalizedStrings({
     loading: "Laddar...",
     name: "Leverantörssaldo",
     description: "Dessa kommer från vårt realtidsbokföringssystem via ett REST API-gränssnitt från databaser."
+  },
+  ar: {
+    title: "معاملات المبيعات السنوية",
+    error: "فشل في جلب المعاملات. يرجى المحاولة مرة أخرى.",
+    loading: "جاري التحميل...",
+    name: "رصيد المورد",
+    description: "تأتي هذه البيانات من نظام المحاسبة الفوري الخاص بنا عبر واجهة REST API من قواعد البيانات."
   }
 });
 

@@ -49,6 +49,21 @@ let strings = new LocalizedStrings({
     totalWithVat: "Totalt (inkl. moms):",
     totalForProject: "Projektets totalkostnad:",
   },
+  ar: {
+    title: "حاسبة تسعير مشاريع تقنية المعلومات",
+    hourlyRate: "السعر بالساعة (يورو)",
+    vatRate: "نسبة ضريبة القيمة المضافة (%)",
+    hoursPerWeek: "الساعات أسبوعيًا",
+    weeksPerMonth: "الأسابيع شهريًا",
+    projectDuration: "مدة المشروع (بالأشهر)",
+    calculate: "حساب",
+    results: "النتائج:",
+    hoursPerMonth: "الساعات شهريًا:",
+    baseAmount: "المبلغ الأساسي:",
+    vatAmount: "قيمة ضريبة القيمة المضافة:",
+    totalWithVat: "الإجمالي (شامل الضريبة):",
+    totalForProject: "إجمالي تكلفة المشروع:",
+  },
 });
 
 const InvoicingCalculator = () => {

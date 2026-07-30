@@ -84,6 +84,32 @@ let strings = new LocalizedStrings({
     euroPerMonth: "/mån",
     reset: "Rensa",
   },
+  ar: {
+    appTitle: "حاسبة YEL",
+    inputs: "المدخلات",
+    income: "دخل YEL (يورو/السنة)",
+    birthMonth: "شهر الميلاد",
+    birthYear: "سنة الميلاد",
+    installments: "عدد الأقساط في السنة",
+    firstInstallmentMonth: "شهر القسط الأول",
+    calculate: "حساب",
+    results: "النتائج",
+    premiumPerInstallment: "القسط لكل دفعة",
+    premiumPerYear: "القسط السنوي",
+    newEntrepreneur: "رائد أعمال جديد (أول 48 شهرًا)",
+    discountedPerInstallment: "المخفض لكل دفعة",
+    discountedPerYear: "المخفض سنويًا",
+    assumptionsTitle: "الافتراضات والملاحظات",
+    assumptionsText:
+      "تستخدم هذه الحاسبة افتراضات مبسطة (نطاقات أسعار قائمة على العمر وخصم بنسبة 22% لرواد الأعمال الجدد). تتغير نسب ومنافع YEL الفعلية سنويًا؛ يرجى مراجعة جهة التأمين التقاعدي الخاصة بك لمعرفة الأرقام الرسمية.",
+    ageBandA: "أقل من 53 أو 63+",
+    ageBandB: "العمر 53–62",
+    choose: "اختر",
+    estimatePension: "تقدير تقريبي للغاية للمعاش التقاعدي المستقبلي",
+    targetAtAge: "عند سن التقاعد",
+    euroPerMonth: "/شهر",
+    reset: "إعادة تعيين",
+  },
 });
 
 export default function YelCalculator() {

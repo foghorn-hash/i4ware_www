@@ -38,6 +38,17 @@ let strings = new LocalizedStrings({
     vatAmount: "Momsbelopp:",
     totalWithVat: "Total avgift (inkl. moms):",
   },
+  ar: {
+    title: "حاسبة السعر بالساعة",
+    hourlyRate: "السعر بالساعة (يورو)",
+    vatRate: "نسبة ضريبة القيمة المضافة (%)",
+    projectHours: "ساعات المشروع",
+    calculate: "حساب",
+    results: "النتائج:",
+    baseAmount: "إجمالي رسوم الساعة (غير شامل الضريبة):",
+    vatAmount: "قيمة ضريبة القيمة المضافة:",
+    totalWithVat: "إجمالي الرسوم (شامل الضريبة):",
+  },
 });
 
 const LegalFeeCalculator = () => {

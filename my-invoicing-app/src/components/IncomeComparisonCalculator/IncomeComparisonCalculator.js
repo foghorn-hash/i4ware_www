@@ -65,6 +65,26 @@ let strings = new LocalizedStrings({
     competitorGrossIncome: "Konkurrentens bruttoinkomst:",
     totalMonthlyIncome: "Total månadsinkomst (inkl. pension, bostadsbidrag och garantipension):",
   },
+  ar: {
+    title: "حاسبة مقارنة الدخل",
+    competitorRate: "السعر بالساعة للمنافس (يورو)",
+    hoursPerMonth: "الساعات شهريًا",
+    monthlyPension: "المعاش التقاعدي الوطني (يورو/شهر)",
+    housingAllowance: "بدل السكن (يورو/شهر)",
+    guaranteePension: "المعاش التقاعدي المضمون (يورو/شهر)",
+    yelIncome: "دخل YEL (يورو/سنة)",
+    isStartingEntrepreneur: "رائد أعمال مبتدئ (خصم 22% على رسوم YEL)",
+    taxRate: "الضريبة المستقطعة + ضريبة الكنيسة (%)",
+    calculate: "حساب",
+    results: "النتائج:",
+    grossIncome: "إجمالي دخلك (رسوم شهرية ثابتة):",
+    vatAmount: "قيمة ضريبة القيمة المضافة:",
+    taxAmount: "الضرائب:",
+    yelFee: "رسوم YEL:",
+    netIncome: "صافي الدخل:",
+    competitorGrossIncome: "إجمالي دخل المنافس:",
+    totalMonthlyIncome: "إجمالي الدخل الشهري (شامل المعاش وبدل السكن والمعاش المضمون):",
+  },
 });
 
 const IncomeComparisonCalculator = () => {

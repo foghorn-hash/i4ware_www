@@ -30,6 +30,13 @@ let strings = new LocalizedStrings({
     permission: 'Härmed ges tillstånd, kostnadsfritt, till varje person som erhåller en kopia av denna programvara och tillhörande dokumentationsfiler (nedan kallad "Programvara"), att använda Programvaran utan begränsningar, inklusive rätten att använda, kopiera, modifiera, sammanfoga, publicera, distribuera, underlicensiera och/eller sälja kopior av Programvaran samt att ge personer till vilka Programvaran tillhandahålls tillstånd att göra detsamma, under förutsättning att följande villkor uppfylls:',
     conditions: 'Ovanstående upphovsrättsmeddelande och detta tillståndsmeddelande ska inkluderas i alla kopior eller väsentliga delar av Programvaran.', 
     warranty: 'PROGRAMVARAN TILLHANDAHÅLLS "I BEFINTLIGT SKICK", UTAN GARANTI AV NÅGOT SLAG, VARE SIG UTTRYCKT ELLER UNDERFÖRSTÅDD, INKLUSIVE MEN INTE BEGRÄNSAT TILL GARANTIER OM SÄLJBARHET, ANPASSNING FÖR ETT VISST SYFTE OCH OFRÄNKBARHET. UNDER INGA OMSTÄNDIGHETER SKA UPPHOVSRÄTTSHAVARE ELLER UPPHOVSPERSONER VARA ANSVARIGA FÖR NÅGRA KRAV, SKADOR ELLER ANNAN ANSVARSSKYLDIGHET, OAVSETT OM DET GÄLLER KONTRAKT, SKULD, ELLER ANNAT, SOM UPPSTÅR FRÅN, UTANFÖR ELLER I SAMBAND MED PROGRAMVARAN ELLER ANVÄNDNINGEN ELLER ANDRA ÅTGÄRDER MED PROGRAMVARAN.',
+  },
+  ar: {
+    license: "الترخيص",
+    copyright: "حقوق النشر © 2022-الآن i4ware Software",
+    permission: "يمنح الإذن بموجب هذا، مجانًا، لأي شخص يحصل على نسخة من هذا البرنامج وملفات التوثيق المصاحبة له (\"البرنامج\")، للتعامل مع البرنامج دون قيود، بما في ذلك على سبيل المثال لا الحصر حقوق الاستخدام، والنسخ، والتعديل، والدمج، والنشر، والتوزيع، والترخيص من الباطن، و/أو بيع نسخ من البرنامج، والسماح للأشخاص الذين يُمنح لهم البرنامج بالقيام بذلك، وفقًا للشروط التالية:",
+    conditions: "يجب إدراج إشعار حقوق النشر أعلاه وإشعار الإذن هذا في جميع النسخ أو الأجزاء الجوهرية من البرنامج.",
+    warranty: "يُقدم البرنامج \"كما هو\"، دون أي ضمان من أي نوع، صريحًا كان أم ضمنيًا، بما في ذلك على سبيل المثال لا الحصر ضمانات الرواج الملائم، والملاءمة لغرض معين، وعدم الانتهاك. لا يتحمل المؤلفون أو أصحاب حقوق النشر في أي حال من الأحوال المسؤولية عن أي مطالبة أو أضرار أو مسؤولية أخرى، سواء كان ذلك في إطار عقد أو ضرر أو غير ذلك، تنشأ عن أو تتعلق بالبرنامج أو استخدامه أو التعاملات الأخرى فيه."
   }
 });
 

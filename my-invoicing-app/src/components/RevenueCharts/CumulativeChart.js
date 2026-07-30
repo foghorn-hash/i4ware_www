@@ -35,6 +35,12 @@ let strings = new LocalizedStrings({
     error: "Misslyckades med att hämta transaktioner. Försök igen.",
     loading: "Laddar...",
     name: "Kumulativ leverantörssaldo"
+  },
+  ar: {
+    title: "مخطط المبيعات التراكمي",
+    error: "فشل في جلب المعاملات. يرجى المحاولة مرة أخرى.",
+    loading: "جاري التحميل...",
+    name: "رصيد المورد التراكمي"
   }
  });
 

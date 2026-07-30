@@ -24,6 +24,12 @@ let strings = new LocalizedStrings({
       error: "Misslyckades med att hämta årliga försäljningsdata. Försök igen.",
       loading: "Laddar årliga försäljningsdata...",
       name: "Årlig försäljningsprocent"
+    },
+    ar: {
+      title: "توزيع المبيعات السنوي",
+      error: "فشل في جلب بيانات المبيعات السنوية. يرجى المحاولة مرة أخرى.",
+      loading: "جاري تحميل بيانات المبيعات السنوية...",
+      name: "نسبة المبيعات السنوية"
     }
   });  
 

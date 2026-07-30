@@ -25,6 +25,12 @@ let strings = new LocalizedStrings({
       loading: "Laddar...",
       name: "Soliditet",
     },
+    ar: {
+      title: "نسبة الملاءة المالية %",
+      error: "فشل في جلب المعاملات. يرجى المحاولة مرة أخرى.",
+      loading: "جاري التحميل...",
+      name: "الملاءة المالية",
+    },
   });
 
 const AnnualChart = () => {
