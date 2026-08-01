@@ -50,7 +50,7 @@ class CV_OAI_PLL_String_Translator {
      * @param string $target_lang Target language code.
      * @return bool True on success, false on failure.
      */
-    public static function save_single_translation($source_text, $translated_text, $target_lang) {
+    public static function save_single_translation($source_text, $translated_text, $target_lang, $context = '') {
         global $polylang;
 
         if (!class_exists('PLL_MO') || !isset($polylang) || !isset($polylang->model)) {
@@ -73,6 +73,7 @@ class CV_OAI_PLL_String_Translator {
         // Add or update the translation entry
         $mo->add_entry(new Translation_Entry([
             'singular'     => $source_text,
+            'context'      => '',
             'translations' => [$translated_text]
         ]));
 
@@ -144,7 +145,7 @@ class CV_OAI_PLL_String_Translator {
                 $translated_text = $translated[$key];
                 
                 // Validate individual translation integrity
-                $validation = CV_OAI_PLL_Validator::validate([$key => $source_text], [$key => $translated_text]);
+                $validation = CV_OAI_PLL_Validator::validate([$key => $source_text], [$key => $translated_text], $target_lang);
                 if (!is_wp_error($validation)) {
                     self::save_single_translation($source_text, $translated_text, $target_lang);
                     CV_OAI_PLL_DB::add_cached_translation($source_text, $target_lang, $translated_text);

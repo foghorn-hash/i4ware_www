@@ -20,7 +20,7 @@ class CV_OAI_PLL_Queue {
      * @param string $target_lang The target language code (e.g. 'en', 'ar').
      * @return int Number of items added to the queue.
      */
-    public static function populate_queue($target_lang) {
+    public static function populate_queue($target_lang, $overwrite = false) {
         if (!function_exists('pll_get_post_language') || !function_exists('pll_languages_list')) {
             return 0;
         }
@@ -43,14 +43,11 @@ class CV_OAI_PLL_Queue {
             foreach ($posts as $post) {
                 $lang = pll_get_post_language($post->ID);
                 if ($lang === 'fi') {
-                    // Check if translation already exists and is published (we do not overwrite published ones)
+                    // Check if translation already exists
                     $translations = pll_get_post_translations($post->ID);
                     $existing_id = isset($translations[$target_lang]) ? (int) $translations[$target_lang] : 0;
-                    if ($existing_id) {
-                        $existing_post = get_post($existing_id);
-                        if ($existing_post && $existing_post->post_status === 'publish') {
-                            continue; // Skip published translations
-                        }
+                    if ($existing_id && !$overwrite) {
+                        continue; // Skip if translation already exists and overwrite is disabled
                     }
 
                     $queue_id = CV_OAI_PLL_DB::add_to_queue('post', $post->ID, $target_lang);
@@ -79,6 +76,13 @@ class CV_OAI_PLL_Queue {
                     if (function_exists('pll_get_term_language')) {
                         $lang = pll_get_term_language($term->term_id);
                         if ($lang === 'fi') {
+                            if (function_exists('pll_get_term')) {
+                                $existing_term_id = pll_get_term($term->term_id, $target_lang);
+                                if ($existing_term_id && !$overwrite) {
+                                    continue; // Skip if term translation already exists and overwrite is disabled
+                                }
+                            }
+
                             $queue_id = CV_OAI_PLL_DB::add_to_queue('term', $term->term_id, $target_lang);
                             if ($queue_id) {
                                 $added_count++;
@@ -90,7 +94,7 @@ class CV_OAI_PLL_Queue {
         }
 
         // 3. Scan registered Polylang strings
-        $added_count += self::populate_missing_strings($target_lang);
+        $added_count += self::populate_missing_strings($target_lang, $overwrite);
 
         // 4. Scan Menus
         $menus = wp_get_nav_menus();
@@ -99,6 +103,13 @@ class CV_OAI_PLL_Queue {
                 if (function_exists('pll_get_term_language')) {
                     $lang = pll_get_term_language($menu->term_id);
                     if ($lang === 'fi') {
+                        if (function_exists('pll_get_term')) {
+                            $existing_menu_id = pll_get_term($menu->term_id, $target_lang);
+                            if ($existing_menu_id && !$overwrite) {
+                                continue; // Skip if menu translation already exists and overwrite is disabled
+                            }
+                        }
+
                         $queue_id = CV_OAI_PLL_DB::add_to_queue('menu', $menu->term_id, $target_lang);
                         if ($queue_id) {
                             $added_count++;
@@ -112,12 +123,39 @@ class CV_OAI_PLL_Queue {
     }
 
     /**
+     * Helper to retrieve all registered Polylang strings.
+     *
+     * @return array
+     */
+    public static function get_registered_strings() {
+        if (class_exists('PLL_Admin_Strings')) {
+            return PLL_Admin_Strings::get_strings();
+        }
+
+        global $polylang;
+        if (!isset($polylang)) {
+            return [];
+        }
+        
+        if (isset($polylang->strings) && method_exists($polylang->strings, 'get_strings')) {
+            return $polylang->strings->get_strings();
+        } elseif (isset($polylang->model->strings) && method_exists($polylang->model->strings, 'get_strings')) {
+            return $polylang->model->strings->get_strings();
+        } elseif (isset($polylang->model) && method_exists($polylang->model, 'get_strings')) {
+            return $polylang->model->get_strings();
+        }
+        
+        return [];
+    }
+
+    /**
      * Scans registered Polylang strings and adds untranslated strings to the queue.
      *
      * @param string $target_lang Target language code.
+     * @param bool   $overwrite   Whether to overwrite existing translations.
      * @return int Number of strings added.
      */
-    public static function populate_missing_strings($target_lang) {
+    public static function populate_missing_strings($target_lang, $overwrite = false) {
         global $polylang;
         if (!isset($polylang) || !isset($polylang->model)) {
             return 0;
@@ -125,14 +163,7 @@ class CV_OAI_PLL_Queue {
 
         $added_count = 0;
         
-        $registered_strings = [];
-        if (isset($polylang->strings) && method_exists($polylang->strings, 'get_strings')) {
-            $registered_strings = $polylang->strings->get_strings();
-        } elseif (isset($polylang->model->strings) && method_exists($polylang->model->strings, 'get_strings')) {
-            $registered_strings = $polylang->model->strings->get_strings();
-        } elseif (isset($polylang->model) && method_exists($polylang->model, 'get_strings')) {
-            $registered_strings = $polylang->model->get_strings();
-        }
+        $registered_strings = self::get_registered_strings();
 
         if (empty($registered_strings)) {
             return 0;
@@ -155,21 +186,34 @@ class CV_OAI_PLL_Queue {
             }
 
             // Check if translation exists in the target MO object
-            $translation = $mo->translate($text);
-            
-            // If the translation is identical to the source, and the target language is not fi,
-            // or the translation is empty, consider it untranslated.
-            // Note: translate() returns the original string if no translation is found.
-            $is_translated = true;
-            if ($translation === $text && $target_lang !== 'fi') {
-                $is_translated = false;
-            } elseif (empty($translation)) {
-                $is_translated = false;
+            $is_translated = false;
+            if (!$overwrite) {
+                if (method_exists($mo, 'translate_if_any')) {
+                    $translation = $mo->translate_if_any($text);
+                    if ($translation !== '') {
+                        $is_translated = true;
+                    }
+                } else {
+                    if (!class_exists('Translation_Entry')) {
+                        require_once ABSPATH . 'wp-includes/pomo/entry.php';
+                    }
+                    $search_entry = new Translation_Entry(['singular' => $text]);
+                    $entry = method_exists($mo, 'translate_entry') ? $mo->translate_entry($search_entry) : null;
+                    if ($entry && !empty($entry->translations) && isset($entry->translations[0]) && $entry->translations[0] !== '') {
+                        $is_translated = true;
+                    } else {
+                        // Fallback to translate comparison if entry check isn't available
+                        $translation = $mo->translate($text);
+                        if (!empty($translation) && $translation !== $text) {
+                            $is_translated = true;
+                        }
+                    }
+                }
             }
 
             if (!$is_translated) {
-                // Unique item ID for strings: md5(context ||| name)
-                $item_id = md5($context . '|||' . $name);
+                // Unique item ID for strings: md5(context ||| name ||| string)
+                $item_id = md5($context . '|||' . $name . '|||' . $text);
                 $queue_id = CV_OAI_PLL_DB::add_to_queue('string', $item_id, $target_lang);
                 if ($queue_id) {
                     $added_count++;
@@ -186,163 +230,239 @@ class CV_OAI_PLL_Queue {
      * @param int $batch_size Batch size limit (default 10).
      * @return array Summary of processed items.
      */
-    public static function process_batch($batch_size = 10) {
-        $pending_items = CV_OAI_PLL_DB::get_pending_batch($batch_size);
-        $results = [
-            'total'     => count($pending_items),
-            'success'   => 0,
-            'failed'    => 0,
-            'details'   => []
-        ];
-
-        if (empty($pending_items)) {
-            return $results;
+    /**
+     * Processes a batch of up to 10 pending translation queue items.
+     *
+     * @param int  $batch_size   Batch size limit (default 10).
+     * @param bool $bypass_cache Whether to ignore cached translations.
+     * @return array Summary of processed items.
+     */
+    public static function process_batch($batch_size = 10, $bypass_cache = false) {
+        require_once dirname(__FILE__) . '/class-cv-oai-pll-translation-lock.php';
+        if (CV_OAI_PLL_Translation_Lock::is_locked()) {
+            return [
+                'total'     => 0,
+                'success'   => 0,
+                'failed'    => 0,
+                'details'   => [
+                    [
+                        'success' => false,
+                        'error'   => __('Another translation job is currently running on this site. Please wait a few minutes.', 'cv-openai-polylang-translator')
+                    ]
+                ]
+            ];
         }
 
-        // We can group strings in the batch to translate them all in one OpenAI call
-        $string_items = [];
-        $other_items = [];
+        CV_OAI_PLL_Translation_Lock::acquire(999999);
 
-        foreach ($pending_items as $item) {
-            if ($item->item_type === 'string') {
-                $string_items[] = $item;
+        try {
+            $pending_items = CV_OAI_PLL_DB::get_pending_batch($batch_size);
+
+            if (empty($pending_items)) {
+                CV_OAI_PLL_Translation_Lock::release();
+                return [
+                    'total'     => 0,
+                    'success'   => 0,
+                    'failed'    => 0,
+                    'details'   => []
+                ];
+            }
+
+            // Smart batch slicing:
+            // If the first item is not a string, only process that one item.
+            // If the first item is a string, process all consecutive strings in this batch.
+            $first_item = $pending_items[0];
+            if ($first_item->item_type !== 'string') {
+                $pending_items = [$first_item];
             } else {
-                $other_items[] = $item;
-            }
-        }
-
-        // Set status to processing for all items in batch
-        foreach ($pending_items as $item) {
-            CV_OAI_PLL_DB::update_item_status($item->id, 'processing', '', $item->attempts + 1);
-        }
-
-        // 1. Process String Items (Optimized Batching!)
-        if (!empty($string_items)) {
-            // Group by target language code (though usually they are all the same target language in a cron run)
-            $strings_by_lang = [];
-            foreach ($string_items as $item) {
-                $strings_by_lang[$item->target_language][] = $item;
+                $sliced_items = [];
+                foreach ($pending_items as $item) {
+                    if ($item->item_type === 'string') {
+                        $sliced_items[] = $item;
+                    } else {
+                        break; // Stop at the first non-string item
+                    }
+                }
+                $pending_items = $sliced_items;
             }
 
-            foreach ($strings_by_lang as $lang => $items) {
-                $batch_results = self::process_string_batch($items, $lang);
-                $results['success'] += $batch_results['success'];
-                $results['failed']  += $batch_results['failed'];
-                $results['details'] = array_merge($results['details'], $batch_results['details']);
-            }
-        }
-
-        // 2. Process Other Items (Posts, Terms) sequentially
-        if (!empty($other_items)) {
-            $options = [
-                'title'   => true,
-                'excerpt' => true,
-                'content' => true,
-                'acf'     => true,
-                'caption' => true,
-                'alt'     => true,
+            $results = [
+                'total'     => count($pending_items),
+                'success'   => 0,
+                'failed'    => 0,
+                'details'   => []
             ];
 
-            foreach ($other_items as $item) {
-                $item_id = $item->item_id;
-                $target_lang = $item->target_language;
+            // We can group strings in the batch to translate them all in one OpenAI call
+            $string_items = [];
+            $other_items = [];
 
-                if ($item->item_type === 'post') {
-                    // Lock check: translate_post handles lock internally, but we can verify here
-                    $post_id = (int) $item_id;
-                    $translate_res = CV_OAI_PLL_Translator::translate_post($post_id, $target_lang, $options, true);
+            foreach ($pending_items as $item) {
+                if ($item->item_type === 'string') {
+                    $string_items[] = $item;
+                } else {
+                    $other_items[] = $item;
+                }
+            }
 
-                    if (is_wp_error($translate_res)) {
-                        CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $translate_res->get_error_message());
-                        $results['failed']++;
-                        $results['details'][] = [
-                            'id'      => $item->id,
-                            'type'    => 'post',
-                            'item_id' => $post_id,
-                            'success' => false,
-                            'error'   => $translate_res->get_error_message()
-                        ];
-                    } else {
-                        // Success! Retrieve token usage from last logs
-                        $usage = self::get_last_logged_usage($post_id, $target_lang);
-                        CV_OAI_PLL_DB::update_item_status($item->id, 'completed', '', null, $usage);
-                        $results['success']++;
-                        $results['details'][] = [
-                            'id'      => $item->id,
-                            'type'    => 'post',
-                            'item_id' => $post_id,
-                            'success' => true,
-                            'draft_id'=> $translate_res
-                        ];
-                    }
-                } elseif ($item->item_type === 'term') {
-                    $term_id = (int) $item_id;
-                    $translate_res = CV_OAI_PLL_Translator::translate_term_by_id($term_id, $target_lang);
+            // Set status to processing for all items in batch
+            foreach ($pending_items as $item) {
+                CV_OAI_PLL_DB::update_item_status($item->id, 'processing', '', $item->attempts + 1);
+            }
 
-                    if (is_wp_error($translate_res)) {
-                        CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $translate_res->get_error_message());
-                        $results['failed']++;
-                        $results['details'][] = [
-                            'id'      => $item->id,
-                            'type'    => 'term',
-                            'item_id' => $term_id,
-                            'success' => false,
-                            'error'   => $translate_res->get_error_message()
-                        ];
-                    } else {
-                        CV_OAI_PLL_DB::update_item_status($item->id, 'completed', '', null, $translate_res['usage']);
-                        $results['success']++;
-                        $results['details'][] = [
-                            'id'      => $item->id,
-                            'type'    => 'term',
-                            'item_id' => $term_id,
-                            'success' => true
-                        ];
-                    }
-                } elseif ($item->item_type === 'menu') {
-                    $menu_id = (int) $item_id;
-                    $translate_res = CV_OAI_PLL_Translator::translate_menu($menu_id, $target_lang);
+            // 1. Process String Items (Optimized Batching!)
+            if (!empty($string_items)) {
+                // Group by target language code (though usually they are all the same target language in a cron run)
+                $strings_by_lang = [];
+                foreach ($string_items as $item) {
+                    $strings_by_lang[$item->target_language][] = $item;
+                }
 
-                    if (is_wp_error($translate_res)) {
-                        CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $translate_res->get_error_message());
-                        $results['failed']++;
-                        $results['details'][] = [
-                            'id'      => $item->id,
-                            'type'    => 'menu',
-                            'item_id' => $menu_id,
-                            'success' => false,
-                            'error'   => $translate_res->get_error_message()
-                        ];
-                    } else {
-                        CV_OAI_PLL_DB::update_item_status($item->id, 'completed', '', null, [
-                            'model'             => get_option('cv_oai_pll_model', 'gpt-4o-mini'),
-                            'prompt_tokens'     => 0,
-                            'completion_tokens' => 0
-                        ]);
-                        $results['success']++;
-                        $results['details'][] = [
-                            'id'      => $item->id,
-                            'type'    => 'menu',
-                            'item_id' => $menu_id,
-                            'success' => true
-                        ];
+                foreach ($strings_by_lang as $lang => $items) {
+                    $batch_results = self::process_string_batch($items, $lang, $bypass_cache);
+                    $results['success'] += $batch_results['success'];
+                    $results['failed']  += $batch_results['failed'];
+                    $results['details'] = array_merge($results['details'], $batch_results['details']);
+                }
+            }
+
+            // 2. Process Other Items (Posts, Terms) sequentially
+            if (!empty($other_items)) {
+                $options = [
+                    'title'   => true,
+                    'excerpt' => true,
+                    'content' => true,
+                    'acf'     => true,
+                    'caption' => true,
+                    'alt'     => true,
+                ];
+
+                foreach ($other_items as $item) {
+                    $item_id = $item->item_id;
+                    $target_lang = $item->target_language;
+
+                    if ($item->item_type === 'post') {
+                        $post_id = (int) $item_id;
+                        $post_title = get_the_title($post_id);
+                        $post_name = $post_title ? $post_title : '#' . $post_id;
+                        
+                        $translate_res = CV_OAI_PLL_Translator::translate_post($post_id, $target_lang, $options, true, true, $bypass_cache);
+
+                        if (is_wp_error($translate_res)) {
+                            CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $translate_res->get_error_message());
+                            $results['failed']++;
+                            $results['details'][] = [
+                                'id'              => $item->id,
+                                'type'            => 'post',
+                                'item_id'         => $post_id,
+                                'name'            => $post_name,
+                                'target_language' => $target_lang,
+                                'success'         => false,
+                                'error'           => $translate_res->get_error_message()
+                            ];
+                        } else {
+                            // Success! Retrieve token usage from last logs
+                            $usage = self::get_last_logged_usage($post_id, $target_lang);
+                            CV_OAI_PLL_DB::update_item_status($item->id, 'completed', '', null, $usage);
+                            $results['success']++;
+                            $results['details'][] = [
+                                'id'              => $item->id,
+                                'type'            => 'post',
+                                'item_id'         => $post_id,
+                                'name'            => $post_name,
+                                'target_language' => $target_lang,
+                                'success'         => true,
+                                'draft_id'        => $translate_res
+                            ];
+                        }
+                    } elseif ($item->item_type === 'term') {
+                        $term_id = (int) $item_id;
+                        $translate_res = CV_OAI_PLL_Translator::translate_term_by_id($term_id, $target_lang, $bypass_cache);
+
+                        $term_obj = get_term($term_id);
+                        $term_name = ($term_obj && !is_wp_error($term_obj)) ? $term_obj->name : '#' . $term_id;
+
+                        if (is_wp_error($translate_res)) {
+                            CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $translate_res->get_error_message());
+                            $results['failed']++;
+                            $results['details'][] = [
+                                'id'              => $item->id,
+                                'type'            => 'term',
+                                'item_id'         => $term_id,
+                                'name'            => $term_name,
+                                'target_language' => $target_lang,
+                                'success'         => false,
+                                'error'           => $translate_res->get_error_message()
+                            ];
+                        } else {
+                            CV_OAI_PLL_DB::update_item_status($item->id, 'completed', '', null, $translate_res['usage']);
+                            $results['success']++;
+                            $results['details'][] = [
+                                'id'              => $item->id,
+                                'type'            => 'term',
+                                'item_id'         => $term_id,
+                                'name'            => $term_name,
+                                'target_language' => $target_lang,
+                                'success'         => true
+                            ];
+                        }
+                    } elseif ($item->item_type === 'menu') {
+                        $menu_id = (int) $item_id;
+                        $translate_res = CV_OAI_PLL_Translator::translate_menu($menu_id, $target_lang);
+
+                        $menu_obj = wp_get_nav_menu_object($menu_id);
+                        $menu_name = $menu_obj ? $menu_obj->name : '#' . $menu_id;
+
+                        if (is_wp_error($translate_res)) {
+                            CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $translate_res->get_error_message());
+                            $results['failed']++;
+                            $results['details'][] = [
+                                'id'              => $item->id,
+                                'type'            => 'menu',
+                                'item_id'         => $menu_id,
+                                'name'            => $menu_name,
+                                'target_language' => $target_lang,
+                                'success'         => false,
+                                'error'           => $translate_res->get_error_message()
+                            ];
+                        } else {
+                            CV_OAI_PLL_DB::update_item_status($item->id, 'completed', '', null, [
+                                'model'             => get_option('cv_oai_pll_model', 'gpt-4o-mini'),
+                                'prompt_tokens'     => 0,
+                                'completion_tokens' => 0
+                            ]);
+                            $results['success']++;
+                            $results['details'][] = [
+                                'id'              => $item->id,
+                                'type'            => 'menu',
+                                'item_id'         => $menu_id,
+                                'name'            => $menu_name,
+                                'target_language' => $target_lang,
+                                'success'         => true
+                            ];
+                        }
                     }
                 }
             }
-        }
 
-        return $results;
+            CV_OAI_PLL_Translation_Lock::release();
+            return $results;
+        } catch (\Throwable $t) {
+            CV_OAI_PLL_Translation_Lock::release();
+            throw $t;
+        }
     }
 
     /**
      * Processes a batch of Polylang strings.
      * Combines all strings into a single JSON object for translation.
      *
-     * @param array  $items       List of queue string items.
-     * @param string $target_lang Target language code.
+     * @param array  $items        List of queue string items.
+     * @param string $target_lang  Target language code.
+     * @param bool   $bypass_cache Whether to ignore cached translations.
      * @return array Progress stats.
      */
-    private static function process_string_batch($items, $target_lang) {
+    private static function process_string_batch($items, $target_lang, $bypass_cache = false) {
         global $polylang;
         $results = [
             'success' => 0,
@@ -356,11 +476,11 @@ class CV_OAI_PLL_Queue {
 
         require_once dirname(__FILE__) . '/class-cv-oai-pll-string-translator.php';
 
-        // 1. Map registered strings by item_id (MD5 hash of context + name)
-        $registered_strings = $polylang->model->get_strings();
+        // 1. Map registered strings by item_id (MD5 hash of context + name + string)
+        $registered_strings = self::get_registered_strings();
         $string_map = [];
         foreach ($registered_strings as $string) {
-            $hash = md5($string['context'] . '|||' . $string['name']);
+            $hash = md5($string['context'] . '|||' . $string['name'] . '|||' . $string['string']);
             $string_map[$hash] = $string;
         }
 
@@ -373,14 +493,15 @@ class CV_OAI_PLL_Queue {
             if (isset($string_map[$hash])) {
                 $string_info = $string_map[$hash];
                 // Check Cache/Translation Memory first!
-                $cached = CV_OAI_PLL_DB::get_cached_translation($string_info['string'], $target_lang);
+                $cached = !$bypass_cache ? CV_OAI_PLL_DB::get_cached_translation($string_info['string'], $target_lang) : false;
 
                 if ($cached !== false) {
                     // Instant success from cache!
                     $saved = CV_OAI_PLL_String_Translator::save_single_translation(
                         $string_info['string'],
                         $cached,
-                        $target_lang
+                        $target_lang,
+                        $string_info['context']
                     );
 
                     if ($saved) {
@@ -391,15 +512,26 @@ class CV_OAI_PLL_Queue {
                         ]);
                         $results['success']++;
                         $results['details'][] = [
-                            'id'      => $item->id,
-                            'type'    => 'string',
-                            'item_id' => $hash,
-                            'success' => true,
-                            'cached'  => true
+                            'id'              => $item->id,
+                            'type'            => 'string',
+                            'item_id'         => $hash,
+                            'name'            => strlen($string_info['string']) > 40 ? mb_substr($string_info['string'], 0, 40) . '...' : $string_info['string'],
+                            'target_language' => $target_lang,
+                            'success'         => true,
+                            'cached'          => true
                         ];
                     } else {
                         CV_OAI_PLL_DB::update_item_status($item->id, 'failed', __('Failed to write translation memory to database.', 'cv-openai-polylang-translator'));
                         $results['failed']++;
+                        $results['details'][] = [
+                            'id'              => $item->id,
+                            'type'            => 'string',
+                            'item_id'         => $hash,
+                            'name'            => strlen($string_info['string']) > 40 ? mb_substr($string_info['string'], 0, 40) . '...' : $string_info['string'],
+                            'target_language' => $target_lang,
+                            'success'         => false,
+                            'error'           => __('Failed to write translation memory to database.', 'cv-openai-polylang-translator')
+                        ];
                     }
                 } else {
                     // Not cached, translate using OpenAI
@@ -411,11 +543,13 @@ class CV_OAI_PLL_Queue {
                 CV_OAI_PLL_DB::update_item_status($item->id, 'failed', __('Registered Polylang string not found.', 'cv-openai-polylang-translator'));
                 $results['failed']++;
                 $results['details'][] = [
-                    'id'      => $item->id,
-                    'type'    => 'string',
-                    'item_id' => $hash,
-                    'success' => false,
-                    'error'   => __('Registered Polylang string not found.', 'cv-openai-polylang-translator')
+                    'id'              => $item->id,
+                    'type'            => 'string',
+                    'item_id'         => $hash,
+                    'name'            => __('Unknown String', 'cv-openai-polylang-translator'),
+                    'target_language' => $target_lang,
+                    'success'         => false,
+                    'error'           => __('Registered Polylang string not found.', 'cv-openai-polylang-translator')
                 ];
             }
         }
@@ -452,14 +586,19 @@ class CV_OAI_PLL_Queue {
             // Entire batch failed API request
             $err_msg = $response->get_error_message();
             foreach ($item_mapping as $hash => $item) {
+                $string_info = isset($string_map[$hash]) ? $string_map[$hash] : null;
+                $string_text = $string_info ? $string_info['string'] : __('Unknown String', 'cv-openai-polylang-translator');
+                
                 CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $err_msg);
                 $results['failed']++;
                 $results['details'][] = [
-                    'id'      => $item->id,
-                    'type'    => 'string',
-                    'item_id' => $hash,
-                    'success' => false,
-                    'error'   => $err_msg
+                    'id'              => $item->id,
+                    'type'            => 'string',
+                    'item_id'         => $hash,
+                    'name'            => strlen($string_text) > 40 ? mb_substr($string_text, 0, 40) . '...' : $string_text,
+                    'target_language' => $target_lang,
+                    'success'         => false,
+                    'error'           => $err_msg
                 ];
             }
             return $results;
@@ -470,14 +609,19 @@ class CV_OAI_PLL_Queue {
         if (!is_array($translated_data)) {
             $err_msg = __('Invalid JSON structure returned by OpenAI.', 'cv-openai-polylang-translator');
             foreach ($item_mapping as $hash => $item) {
+                $string_info = isset($string_map[$hash]) ? $string_map[$hash] : null;
+                $string_text = $string_info ? $string_info['string'] : __('Unknown String', 'cv-openai-polylang-translator');
+                
                 CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $err_msg);
                 $results['failed']++;
                 $results['details'][] = [
-                    'id'      => $item->id,
-                    'type'    => 'string',
-                    'item_id' => $hash,
-                    'success' => false,
-                    'error'   => $err_msg
+                    'id'              => $item->id,
+                    'type'            => 'string',
+                    'item_id'         => $hash,
+                    'name'            => strlen($string_text) > 40 ? mb_substr($string_text, 0, 40) . '...' : $string_text,
+                    'target_language' => $target_lang,
+                    'success'         => false,
+                    'error'           => $err_msg
                 ];
             }
             return $results;
@@ -493,7 +637,7 @@ class CV_OAI_PLL_Queue {
 
             // Quick validation logic matching validator rules
             $trans_val = $translated_data[$hash];
-            $validation_res = CV_OAI_PLL_Validator::validate([$hash => $source_text], [$hash => $trans_val]);
+            $validation_res = CV_OAI_PLL_Validator::validate([$hash => $source_text], [$hash => $trans_val], $target_lang);
             if (is_wp_error($validation_res)) {
                 $validation_errs[$hash] = $validation_res->get_error_message();
             }
@@ -517,19 +661,23 @@ class CV_OAI_PLL_Queue {
                 CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $validation_errs[$hash]);
                 $results['failed']++;
                 $results['details'][] = [
-                    'id'      => $item->id,
-                    'type'    => 'string',
-                    'item_id' => $hash,
-                    'success' => false,
-                    'error'   => $validation_errs[$hash]
+                    'id'              => $item->id,
+                    'type'            => 'string',
+                    'item_id'         => $hash,
+                    'name'            => strlen($source_text) > 40 ? mb_substr($source_text, 0, 40) . '...' : $source_text,
+                    'target_language' => $target_lang,
+                    'success'         => false,
+                    'error'           => $validation_errs[$hash]
                 ];
                 continue;
             }
 
             $translated_text = $translated_data[$hash];
+            $string_info = isset($string_map[$hash]) ? $string_map[$hash] : null;
+            $context = $string_info ? $string_info['context'] : '';
             
             // Save string translation to Polylang
-            $saved = CV_OAI_PLL_String_Translator::save_single_translation($source_text, $translated_text, $target_lang);
+            $saved = CV_OAI_PLL_String_Translator::save_single_translation($source_text, $translated_text, $target_lang, $context);
 
             if ($saved) {
                 // Save to Cache/Translation memory
@@ -538,21 +686,25 @@ class CV_OAI_PLL_Queue {
                 CV_OAI_PLL_DB::update_item_status($item->id, 'completed', '', null, $avg_usage);
                 $results['success']++;
                 $results['details'][] = [
-                    'id'      => $item->id,
-                    'type'    => 'string',
-                    'item_id' => $hash,
-                    'success' => true
+                    'id'              => $item->id,
+                    'type'            => 'string',
+                    'item_id'         => $hash,
+                    'name'            => strlen($source_text) > 40 ? mb_substr($source_text, 0, 40) . '...' : $source_text,
+                    'target_language' => $target_lang,
+                    'success'         => true
                 ];
             } else {
                 $err_msg = __('Failed to write translation to database.', 'cv-openai-polylang-translator');
                 CV_OAI_PLL_DB::update_item_status($item->id, 'failed', $err_msg);
                 $results['failed']++;
                 $results['details'][] = [
-                    'id'      => $item->id,
-                    'type'    => 'string',
-                    'item_id' => $hash,
-                    'success' => false,
-                    'error'   => $err_msg
+                    'id'              => $item->id,
+                    'type'            => 'string',
+                    'item_id'         => $hash,
+                    'name'            => strlen($source_text) > 40 ? mb_substr($source_text, 0, 40) . '...' : $source_text,
+                    'target_language' => $target_lang,
+                    'success'         => false,
+                    'error'           => $err_msg
                 ];
             }
         }

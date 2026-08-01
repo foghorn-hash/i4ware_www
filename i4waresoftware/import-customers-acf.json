@@ -20,6 +20,12 @@
                 "label": "Use Case (English)",
                 "name": "use_case_en",
                 "type": "textarea"
+            },
+            {
+                "key": "field_use_case_ar",
+                "label": "Use Case (Arabic)",
+                "name": "use_case_ar",
+                "type": "textarea"
             }
         ],
         "location": [

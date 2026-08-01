@@ -24,7 +24,7 @@ class CV_OAI_PLL_Translator {
      * @param bool   $overwrite_draft  Whether the user explicitly confirmed overwriting an existing draft.
      * @return int|WP_Error New or updated translation post ID on success, WP_Error on failure.
      */
-    public static function translate_post($post_id, $target_lang, $options, $overwrite_draft = false) {
+    public static function translate_post($post_id, $target_lang, $options, $overwrite_draft = false, $bypass_lock = false, $bypass_cache = false) {
         $start_time = microtime(true);
         $post       = get_post($post_id);
 
@@ -53,6 +53,7 @@ class CV_OAI_PLL_Translator {
         $translations = pll_get_post_translations($post_id);
         $existing_id  = isset($translations[$target_lang]) ? (int) $translations[$target_lang] : 0;
         $is_update    = false;
+        $existing_post = null;
 
         if ($existing_id) {
             $existing_post = get_post($existing_id);
@@ -71,7 +72,7 @@ class CV_OAI_PLL_Translator {
         }
 
         // 3. Acquire global translation lock
-        if (!CV_OAI_PLL_Translation_Lock::acquire($post_id)) {
+        if (!$bypass_lock && !CV_OAI_PLL_Translation_Lock::acquire($post_id)) {
             return new WP_Error('locked', __('Another translation job is currently running on this site. Please wait a few minutes.', 'cv-openai-polylang-translator'));
         }
 
@@ -95,7 +96,7 @@ class CV_OAI_PLL_Translator {
 
             foreach ($payload as $key => $item) {
                 if (isset($item['content']) && is_string($item['content']) && trim($item['content']) !== '') {
-                    $cached = CV_OAI_PLL_DB::get_cached_translation($item['content'], $target_lang);
+                    $cached = !$bypass_cache ? CV_OAI_PLL_DB::get_cached_translation($item['content'], $target_lang) : false;
                     if ($cached !== false) {
                         $cached_results[$key] = $cached;
                     } else {
@@ -221,12 +222,12 @@ class CV_OAI_PLL_Translator {
             $translated_results = array_merge($translated_results, $cached_results);
 
             // 7. Compile translated elements
-            $compiled = CV_OAI_PLL_Content_Extractor::compile_translated_post($post, $translated_results, $options, $enabled_acf_fields);
+            $compiled = CV_OAI_PLL_Content_Extractor::compile_translated_post($post, $translated_results, $options, $enabled_acf_fields, $existing_post);
 
             // 8. Create or Update Translation Draft
             $post_data = [
                 'post_type'    => $post->post_type,
-                'post_status'  => 'draft', // Always draft!
+                'post_status'  => $is_update ? get_post_status($existing_id) : 'draft',
                 'post_title'   => $compiled['post_title'],
                 'post_excerpt' => $compiled['post_excerpt'],
                 'post_content' => $compiled['post_content'],
@@ -300,14 +301,18 @@ class CV_OAI_PLL_Translator {
 
             // 13. Log success and release lock
             CV_OAI_PLL_Logger::log($post_id, $target_lang, $model, true, '', count($payload), $new_post_id, $start_time);
-            CV_OAI_PLL_Translation_Lock::release();
+            if (!$bypass_lock) {
+                CV_OAI_PLL_Translation_Lock::release();
+            }
 
             return $new_post_id;
 
         } catch (Exception $e) {
             // Log failure and release lock
             CV_OAI_PLL_Logger::log($post_id, $target_lang, $model, false, $e->getMessage(), 0, 0, $start_time);
-            CV_OAI_PLL_Translation_Lock::release();
+            if (!$bypass_lock) {
+                CV_OAI_PLL_Translation_Lock::release();
+            }
             return new WP_Error('translation_processing_error', $e->getMessage());
         }
     }
@@ -315,7 +320,7 @@ class CV_OAI_PLL_Translator {
     /**
      * Translates a Polylang language code to a readable name for the OpenAI prompt.
      */
-    private static function get_language_name_by_code($code) {
+    public static function get_language_name_by_code($code) {
         $langs = [
             'en' => 'English',
             'ar' => 'Arabic',
@@ -410,7 +415,7 @@ class CV_OAI_PLL_Translator {
      * @param string $target_lang Target language code.
      * @return array|WP_Error Array with 'term_id' and 'usage', or WP_Error on failure.
      */
-    public static function translate_term_by_id($term_id, $target_lang) {
+    public static function translate_term_by_id($term_id, $target_lang, $bypass_cache = false) {
         $term = get_term($term_id);
         if (!$term || is_wp_error($term)) {
             return new WP_Error('invalid_term', __('Source term not found.', 'cv-openai-polylang-translator'));
@@ -424,7 +429,7 @@ class CV_OAI_PLL_Translator {
             $translated_term_id = pll_get_term($term_id, $target_lang);
         }
 
-        if ($translated_term_id) {
+        if ($translated_term_id && !$bypass_cache) {
             return [
                 'term_id' => (int) $translated_term_id,
                 'usage'   => ['prompt_tokens' => 0, 'completion_tokens' => 0, 'model' => 'Cache']
@@ -465,16 +470,24 @@ class CV_OAI_PLL_Translator {
             return new WP_Error('translation_failed', __('Translated term name is empty.', 'cv-openai-polylang-translator'));
         }
 
-        // Create the new term in the target language
-        $new_term = wp_insert_term($translated_name, $taxonomy);
-        if (is_wp_error($new_term)) {
-            if (isset($new_term->error_data['term_exists'])) {
-                $new_term_id = (int) $new_term->error_data['term_exists'];
-            } else {
-                return $new_term;
+        if ($translated_term_id) {
+            $updated = wp_update_term($translated_term_id, $taxonomy, ['name' => $translated_name]);
+            if (is_wp_error($updated)) {
+                return $updated;
             }
+            $new_term_id = $translated_term_id;
         } else {
-            $new_term_id = (int) $new_term['term_id'];
+            // Create the new term in the target language
+            $new_term = wp_insert_term($translated_name, $taxonomy);
+            if (is_wp_error($new_term)) {
+                if (isset($new_term->error_data['term_exists'])) {
+                    $new_term_id = (int) $new_term->error_data['term_exists'];
+                } else {
+                    return $new_term;
+                }
+            } else {
+                $new_term_id = (int) $new_term['term_id'];
+            }
         }
 
         // Link in Polylang

@@ -6,14 +6,14 @@ jQuery(function($){
         if (typeof grecaptcha !== 'undefined' && $form.find('.g-recaptcha').length) {
             var recaptchaResponse = grecaptcha.getResponse();
             if (!recaptchaResponse) {
-                $form.find('.contact-response').text('Ole hyvä ja vahvista reCAPTCHA.');
+                $form.find('.contact-response').text(i4ware_ajax.recaptcha_msg || 'Ole hyvä ja vahvista reCAPTCHA.');
                 return;
             }
         }
 
         var data = $form.serialize();
         data += '&action=i4ware_contact&nonce=' + i4ware_ajax.nonce;
-        $form.find('.contact-response').text('Lähettää...');
+        $form.find('.contact-response').text(i4ware_ajax.sending_msg || 'Lähettää...');
         $.post(i4ware_ajax.ajax_url, data, function(response){
             if(response.success){
                 $form.find('.contact-response').text(response.data);

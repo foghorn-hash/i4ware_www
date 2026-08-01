@@ -19,9 +19,22 @@ add_action('wp_enqueue_scripts', function() {
     } else {
         wp_enqueue_script('team-contact', plugin_dir_url(__FILE__) . 'contact.js', array('jquery'), null, true);
     }
+
+    $recaptcha_msg = 'Please verify the reCAPTCHA.';
+    $sending_msg = 'Sending...';
+    if ($lang === 'fi') {
+        $recaptcha_msg = 'Ole hyvä ja vahvista reCAPTCHA.';
+        $sending_msg = 'Lähettää...';
+    } elseif ($lang === 'ar') {
+        $recaptcha_msg = 'يرجى إثبات أنك لست روبوتًا (reCAPTCHA).';
+        $sending_msg = 'جاري الإرسال...';
+    }
+
     wp_localize_script('team-contact', 'i4ware_ajax', array(
         'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce'    => wp_create_nonce('contact_nonce')
+        'nonce'    => wp_create_nonce('contact_nonce'),
+        'recaptcha_msg' => $recaptcha_msg,
+        'sending_msg' => $sending_msg
     ));
 });
 
@@ -45,8 +58,15 @@ add_action('customize_register', function($wp_customize) {
     ));
 
     foreach ($languages as $lang_code => $lang_label) {
+        $default_name = 'Matti Kiviharju, Specialization in IT/ICT and BBA';
+        if ($lang_code === 'fi') {
+            $default_name = 'Matti Kiviharju, IT/ICT tradenomi';
+        } elseif ($lang_code === 'ar') {
+            $default_name = 'ماتي كيفيهارجو، أخصائي تكنولوجيا المعلومات وبكالوريوس إدارة الأعمال';
+        }
+
         $wp_customize->add_setting("i4ware_team_name_$lang_code", array(
-            'default' => ($lang_code === 'fi') ? 'Matti Kiviharju, IT/ICT tradenomi' : 'Matti Kiviharju, Specialization in IT/ICT and BBA',
+            'default' => $default_name,
             'sanitize_callback' => 'sanitize_text_field',
         ));
         $wp_customize->add_control("i4ware_team_name_$lang_code", array(
@@ -55,8 +75,15 @@ add_action('customize_register', function($wp_customize) {
             'type' => 'text',
         ));
 
+        $default_title = 'Entrepreneur, Founder, and Expert Full-Stack Developer and Architect';
+        if ($lang_code === 'fi') {
+            $default_title = 'Yrittäjä, perustaja ja kokenut ohjelmistoarkkitehti';
+        } elseif ($lang_code === 'ar') {
+            $default_title = 'رائد أعمال، مؤسس، ومهندس ومطور ويب خبير';
+        }
+
         $wp_customize->add_setting("i4ware_team_title_$lang_code", array(
-            'default' => ($lang_code === 'fi') ? 'Yrittäjä, perustaja ja kokenut ohjelmistoarkkitehti' : 'Entrepreneur, Founder, and Expert Full-Stack Developer and Architect',
+            'default' => $default_title,
             'sanitize_callback' => 'sanitize_text_field',
         ));
         $wp_customize->add_control("i4ware_team_title_$lang_code", array(
@@ -65,8 +92,15 @@ add_action('customize_register', function($wp_customize) {
             'type' => 'text',
         ));
 
+        $default_bio = 'Matti Kiviharju is an experienced software architect and Full-Stack developer...';
+        if ($lang_code === 'fi') {
+            $default_bio = 'Matti Kiviharju on kokenut ohjelmistoarkkitehti ja Full-Stack-kehittäjä...';
+        } elseif ($lang_code === 'ar') {
+            $default_bio = 'ماتي كيفيهارجو هو مهندس برمجيات ومطور ويب خبير متكامل (Full-Stack)...';
+        }
+
         $wp_customize->add_setting("i4ware_team_bio_$lang_code", array(
-            'default' => ($lang_code === 'fi') ? 'Matti Kiviharju on kokenut ohjelmistoarkkitehti ja Full-Stack-kehittäjä...' : 'Matti Kiviharju is an experienced software architect and Full-Stack developer...',
+            'default' => $default_bio,
             'sanitize_callback' => 'wp_kses_post',
         ));
         $wp_customize->add_control("i4ware_team_bio_$lang_code", array(
@@ -75,8 +109,15 @@ add_action('customize_register', function($wp_customize) {
             'type' => 'textarea',
         ));
 
-       $wp_customize->add_setting("i4ware_contact_details_$lang_code", array(
-            'default' => ($lang_code === 'fi') ? "Sähköposti: info@i4ware.fi\nPuhelin: +358 40 123 4567" : "Email: info@i4ware.fi\nPhone: +358 40 123 4567",
+        $default_contact = "Email: info@i4ware.fi\nPhone: +358 40 123 4567";
+        if ($lang_code === 'fi') {
+            $default_contact = "Sähköposti: info@i4ware.fi\nPuhelin: +358 40 123 4567";
+        } elseif ($lang_code === 'ar') {
+            $default_contact = "البريد الإلكتروني: info@i4ware.fi\nالهاتف: +358 40 123 4567";
+        }
+
+        $wp_customize->add_setting("i4ware_contact_details_$lang_code", array(
+            'default' => $default_contact,
             'sanitize_callback' => 'sanitize_textarea_field',
         ));
 
@@ -106,8 +147,15 @@ add_action('customize_register', function($wp_customize) {
             'type' => 'text',
         ));
 
+        $default_address = "Example Street 1\n00100 Helsinki, Finland";
+        if ($lang_code === 'fi') {
+            $default_address = "Esimerkkikatu 1\n00100 Helsinki, Suomi";
+        } elseif ($lang_code === 'ar') {
+            $default_address = "شارع المثال 1\n00100 هلسنكي، فنلندا";
+        }
+
         $wp_customize->add_setting("i4ware_address_$lang_code", array(
-            'default' => ($lang_code === 'fi') ? "Esimerkkikatu 1\n00100 Helsinki, Suomi" : "Example Street 1\n00100 Helsinki, Finland",
+            'default' => $default_address,
             'sanitize_callback' => 'sanitize_textarea_field',
         ));
         $wp_customize->add_control("i4ware_address_$lang_code", array(
@@ -186,6 +234,8 @@ add_shortcode('i4ware_team', function() {
             <h2><?php
                 if ($lang === 'fi') {
                     echo 'Yhteystiedot';
+                } elseif ($lang === 'ar') {
+                    echo 'معلومات الاتصال';
                 } else {
                     echo 'Contact Information';
                 }
@@ -194,14 +244,20 @@ add_shortcode('i4ware_team', function() {
                 <strong><?php
                 if ($lang === 'fi') {
                     echo 'Osoite';
+                } elseif ($lang === 'ar') {
+                    echo 'العنوان';
                 } else {
                     echo 'Address';
                 }
                 ?></strong><br>
-                <?php echo nl2br(esc_html(get_theme_mod("i4ware_address_$lang", "Example Street 1\n00100 Helsinki, Finland"))); ?><br><br>
+                <?php 
+                $default_address = ($lang === 'fi') ? "Esimerkkikatu 1\n00100 Helsinki, Suomi" : (($lang === 'ar') ? "شارع المثال 1\n00100 هلسنكي، فنلندا" : "Example Street 1\n00100 Helsinki, Finland");
+                echo nl2br(esc_html(get_theme_mod("i4ware_address_$lang", $default_address))); ?><br><br>
                 <strong><?php
                 if ($lang === 'fi') {
                     echo 'ALV-tunnus';
+                } elseif ($lang === 'ar') {
+                    echo 'الرقم الضريبي';
                 } else {
                     echo 'VAT-ID';
                 }
@@ -210,33 +266,63 @@ add_shortcode('i4ware_team', function() {
                 <strong><?php
                 if ($lang === 'fi') {
                     echo 'Y-tunnus';
+                } elseif ($lang === 'ar') {
+                    echo 'الرقم التجاري للشركة';
                 } else {
                     echo 'Corporate ID';
                 }
                 ?></strong>
                 <?php echo esc_html(get_theme_mod("i4ware_business_id_$lang", '1234567-8')); ?><br><br>
-                <?php echo nl2br(esc_html(get_theme_mod("i4ware_contact_details_$lang", "Email: info@i4ware.fi\nPhone: +358 40 123 4567"))); ?>
+                <?php 
+                $default_contact = ($lang === 'fi') ? "Sähköposti: info@i4ware.fi\nPuhelin: +358 40 123 4567" : (($lang === 'ar') ? "البريد الإلكتروني: info@i4ware.fi\nالهاتف: +358 40 123 4567" : "Email: info@i4ware.fi\nPhone: +358 40 123 4567");
+                echo nl2br(esc_html(get_theme_mod("i4ware_contact_details_$lang", $default_contact))); ?>
             </div>
             <h2><?php
                 if ($lang === 'fi') {
                     echo 'Ota yhteyttälomake';
+                } elseif ($lang === 'ar') {
+                    echo 'نموذج الاتصال بنا';
                 } else {
                     echo 'Contact Us Form';
                 }
                 ?></h2>
             <form id="contact-form">
                 <label for="contact-name">
-                    <?php echo ($lang === 'fi') ? 'Koko nimesi' : 'Your Full Name'; ?>
+                    <?php 
+                    if ($lang === 'fi') {
+                        echo 'Koko nimesi';
+                    } elseif ($lang === 'ar') {
+                        echo 'الاسم الكامل';
+                    } else {
+                        echo 'Your Full Name';
+                    }
+                    ?>
                 </label>
-                <input type="text" id="contact-name" name="name" placeholder="<?php echo ($lang === 'fi') ? 'Matti Meikäläinen' : 'Matti Meikäläinen'; ?>" required>
+                <input type="text" id="contact-name" name="name" placeholder="<?php echo ($lang === 'fi') ? 'Matti Meikäläinen' : (($lang === 'ar') ? 'ماتي ميكالاينن' : 'Matti Meikäläinen'); ?>" required>
 
                 <label for="contact-email">
-                    <?php echo ($lang === 'fi') ? 'Sähköposti' : 'Email'; ?>
+                    <?php 
+                    if ($lang === 'fi') {
+                        echo 'Sähköposti';
+                    } elseif ($lang === 'ar') {
+                        echo 'البريد الإلكتروني';
+                    } else {
+                        echo 'Email';
+                    }
+                    ?>
                 </label>
                 <input type="email" id="contact-email" name="email" placeholder="<?php echo ($lang === 'fi') ? 'matti.meikalainen@osoite.com' : 'matti.meikalainen@address.com'; ?>" required>
 
                 <label for="contact-message">
-                    <?php echo ($lang === 'fi') ? 'Viesti' : 'Message'; ?>
+                    <?php 
+                    if ($lang === 'fi') {
+                        echo 'Viesti';
+                    } elseif ($lang === 'ar') {
+                        echo 'الرسالة';
+                    } else {
+                        echo 'Message';
+                    }
+                    ?>
                 </label>
                 <textarea id="contact-message" name="message" placeholder="<?php echo ($lang === 'fi') ? 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis at lectus tortor.' : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis at lectus tortor.'; ?>" required></textarea>
 
@@ -258,7 +344,15 @@ add_shortcode('i4ware_team', function() {
                 <?php endif; ?>
 
                 <button type="submit">
-                    <?php echo ($lang === 'fi') ? 'Lähetä viesti' : 'Send Message'; ?>
+                    <?php 
+                    if ($lang === 'fi') {
+                        echo 'Lähetä viesti';
+                    } elseif ($lang === 'ar') {
+                        echo 'إرسال الرسالة';
+                    } else {
+                        echo 'Send Message';
+                    }
+                    ?>
                 </button>
                 <div class="contact-response"></div>
             </form>
@@ -267,6 +361,8 @@ add_shortcode('i4ware_team', function() {
             <h2><?php
                 if ($lang === 'fi') {
                     echo 'Tiimi';
+                } elseif ($lang === 'ar') {
+                    echo 'الفريق';
                 } else {
                     echo 'Team';
                 }
@@ -289,14 +385,18 @@ add_shortcode('i4ware_team', function() {
                         </a>
                     <?php endif;
 
-                    if ($email) : ?>
-                        <a href="mailto:<?php echo sanitize_email($email); ?>" class="contact-icon-link email-link" title="<?php echo esc_attr(($lang === 'fi') ? 'Sähköposti' : 'Email'); ?>">
+                    if ($email) : 
+                        $email_title = ($lang === 'fi') ? 'Sähköposti' : (($lang === 'ar') ? 'البريد الإلكتروني' : 'Email');
+                        ?>
+                        <a href="mailto:<?php echo sanitize_email($email); ?>" class="contact-icon-link email-link" title="<?php echo esc_attr($email_title); ?>">
                             <i class="bi bi-envelope-fill"></i>
                         </a>
                     <?php endif;
 
-                    if ($phone) : ?>
-                        <a href="tel:<?php echo esc_attr(str_replace(' ', '', $phone)); ?>" class="contact-icon-link phone-link" title="<?php echo esc_attr(($lang === 'fi') ? 'Puhelin' : 'Phone'); ?>">
+                    if ($phone) : 
+                        $phone_title = ($lang === 'fi') ? 'Puhelin' : (($lang === 'ar') ? 'الهاتف' : 'Phone');
+                        ?>
+                        <a href="tel:<?php echo esc_attr(str_replace(' ', '', $phone)); ?>" class="contact-icon-link phone-link" title="<?php echo esc_attr($phone_title); ?>">
                             <i class="bi bi-telephone-fill"></i>
                         </a>
                     <?php endif; ?>
@@ -349,7 +449,13 @@ function i4ware_contact_form_handler() {
     if (!empty($recaptcha_site_key) && !empty($recaptcha_secret_key)) {
         $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
         if (empty($recaptcha_response)) {
-            wp_send_json_error(($lang === 'fi') ? 'Ole hyvä ja vahvista reCAPTCHA.' : 'Please verify the reCAPTCHA.');
+            $recaptcha_err = 'Please verify the reCAPTCHA.';
+            if ($lang === 'fi') {
+                $recaptcha_err = 'Ole hyvä ja vahvista reCAPTCHA.';
+            } elseif ($lang === 'ar') {
+                $recaptcha_err = 'يرجى إثبات أنك لست روبوتًا (reCAPTCHA).';
+            }
+            wp_send_json_error($recaptcha_err);
         }
 
         $response = wp_remote_post('https://www.google.com/recaptcha/api/siteverify', array(
@@ -368,7 +474,13 @@ function i4ware_contact_form_handler() {
         $result = json_decode($response_body, true);
 
         if (empty($result['success'])) {
-            wp_send_json_error(($lang === 'fi') ? 'Ole hyvä ja vahvista reCAPTCHA.' : 'Please verify the reCAPTCHA.');
+            $recaptcha_err = 'Please verify the reCAPTCHA.';
+            if ($lang === 'fi') {
+                $recaptcha_err = 'Ole hyvä ja vahvista reCAPTCHA.';
+            } elseif ($lang === 'ar') {
+                $recaptcha_err = 'يرجى إثبات أنك لست روبوتًا (reCAPTCHA).';
+            }
+            wp_send_json_error($recaptcha_err);
         }
     }
 
@@ -377,6 +489,11 @@ function i4ware_contact_form_handler() {
             'required' => 'Kaikki kentät ovat pakollisia.',
             'success'  => 'Kiitos yhteydenotostasi!',
             'fail'     => 'Virhe viestin lähetyksessä.'
+        ),
+        'ar' => array(
+            'required' => 'جميع الحقول مطلوبة.',
+            'success'  => 'شكراً على رسالتك!',
+            'fail'     => 'خطأ في إرسال الرسالة.'
         ),
         'en' => array(
             'required' => 'All fields are required.',
@@ -552,14 +669,18 @@ add_shortcode('i4ware_team_members', function() {
                             </a>
                         <?php endif; ?>
                         
-                        <?php if ($email) : ?>
-                            <a href="mailto:<?php echo sanitize_email($email); ?>" class="contact-icon-link email-link" title="<?php echo esc_attr(($lang === 'fi') ? 'Sähköposti' : 'Email'); ?>">
+                        <?php if ($email) : 
+                            $email_title = ($lang === 'fi') ? 'Sähköposti' : (($lang === 'ar') ? 'البريد الإلكتروني' : 'Email');
+                            ?>
+                            <a href="mailto:<?php echo sanitize_email($email); ?>" class="contact-icon-link email-link" title="<?php echo esc_attr($email_title); ?>">
                                 <i class="bi bi-envelope-fill"></i>
                             </a>
                         <?php endif; ?>
                         
-                        <?php if ($phone) : ?>
-                            <a href="tel:<?php echo esc_attr(str_replace(' ', '', $phone)); ?>" class="contact-icon-link phone-link" title="<?php echo esc_attr(($lang === 'fi') ? 'Puhelin' : 'Phone'); ?>">
+                        <?php if ($phone) : 
+                            $phone_title = ($lang === 'fi') ? 'Puhelin' : (($lang === 'ar') ? 'الهاتف' : 'Phone');
+                            ?>
+                            <a href="tel:<?php echo esc_attr(str_replace(' ', '', $phone)); ?>" class="contact-icon-link phone-link" title="<?php echo esc_attr($phone_title); ?>">
                                 <i class="bi bi-telephone-fill"></i>
                             </a>
                         <?php endif; ?>
@@ -567,7 +688,15 @@ add_shortcode('i4ware_team_members', function() {
                 </div>
             <?php endwhile; wp_reset_postdata(); ?>
         <?php else : ?>
-            <p><?php echo ($lang === 'fi') ? 'Ei tiimin jäseniä löydetty.' : 'No team members found.'; ?></p>
+            <p><?php 
+                if ($lang === 'fi') {
+                    echo 'Ei tiimin jäseniä löydetty.';
+                } elseif ($lang === 'ar') {
+                    echo 'لم يتم العثور على أعضاء للفريق.';
+                } else {
+                    echo 'No team members found.';
+                }
+            ?></p>
         <?php endif; ?>
     </div>
     <?php

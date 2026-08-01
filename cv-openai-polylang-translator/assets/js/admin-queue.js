@@ -100,6 +100,13 @@
                             $retryAllBtn.hide();
                         }
 
+                        // Update current action status text
+                        if (isWorkerRunning && response.data.next_item_desc) {
+                            $('#cv-oai-pll-current-action').text(response.data.next_item_desc);
+                        } else if (!isWorkerRunning) {
+                            $('#cv-oai-pll-current-action').text('');
+                        }
+
                         checkWorkerButtonState();
                         
                         if (typeof callback === 'function') {
@@ -128,16 +135,20 @@
                 return;
             }
 
+            var overwrite = $('#cv-oai-pll-overwrite-queue').is(':checked') ? 1 : 0;
+
             $scanBtn.prop('disabled', true);
             $scanStringsBtn.prop('disabled', true);
             $targetLang.prop('disabled', true);
+            $('#cv-oai-pll-overwrite-queue').prop('disabled', true);
             $progressText.text(cvOaiPllQueueL10n.scanning_msg);
 
             var ajaxData = {
                 action: 'cv_oai_pll_scan_content',
                 nonce: cvOaiPllQueueL10n.nonce,
                 target_lang: selectedLang,
-                scan_type: scanType
+                scan_type: scanType,
+                overwrite: overwrite
             };
 
             $.post(cvOaiPllQueueL10n.ajax_url, ajaxData)
@@ -148,6 +159,7 @@
                         alert(response.data.message);
                     }
                     $targetLang.prop('disabled', false);
+                    $('#cv-oai-pll-overwrite-queue').prop('disabled', false);
                     $scanBtn.prop('disabled', false);
                     $scanStringsBtn.prop('disabled', false);
                     fetchStats();
@@ -155,6 +167,7 @@
                 .fail(function() {
                     alert('Scan failed. Server connection error.');
                     $targetLang.prop('disabled', false);
+                    $('#cv-oai-pll-overwrite-queue').prop('disabled', false);
                     $scanBtn.prop('disabled', false);
                     $scanStringsBtn.prop('disabled', false);
                     fetchStats();
@@ -177,6 +190,7 @@
             $scanBtn.prop('disabled', true);
             $scanStringsBtn.prop('disabled', true);
             $targetLang.prop('disabled', true);
+            $('#cv-oai-pll-overwrite-queue').prop('disabled', true);
             $clearBtn.prop('disabled', true);
 
             // Execute first loop batch
@@ -189,6 +203,7 @@
             $scanBtn.prop('disabled', !$targetLang.val());
             $scanStringsBtn.prop('disabled', !$targetLang.val());
             $targetLang.prop('disabled', false);
+            $('#cv-oai-pll-overwrite-queue').prop('disabled', false);
             $clearBtn.prop('disabled', false);
             fetchStats();
         }
@@ -199,16 +214,36 @@
                 return;
             }
 
+            var bypassCache = $('#cv-oai-pll-overwrite-queue').is(':checked') ? 1 : 0;
+
             var ajaxData = {
                 action: 'cv_oai_pll_process_queue_batch',
-                nonce: cvOaiPllQueueL10n.nonce
+                nonce: cvOaiPllQueueL10n.nonce,
+                bypass_cache: bypassCache
             };
-
-            $progressText.text(cvOaiPllQueueL10n.processing_msg);
 
             $.post(cvOaiPllQueueL10n.ajax_url, ajaxData)
                 .done(function(response) {
                     if (response.success) {
+                        // Log the details to the live log!
+                        if (response.data.details && response.data.details.length > 0) {
+                            var $log = $('#cv-oai-pll-live-log');
+                            $log.show();
+                            response.data.details.forEach(function(detail) {
+                                var statusIcon = detail.success ? '<span style="color:green;">✔</span>' : '<span style="color:red;">❌</span>';
+                                var langName = detail.target_language ? detail.target_language.toUpperCase() : '';
+                                var typeLabel = detail.type ? '[' + detail.type.toUpperCase() + ']' : '';
+                                var msg = '<div>' + statusIcon + ' ' + typeLabel + ' ' + detail.name + ' ➔ ' + langName;
+                                if (!detail.success && detail.error) {
+                                    msg += ' <span style="color:red; font-style:italic;">(' + detail.error + ')</span>';
+                                }
+                                msg += '</div>';
+                                $log.append(msg);
+                            });
+                            // Auto scroll log to bottom
+                            $log.scrollTop($log[0].scrollHeight);
+                        }
+
                         fetchStats(function() {
                             var remaining = pendingCount + processingCount;
                             
@@ -218,6 +253,7 @@
                             } else {
                                 // Completed!
                                 stopWorker();
+                                $('#cv-oai-pll-current-action').text('All translations finished.');
                                 alert('All queued translations processed.');
                             }
                         });

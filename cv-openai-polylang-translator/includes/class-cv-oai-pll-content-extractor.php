@@ -396,7 +396,7 @@ class CV_OAI_PLL_Content_Extractor {
      * @param array   $enabled_acf_fields Enabled ACF fields.
      * @return array Elements: 'post_title', 'post_excerpt', 'post_content', and 'acf_data' (parent ACF field values).
      */
-    public static function compile_translated_post($post, $translations, $options, $enabled_acf_fields) {
+    public static function compile_translated_post($post, $translations, $options, $enabled_acf_fields, $existing_post = null) {
         // 1. Reassemble any split strings
         $reassembled = [];
         $split_groups = [];
@@ -417,18 +417,18 @@ class CV_OAI_PLL_Content_Extractor {
         }
 
         // 2. Build Title and Excerpt
-        $post_title = $post->post_title;
+        $post_title = ($existing_post) ? $existing_post->post_title : $post->post_title;
         if (!empty($options['title']) && isset($reassembled['post_title'])) {
             $post_title = wp_strip_all_tags($reassembled['post_title']);
         }
 
-        $post_excerpt = $post->post_excerpt;
+        $post_excerpt = ($existing_post) ? $existing_post->post_excerpt : $post->post_excerpt;
         if (!empty($options['excerpt']) && isset($reassembled['post_excerpt'])) {
             $post_excerpt = wp_kses_post($reassembled['post_excerpt']);
         }
 
         // 3. Build Content (Blocks or Classic)
-        $post_content = $post->post_content;
+        $post_content = ($existing_post) ? $existing_post->post_content : $post->post_content;
         if (!empty($options['content'])) {
             if (has_blocks($post->post_content)) {
                 $blocks = parse_blocks($post->post_content);

@@ -6,14 +6,14 @@ jQuery(function($){
         if (typeof grecaptcha !== 'undefined' && $form.find('.g-recaptcha').length) {
             var recaptchaResponse = grecaptcha.getResponse();
             if (!recaptchaResponse) {
-                $form.find('.contact-response').text('Please verify the reCAPTCHA.');
+                $form.find('.contact-response').text(i4ware_ajax.recaptcha_msg || 'Please verify the reCAPTCHA.');
                 return;
             }
         }
 
         var data = $form.serialize();
         data += '&action=i4ware_contact&nonce=' + i4ware_ajax.nonce;
-        $form.find('.contact-response').text('Sending...');
+        $form.find('.contact-response').text(i4ware_ajax.sending_msg || 'Sending...');
         $.post(i4ware_ajax.ajax_url, data, function(response){
             if(response.success){
                 $form.find('.contact-response').text(response.data);

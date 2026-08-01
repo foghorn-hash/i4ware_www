@@ -28,6 +28,14 @@
                 "required": 0
             },
             {
+                "key": "field_logo_alt_ar",
+                "label": "Logo Alt (AR)",
+                "name": "logo_alt_ar",
+                "type": "text",
+                "instructions": "Alt text in Arabic.",
+                "required": 0
+            },
+            {
                 "key": "field_logo_group",
                 "label": "Logo ryhmä",
                 "name": "logo_group",

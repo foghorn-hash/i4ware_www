@@ -77,7 +77,7 @@ class CV_OAI_PLL_Validator {
                 }
 
                 // HTML Tag Balance/Integrity check
-                if (!self::check_html_integrity($trans_val_clean)) {
+                if (!self::check_html_integrity($source_val_clean, $trans_val_clean)) {
                     return new WP_Error('validation_html_imbalance', __('Validation failed: Mismatched or unclosed HTML tags in translation.', 'cv-openai-polylang-translator'));
                 }
 
@@ -179,9 +179,8 @@ class CV_OAI_PLL_Validator {
                     'Microsoft Teams'
                 ];
                 foreach ($product_names as $product) {
-                    $pattern = '/(?<!\p{L})' . preg_quote($product, '/') . '(?!\p{L})/iu';
-                    if (preg_match($pattern, $source_val_clean)) {
-                        if (!preg_match($pattern, $trans_val_clean)) {
+                    if (stripos($source_val_clean, $product) !== false) {
+                        if (stripos($trans_val_clean, $product) === false) {
                             return new WP_Error(
                                 'validation_missing_product',
                                 sprintf(__('Validation failed: Product name or trademark "%s" was missing or altered in translation.', 'cv-openai-polylang-translator'), $product)
@@ -203,12 +202,23 @@ class CV_OAI_PLL_Validator {
                 }
 
                 // Arabic Script check (Modern Standard Arabic script validation)
-                if ($target_lang === 'ar' && preg_match('/\p{L}/u', $source_val_clean)) {
-                    // Filter out brand names to check if we actually have text besides brands
-                    $source_without_brands = $source_val_clean;
+                if ($target_lang === 'ar') {
+                    // Extract plain text only (remove HTML, shortcodes, URLs, Emails, sprintf, variables)
+                    $source_plain = strip_tags($source_val_clean);
+                    $source_plain = preg_replace('/\[[^\]]+\]/', '', $source_plain); // shortcodes
+                    $source_plain = preg_replace('/URLPLACEHOLDER_\d+/i', '', $source_plain);
+                    $source_plain = preg_replace('/EMAILPLACEHOLDER_\d+/i', '', $source_plain);
+                    $source_plain = preg_replace('/%(?:\d+\$)?[-+0-9#\. ]*[a-zA-Z%]/', '', $source_plain); // sprintf
+                    $source_plain = preg_replace('/\{\{[a-zA-Z0-9_\-]+\}\}|\{[a-zA-Z0-9_\-]+\}/', '', $source_plain); // curly variables
+                    $source_plain = preg_replace('/(?<![a-zA-Z0-9_]):[a-zA-Z_][a-zA-Z0-9_\-]*/', '', $source_plain); // colon variables
+                    
+                    // Filter out brand names
+                    $source_without_brands = $source_plain;
                     foreach ($product_names as $p) {
                         $source_without_brands = str_replace($p, '', $source_without_brands);
                     }
+                    
+                    // Only enforce Arabic characters if there is actual translatable content in the source
                     if (preg_match('/\p{L}/u', $source_without_brands)) {
                         // Validate that at least some Arabic character blocks are present
                         if (!preg_match('/[\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{08A0}-\x{08FF}\x{FB50}-\x{FDFF}\x{FE70}-\x{FEFF}]/u', $trans_val_clean)) {
@@ -231,29 +241,54 @@ class CV_OAI_PLL_Validator {
      * @param string $text HTML input.
      * @return bool True if balanced/valid, false otherwise.
      */
-    private static function check_html_integrity($text) {
-        preg_match_all('/<([a-zA-Z0-9]+)\b[^>]*>/', $text, $open_matches);
-        preg_match_all('/<\/([a-zA-Z0-9]+)>/', $text, $close_matches);
+    /**
+     * Checks if HTML tag structure in translated text matches the source text exactly.
+     *
+     * @param string $source_text Original source HTML.
+     * @param string $trans_text  Translated HTML.
+     * @return bool True if tag structure matches, false otherwise.
+     */
+    private static function check_html_integrity($source_text, $trans_text) {
+        $source_tags = self::extract_html_tags($source_text);
+        $trans_tags  = self::extract_html_tags($trans_text);
+        return ($source_tags === $trans_tags);
+    }
+
+    /**
+     * Extracts a list of HTML tags in sequence to compare source and translation structure.
+     *
+     * @param string $text HTML input.
+     * @return array List of tags.
+     */
+    private static function extract_html_tags($text) {
+        preg_match_all('/<\/?([a-zA-Z0-9]+)\b[^>]*>/', $text, $matches);
         
-        $open_tags = is_array($open_matches) && !empty($open_matches[1]) ? $open_matches[1] : [];
-        $close_tags = is_array($close_matches) && !empty($close_matches[1]) ? $close_matches[1] : [];
+        $tags = [];
+        // Typography and basic formatting tags to ignore
+        $ignored_tags = [
+            'p', 'br', 'hr', 'strong', 'em', 'span', 'b', 'i', 'ul', 'ol', 'li', 
+            'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre'
+        ];
         
-        $open_counts = array_count_values($open_tags);
-        $close_counts = array_count_values($close_tags);
-        
-        // Self-closing HTML tags
-        $self_closing = ['img', 'br', 'hr', 'input', 'link', 'meta', 'source', 'embed'];
-        foreach ($self_closing as $tag) {
-            unset($open_counts[$tag]);
-        }
-        
-        foreach ($open_counts as $tag => $count) {
-            $close_count = isset($close_counts[$tag]) ? $close_counts[$tag] : 0;
-            if ($count !== $close_count) {
-                return false;
+        if (is_array($matches) && !empty($matches[0])) {
+            foreach ($matches[0] as $match) {
+                $is_closing = (strpos($match, '</') === 0);
+                
+                preg_match('/<\/?([a-zA-Z0-9]+)/', $match, $name_match);
+                $tag_name = isset($name_match[1]) ? strtolower($name_match[1]) : '';
+                
+                if ($tag_name && !in_array($tag_name, $ignored_tags, true)) {
+                    $is_self_closing = (substr($match, -2) === '/>') || in_array($tag_name, ['img', 'br', 'hr', 'input', 'link', 'meta', 'source', 'embed'], true);
+                    
+                    if ($is_self_closing) {
+                        $tags[] = $tag_name;
+                    } else {
+                        $tags[] = ($is_closing ? '/' : '') . $tag_name;
+                    }
+                }
             }
         }
-        return true;
+        return $tags;
     }
 
     /**

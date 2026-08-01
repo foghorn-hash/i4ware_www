@@ -358,6 +358,8 @@ function i4ware_partnerships_shortcode()
             // Hae alt-teksti oikealla kielellä
             if ($lang === 'en') {
                 $alt = get_field('logo_alt_en', $logo->ID);
+            } elseif ($lang === 'ar') {
+                $alt = get_field('logo_alt_ar', $logo->ID);
             } else {
                 $alt = get_field('logo_alt_fi', $logo->ID);
             }
@@ -423,6 +425,8 @@ function i4ware_customers_shortcode()
         // Hae kuvausteksti oikealla kielellä
         if ($lang === 'en') {
             $use_case = get_field('use_case_en', $customer->ID);
+        } elseif ($lang === 'ar') {
+            $use_case = get_field('use_case_ar', $customer->ID);
         } else {
             $use_case = get_field('use_case_fi', $customer->ID);
         }
@@ -526,19 +530,12 @@ add_action('init', function () {
 
     $strings = [
         'Technical Partnership',
-        'Tekninen kumppanuus',
         'Enterprise Digital Architecture & Development',
-        'Yritystason ohjelmistoarkkitehtuuri & kehitys',
         'We design, build, and maintain custom high-performance software for B2B.',
-        'Suunnittelemme, rakennamme ja ylläpidämme räätälöityjä korkean suorituskyvyn ohjelmistoratkaisuja.',
         'Ready to align your technology with your business objectives?',
-        'Haluatko linjata teknologiasi liiketoiminnan tavoitteiden kanssa?',
         'Discuss your project or request a technical consultation.',
-        'Keskustele asiantuntijoidemme kanssa tai pyydä arkkitehtuurikatselmus.',
         'Start Your Digital Transformation',
-        'Aloita digitaalinen uudistus',
-        'Request Architecture Review',
-        'Tilaa arkkitehtuurikatselmus'
+        'Request Architecture Review'
     ];
 
     foreach ($strings as $s) {
@@ -1000,25 +997,13 @@ if (!function_exists('i4ware_pricing_shortcode')) {
             <!-- Section Header -->
             <div class="i4w-pricing-header">
                 <span class="i4w-section-badge">
-                    <?php echo esc_html(
-                        ($lang === 'fi')
-                        ? i4w_t('Tekninen kumppanuus')
-                        : i4w_t('Technical Partnership')
-                    ); ?>
+                    <?php echo esc_html(i4w_t('Technical Partnership')); ?>
                 </span>
                 <h2>
-                    <?php echo esc_html(
-                        ($lang === 'fi')
-                        ? i4w_t('Yritystason ohjelmistoarkkitehtuuri & kehitys')
-                        : i4w_t('Enterprise Digital Architecture & Development')
-                    ); ?>
+                    <?php echo esc_html(i4w_t('Enterprise Digital Architecture & Development')); ?>
                 </h2>
                 <p>
-                    <?php echo esc_html(
-                        ($lang === 'fi')
-                        ? i4w_t('Suunnittelemme, rakennamme ja ylläpidämme räätälöityjä korkean suorituskyvyn ohjelmistoratkaisuja.')
-                        : i4w_t('We design, build, and maintain custom high-performance software for B2B.')
-                    ); ?>
+                    <?php echo esc_html(i4w_t('We design, build, and maintain custom high-performance software for B2B.')); ?>
                 </p>
             </div>
 
@@ -1075,33 +1060,17 @@ if (!function_exists('i4ware_pricing_shortcode')) {
             <!-- Bottom B2B Focus Block / Footer CTAs -->
             <div class="i4w-pricing-footer">
                 <h3>
-                    <?php echo esc_html(
-                        ($lang === 'fi')
-                        ? i4w_t('Haluatko linjata teknologiasi liiketoiminnan tavoitteiden kanssa?')
-                        : i4w_t('Ready to align your technology with your business objectives?')
-                    ); ?>
+                    <?php echo esc_html(i4w_t('Ready to align your technology with your business objectives?')); ?>
                 </h3>
                 <p>
-                    <?php echo esc_html(
-                        ($lang === 'fi')
-                        ? i4w_t('Keskustele asiantuntijoidemme kanssa tai pyydä arkkitehtuurikatselmus.')
-                        : i4w_t('Discuss your project or request a technical consultation.')
-                    ); ?>
+                    <?php echo esc_html(i4w_t('Discuss your project or request a technical consultation.')); ?>
                 </p>
                 <div class="i4w-footer-ctas">
                     <a class="i4w-button i4w-cta-primary" href="<?php echo esc_url($url); ?>">
-                        <?php echo esc_html(
-                            ($lang === 'fi')
-                            ? i4w_t('Aloita digitaalinen uudistus')
-                            : i4w_t('Start Your Digital Transformation')
-                        ); ?>
+                        <?php echo esc_html(i4w_t('Start Your Digital Transformation')); ?>
                     </a>
                     <a class="i4w-button" href="<?php echo esc_url($url); ?>">
-                        <?php echo esc_html(
-                            ($lang === 'fi')
-                            ? i4w_t('Tilaa arkkitehtuurikatselmus')
-                            : i4w_t('Request Architecture Review')
-                        ); ?>
+                        <?php echo esc_html(i4w_t('Request Architecture Review')); ?>
                     </a>
                 </div>
             </div>

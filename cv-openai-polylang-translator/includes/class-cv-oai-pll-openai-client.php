@@ -20,7 +20,7 @@ class CV_OAI_PLL_OpenAI_Client {
     /**
      * Default connection/request timeout in seconds.
      */
-    private static $request_timeout = 45;
+    private static $request_timeout = 120;
 
     /**
      * Sends a translation payload to the OpenAI Chat Completions API.

@@ -58,24 +58,14 @@ class CV_OAI_PLL_Cron {
      * Execution worker called by WP-Cron background worker.
      */
     public static function run_queue_worker() {
-        // Prevent concurrent queue workers using the translation lock
-        if (CV_OAI_PLL_Translation_Lock::is_locked()) {
-            return;
-        }
-
-        // Acquire lock using a temporary system task ID
-        if (!CV_OAI_PLL_Translation_Lock::acquire(999999)) {
-            return;
-        }
-
         try {
-            // Process a batch of up to 10 items
+            require_once dirname(__FILE__) . '/class-cv-oai-pll-queue.php';
             CV_OAI_PLL_Queue::process_batch(10);
-            
-            // Release lock
-            CV_OAI_PLL_Translation_Lock::release();
-        } catch (Exception $e) {
-            CV_OAI_PLL_Translation_Lock::release();
+        } catch (\Throwable $t) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('[CV OpenAI Polylang Translator] Cron worker error: ' . $t->getMessage());
+            }
+        } catch (\Exception $e) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 error_log('[CV OpenAI Polylang Translator] Cron worker exception: ' . $e->getMessage());
             }

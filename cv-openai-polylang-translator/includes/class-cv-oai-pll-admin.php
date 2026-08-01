@@ -314,6 +314,16 @@ class CV_OAI_PLL_Admin {
                                     </select>
                                 </p>
 
+                                <p style="margin-top: 15px;">
+                                    <label>
+                                        <input type="checkbox" id="cv-oai-pll-overwrite-queue" value="1" />
+                                        <strong><?php esc_html_e('Overwrite existing translations', 'cv-openai-polylang-translator'); ?></strong>
+                                    </label>
+                                    <span class="description" style="display: block; margin-top: 3px;">
+                                        <?php esc_html_e('Check this to overwrite existing translations (posts, strings, terms) and bypass the translation cache.', 'cv-openai-polylang-translator'); ?>
+                                    </span>
+                                </p>
+
                                 <div style="display: flex; gap: 10px; margin-top: 20px;">
                                     <button type="button" id="cv-oai-pll-scan-btn" class="button button-secondary" disabled>
                                         <?php esc_html_e('Scan & Add All Finnish Content', 'cv-openai-polylang-translator'); ?>
@@ -368,6 +378,10 @@ class CV_OAI_PLL_Admin {
                                 <div id="cv-oai-pll-progress-bar" style="background:#2271b1; height:100%; width:0%; transition: width 0.3s ease;"></div>
                                 <div id="cv-oai-pll-progress-text" style="position: absolute; width: 100%; text-align: center; top: 0; line-height: 24px; font-weight: 600; color: #1d2327;">0% (0 / 0)</div>
                             </div>
+
+                            <!-- Real-time Status and Log Containers -->
+                            <div id="cv-oai-pll-current-action" style="margin: 10px 0; font-style: italic; font-weight: 500; color: #50575e;"></div>
+                            <div id="cv-oai-pll-live-log" style="max-height: 150px; overflow-y: auto; background: #f6f7f7; border: 1px solid #dcdcde; padding: 10px; font-family: monospace; font-size: 12px; border-radius: 3px; margin: 10px 0; display: none;"></div>
                             
                             <div style="display: flex; gap: 40px; margin-top: 15px;">
                                 <div>
@@ -789,14 +803,16 @@ class CV_OAI_PLL_Admin {
                 wp_send_json_error(['message' => __('Please select a target language.', 'cv-openai-polylang-translator')]);
             }
 
+            $overwrite = !empty($_POST['overwrite']);
+
             require_once dirname(__FILE__) . '/class-cv-oai-pll-queue.php';
             
             $scan_type = isset($_POST['scan_type']) ? sanitize_text_field($_POST['scan_type']) : 'all';
             
             if ($scan_type === 'strings') {
-                $added = CV_OAI_PLL_Queue::populate_missing_strings($target_lang);
+                $added = CV_OAI_PLL_Queue::populate_missing_strings($target_lang, $overwrite);
             } else {
-                $added = CV_OAI_PLL_Queue::populate_queue($target_lang);
+                $added = CV_OAI_PLL_Queue::populate_queue($target_lang, $overwrite);
             }
 
             wp_send_json_success([
@@ -821,9 +837,11 @@ class CV_OAI_PLL_Admin {
                 wp_send_json_error(['message' => __('Insufficient permissions.', 'cv-openai-polylang-translator')]);
             }
 
+            $bypass_cache = !empty($_POST['bypass_cache']);
+
             require_once dirname(__FILE__) . '/class-cv-oai-pll-queue.php';
             
-            $results = CV_OAI_PLL_Queue::process_batch(10);
+            $results = CV_OAI_PLL_Queue::process_batch(10, $bypass_cache);
             wp_send_json_success($results);
         } catch (\Throwable $t) {
             wp_send_json_error(['message' => 'PHP Fatal Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine()]);
@@ -900,11 +918,52 @@ class CV_OAI_PLL_Admin {
             }
             $error_log_html = ob_get_clean();
 
+            // Fetch next pending item description
+            $next_pending = CV_OAI_PLL_DB::get_pending_batch(1);
+            $next_item_desc = '';
+            if (!empty($next_pending)) {
+                $item = $next_pending[0];
+                $type = $item->item_type;
+                $lang = strtoupper($item->target_language);
+                
+                if ($type === 'post') {
+                    $name = get_the_title($item->item_id);
+                } elseif ($type === 'term') {
+                    $term = get_term($item->item_id);
+                    $name = ($term && !is_wp_error($term)) ? $term->name : '#' . $item->item_id;
+                } elseif ($type === 'menu') {
+                    $menu = wp_get_nav_menu_object($item->item_id);
+                    $name = $menu ? $menu->name : '#' . $item->item_id;
+                } else {
+                    // String - fetch from registered strings mapping
+                    global $polylang;
+                    $name = '';
+                    if (isset($polylang->model)) {
+                        require_once dirname(__FILE__) . '/class-cv-oai-pll-queue.php';
+                        $registered_strings = CV_OAI_PLL_Queue::get_registered_strings();
+                        foreach ($registered_strings as $string) {
+                            $hash = md5($string['context'] . '|||' . $string['name'] . '|||' . $string['string']);
+                            if ($hash === $item->item_id) {
+                                $name = $string['string'];
+                                break;
+                            }
+                        }
+                    }
+                    if (empty($name)) {
+                        $name = __('String', 'cv-openai-polylang-translator');
+                    }
+                }
+                
+                $truncated_name = strlen($name) > 40 ? mb_substr($name, 0, 40) . '...' : $name;
+                $next_item_desc = sprintf(__('Translating: "%s" [%s] to %s...', 'cv-openai-polylang-translator'), $truncated_name, strtoupper($type), $lang);
+            }
+
             wp_send_json_success([
                 'stats'          => $stats,
                 'tokens_total'   => $usage['prompt_tokens'] + $usage['completion_tokens'],
                 'cost_total'     => sprintf('$%s', number_format($usage['cost_estimate'], 4)),
-                'error_log_html' => $error_log_html
+                'error_log_html' => $error_log_html,
+                'next_item_desc' => $next_item_desc
             ]);
         } catch (\Throwable $t) {
             wp_send_json_error(['message' => 'PHP Fatal Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine()]);
