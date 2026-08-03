@@ -385,12 +385,15 @@ class I4ware_Testimonials_Plugin {
     private function get_language() {
         if (function_exists('pll_current_language')) {
             $lang = pll_current_language('slug');
-            if (in_array($lang, array('fi', 'en'), true)) {
+            if (in_array($lang, array('fi', 'en', 'ar'), true)) {
                 return $lang;
             }
         }
 
         $locale = function_exists('determine_locale') ? determine_locale() : get_locale();
+        if (strpos((string) $locale, 'ar') === 0) {
+            return 'ar';
+        }
         return strpos((string) $locale, 'fi') === 0 ? 'fi' : 'en';
     }
 
@@ -434,6 +437,25 @@ class I4ware_Testimonials_Plugin {
                 'no_testimonials' => 'Palautteita ei ole viela.',
                 'rating_aria' => 'Arvio: %d / 5',
                 'post_title_anonymous' => 'Anonyymi palaute toimialalta %s',
+            ),
+            'ar' => array(
+                'status_success' => 'شكراً لك. تم إرسال شهادتك المجهولة للمراجعة.',
+                'status_invalid_nonce' => 'فشل التحقق الأمني. يرجى المحاولة مرة أخرى.',
+                'status_missing_fields' => 'يرجى ملء جميع الحقول المطلوبة.',
+                'status_spam' => 'فشل التحقق من البريد العشوائي. يرجى تأكيد أنك لست برنامج روبوت.',
+                'status_error' => 'حدث خطأ ما. يرجى المحاولة مرة أخرى لاحقاً.',
+                'label_industry' => 'مجال عمل العميل',
+                'placeholder_industry' => 'مثال: الرعاية الصحية',
+                'label_writer_title' => 'المسمى الوظيفي',
+                'placeholder_writer_title' => 'مثال: المدير التنفيذي',
+                'label_testimonial' => 'الشهادة/الرأي',
+                'placeholder_testimonial' => 'شارك رأيك دون الكشف عن هويتك',
+                'label_rating' => 'ما مدى رضاك؟ (1-5)',
+                'admin_note_recaptcha' => 'ملاحظة المدير: أضف مفاتيح Google reCAPTCHA في الإعدادات > i4ware Testimonials.',
+                'submit_button' => 'إرسال التقييم',
+                'no_testimonials' => 'لا توجد شهادات حتى الآن.',
+                'rating_aria' => 'التقييم: %d من 5',
+                'post_title_anonymous' => 'شهادة مجهولة من %s',
             ),
         );
 

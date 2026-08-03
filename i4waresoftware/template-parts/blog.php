@@ -4,8 +4,9 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
 <div class="main-row">
     <div class="main-content">
         <h1 class="section-title"><?php echo get_the_title(get_option('page_for_posts')); ?></h1>
-        <?php if ( have_posts() ) : ?>
-            <?php while ( have_posts() ) : the_post(); ?>
+        <?php if (have_posts()): ?>
+            <?php while (have_posts()):
+                the_post(); ?>
                 <article <?php post_class(); ?>>
                     <div class="post-row">
                         <div class="post-content">
@@ -14,7 +15,7 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
                                 <div class="entry-meta">
                                     <span class="posted-on"><?php echo get_the_date(); ?></span>
                                     <span class="cat-links">
-                                        <?php echo ($lang === 'fi') ? '-' : '-'; ?> <?php the_category(', '); ?>
+                                        <?php echo ($lang === 'fi') ? '-' : '-'; ?>         <?php the_category(', '); ?>
                                     </span>
                                     <span class="comments-link">
                                         <?php
@@ -34,7 +35,7 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
                                         ?>
                                     </span>
                                 </div>
-                                <?php if ( has_post_thumbnail() ) : ?>
+                                <?php if (has_post_thumbnail()): ?>
                                     <div class="post-thumbnail">
                                         <a href="<?php the_permalink(); ?>">
                                             <?php the_post_thumbnail('large'); ?>
@@ -52,7 +53,7 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
             <div class="pagination">
                 <?php the_posts_pagination(); ?>
             </div>
-        <?php else : ?>
+        <?php else: ?>
             <p>
                 <?php
                 echo ($lang === 'fi')
@@ -62,9 +63,4 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
             </p>
         <?php endif; ?>
     </div>
-    <aside class="sidebar">
-        <?php if ( is_active_sidebar( 'sidebar-1-' . $lang ) ) : ?>
-            <?php dynamic_sidebar( 'sidebar-1-' . $lang ); ?>
-        <?php endif; ?>
-    </aside>
 </div>

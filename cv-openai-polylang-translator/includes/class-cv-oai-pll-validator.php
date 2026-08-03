@@ -78,7 +78,14 @@ class CV_OAI_PLL_Validator {
 
                 // HTML Tag Balance/Integrity check
                 if (!self::check_html_integrity($source_val_clean, $trans_val_clean)) {
-                    return new WP_Error('validation_html_imbalance', __('Validation failed: Mismatched or unclosed HTML tags in translation.', 'cv-openai-polylang-translator'));
+                    return new WP_Error(
+                        'validation_html_imbalance',
+                        sprintf(
+                            __('Validation failed: Mismatched or unclosed HTML tags in translation. Source tags: %s. Translation tags: %s.', 'cv-openai-polylang-translator'),
+                            implode(', ', self::extract_html_tags($source_val_clean)),
+                            implode(', ', self::extract_html_tags($trans_val_clean))
+                        )
+                    );
                 }
 
                 // Extract and verify URL placeholders
@@ -242,16 +249,68 @@ class CV_OAI_PLL_Validator {
      * @return bool True if balanced/valid, false otherwise.
      */
     /**
-     * Checks if HTML tag structure in translated text matches the source text exactly.
+     * Checks if HTML tag structure in translated text is balanced and has no unauthorized tags.
      *
      * @param string $source_text Original source HTML.
      * @param string $trans_text  Translated HTML.
-     * @return bool True if tag structure matches, false otherwise.
+     * @return bool True if tag structure is valid, false otherwise.
      */
     private static function check_html_integrity($source_text, $trans_text) {
         $source_tags = self::extract_html_tags($source_text);
         $trans_tags  = self::extract_html_tags($trans_text);
-        return ($source_tags === $trans_tags);
+
+        // 1. Verify that the translation has balanced HTML tags.
+        if (!self::is_tags_balanced($trans_tags)) {
+            return false;
+        }
+
+        // 2. Prevent the translation from introducing any "new/unauthorized" HTML tags
+        // that were not present in the source text.
+        $source_tag_types = [];
+        foreach ($source_tags as $tag) {
+            $tag_name = ltrim($tag, '/');
+            $source_tag_types[$tag_name] = true;
+        }
+
+        foreach ($trans_tags as $tag) {
+            $tag_name = ltrim($tag, '/');
+            if (!isset($source_tag_types[$tag_name])) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks if a sequence of extracted HTML tags is balanced.
+     *
+     * @param array $tags List of tags.
+     * @return bool True if balanced, false otherwise.
+     */
+    private static function is_tags_balanced($tags) {
+        $stack = [];
+        $self_closing_tags = ['img', 'br', 'hr', 'input', 'link', 'meta', 'source', 'embed'];
+
+        foreach ($tags as $tag) {
+            if (in_array($tag, $self_closing_tags, true)) {
+                continue;
+            }
+            if (strpos($tag, '/') === 0) {
+                $tag_name = substr($tag, 1);
+                if (empty($stack)) {
+                    return false;
+                }
+                $top = array_pop($stack);
+                if ($top !== $tag_name) {
+                    return false;
+                }
+            } else {
+                $stack[] = $tag;
+            }
+        }
+
+        return empty($stack);
     }
 
     /**
