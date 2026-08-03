@@ -1950,6 +1950,18 @@ h2.wp-block-heading {
   font-weight: bold;
 }
 
+/* RTL overrides for Arabic list markers */
+html[dir="rtl"] .i4w-features li {
+  padding-left: 0;
+  padding-right: 24px;
+}
+
+html[dir="rtl"] .i4w-features li::before {
+  content: "←";
+  left: auto;
+  right: 0;
+}
+
 .i4w-button {
   display: inline-flex;
   align-items: center;

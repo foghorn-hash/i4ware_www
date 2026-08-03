@@ -1900,8 +1900,9 @@ function i4ware_saas_order_form_shortcode()
                 target="_blank"><?php pll_e('Lue Yksityisyydensuojaseloste'); ?></a>
         </label>
 
-        <?php if (!empty($recaptcha_site_key)) : ?>
-            <div class="g-recaptcha" data-sitekey="<?php echo esc_attr($recaptcha_site_key); ?>" style="margin-bottom: 20px;"></div>
+        <?php if (!empty($recaptcha_site_key)): ?>
+            <div class="g-recaptcha" data-sitekey="<?php echo esc_attr($recaptcha_site_key); ?>" style="margin-bottom: 20px;">
+            </div>
             <script src="https://www.google.com/recaptcha/api.js?hl=<?php echo $current_lang; ?>" async defer></script>
         <?php endif; ?>
 
@@ -2239,7 +2240,7 @@ function i4ware_submit_order()
 }
 
 // Settings page to swap reCAPTCHA keys
-add_action('admin_menu', function() {
+add_action('admin_menu', function () {
     add_options_page(
         'i4ware reCAPTCHA',
         'i4ware reCAPTCHA',
@@ -2249,21 +2250,22 @@ add_action('admin_menu', function() {
     );
 });
 
-function i4ware_recaptcha_settings_page() {
+function i4ware_recaptcha_settings_page()
+{
     if (!current_user_can('manage_options')) {
         return;
     }
-    
+
     // Save settings
     if (isset($_POST['i4ware_recaptcha_submit']) && check_admin_referer('i4ware_recaptcha_save', 'i4ware_recaptcha_nonce')) {
         update_option('i4ware_recaptcha_site_key', sanitize_text_field($_POST['i4ware_recaptcha_site_key']));
         update_option('i4ware_recaptcha_secret_key', sanitize_text_field($_POST['i4ware_recaptcha_secret_key']));
         echo '<div class="updated"><p>Settings saved successfully.</p></div>';
     }
-    
+
     $site_key = get_option('i4ware_recaptcha_site_key', '');
     $secret_key = get_option('i4ware_recaptcha_secret_key', '');
-    
+
     ?>
     <div class="wrap">
         <h1>i4ware Google reCAPTCHA Settings</h1>
@@ -2272,11 +2274,13 @@ function i4ware_recaptcha_settings_page() {
             <table class="form-table">
                 <tr>
                     <th scope="row"><label for="i4ware_recaptcha_site_key">Site Key</label></th>
-                    <td><input type="text" name="i4ware_recaptcha_site_key" id="i4ware_recaptcha_site_key" value="<?php echo esc_attr($site_key); ?>" class="regular-text"></td>
+                    <td><input type="text" name="i4ware_recaptcha_site_key" id="i4ware_recaptcha_site_key"
+                            value="<?php echo esc_attr($site_key); ?>" class="regular-text"></td>
                 </tr>
                 <tr>
                     <th scope="row"><label for="i4ware_recaptcha_secret_key">Secret Key</label></th>
-                    <td><input type="password" name="i4ware_recaptcha_secret_key" id="i4ware_recaptcha_secret_key" value="<?php echo esc_attr($secret_key); ?>" class="regular-text"></td>
+                    <td><input type="password" name="i4ware_recaptcha_secret_key" id="i4ware_recaptcha_secret_key"
+                            value="<?php echo esc_attr($secret_key); ?>" class="regular-text"></td>
                 </tr>
             </table>
             <p class="submit">
@@ -2804,7 +2808,7 @@ add_action('wp_footer', function () {
 });
 
 // i4ware SDK page shortcode — supports Polylang localizations and enqueues separate CSS
-add_shortcode('i4ware_sdk_page', function() {
+add_shortcode('i4ware_sdk_page', function () {
     $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
 
     // Enqueue the separate CSS file
@@ -2921,9 +2925,67 @@ add_shortcode('i4ware_sdk_page', function() {
             'vid3_cap' => 'Platform development philosophy & basics',
             'todo_link' => '📋 Team To-Do',
             'cv_link' => '👤 Matti\'s CV',
+        ),
+        'ar' => array(
+            'eyebrow' => 'Low-code · Open Source · MIT',
+            'hero_title' => 'ابنِ منتج SaaS الخاص بك في غضون أسابيع، وليس سنوات.',
+            'hero_desc' => 'i4ware SDK عبارة عن منصة تطوير منخفضة البرمجة (low-code) خفيفة الوزن، ومجزأة، وقابلة للتطوير للشركات الناشئة والمؤسسات. اجمع بين واجهة React أمامية حديثة وخلفية Laravel في منتج جاهز للإنتاج بسرعة وأمان.',
+            'request_quote' => 'اطلب عرض سعر ←',
+            'github_code' => 'كود المصدر على GitHub',
+            'cooperation' => 'التعاون',
+            'coop_title' => 'تم تطويره بالتعاون مع المؤسسات التعليمية.',
+            'coop_lead' => 'نشأت منصة i4ware SDK بالتعاون الوثيق مع طلاب تطوير الويب الشامل (Full‑Stack) من TREDU وكلية هلسنكي للأعمال.',
+            'coop_p1' => 'يجمع هذا الحل بين الخبرات الحديثة للمؤسسات التعليمية ومتطلبات المؤسسات الكبرى. تحتوي SDK على مكونات واجهة مستخدم، وأدوات، وعمليات أتمتة جاهزة للاستخدام مما يقلل بشكل كبير من وقت التطوير.',
+            'coop_p2' => 'تمكّن أدوات بناء المنطق المرئي والتكاملات الجاهزة من التسليم السريع بدءاً من مشاريع الشركات الناشئة ووصولاً إلى الأنظمة على مستوى المؤسسات دون المساس بقابلية التوسع.',
+            'redhat_catalog' => '📦 دليل Red Hat',
+            'github_src' => '💻 كود مصدر GitHub',
+            'features' => 'الميزات الرئيسية',
+            'features_title' => 'كل ما تحتاجه للتطوير السريع.',
+            'features_lead' => 'مكونات مسبقة الصنع وبنية مرنة تتوسع من منتج الحد الأدنى (MVP) إلى أنظمة المؤسسات الكبرى.',
+            'feat1_title' => 'بنية برمجية منخفضة الأكواد',
+            'feat1_desc' => 'نمذجة أولية سريعة ونشر فوري دون الحاجة إلى برمجة ثقيلة.',
+            'feat2_title' => 'مكونات جاهزة',
+            'feat2_desc' => 'عناصر واجهة مستخدم قابلة لإعادة الاستخدام، وسير عمل جاهز مسبقاً، ونماذج بيانات نظيفة.',
+            'feat3_title' => 'وظائف واسعة',
+            'feat3_desc' => 'إدارة المستخدمين، والأمان، وتكامل البيانات، وإعداد التقارير مدمجة داخلياً.',
+            'feat4_title' => 'تكاملات مرنة',
+            'feat4_desc' => 'الاتصال بسلاسة مع واجهات البرمجة (APIs)، والأنظمة الخلفية، والسحابة.',
+            'feat5_title' => 'وحدات برمجية وقابلة للتطوير',
+            'feat5_desc' => 'طور حلك بمرونة من مرحلة منتج الحد الأدنى (MVP) وصولاً إلى متطلبات المؤسسات.',
+            'feat6_title' => 'دعم منصات متعددة',
+            'feat6_desc' => 'تطبيقات ويب متجاوبة بالكامل ودعم تطبيقات الويب التقدمية (PWA) لجميع الأجهزة.',
+            'comparison' => 'مقارنة',
+            'matrix_title' => 'مصفوفة الميزات',
+            'matrix_lead' => 'لماذا تعد i4ware SDK خياراً حديثاً وفعالاً من حيث التكلفة.',
+            'scroll_hint' => 'اسحب أفقياً لعرض الجدول بالكامل ←',
+            'th_feature' => 'الميزة',
+            'th_db' => 'قاعدة البيانات',
+            'th_frontend' => 'الواجهة الأمامية',
+            'th_backend' => 'الواجهة الخلفية',
+            'th_http' => 'خادم HTTP',
+            'th_schedule' => 'المهام المجدولة',
+            'th_license' => 'الترخيص',
+            'foot_outdated' => '* بنية برمجية قديمة',
+            'foot_resources' => '** يستهلك موارد خادم عالية (RAM / CPU)',
+            'foot_light' => '*** حمل خفيف على الخادم',
+            'quote_request' => 'طلب عرض سعر',
+            'quote_title' => 'اطلب مشروعك — بتسعير شفاف.',
+            'quote_desc' => 'سعر الساعة <strong>95 يورو</strong> (+ضريبة القيمة المضافة). سنتحقق من الجدارة الائتمانية والمالية للشركة العميلة عبر <a href="https://www.asiakastieto.fi/" target="_blank" rel="noopener">Suomen Asiakastieto Oy</a> قبل الموافقة على الاتفاقية.',
+            'help_text' => '💡 هل تحتاج إلى مساعدة في التعبئة؟ اتصل على 491 8200 40 358+ أو راسلنا عبر البريد الإلكتروني على',
+            'videos' => 'شاهد الفيديوهات',
+            'videos_title' => 'كيف تطلب — ولماذا يستحق ذلك.',
+            'videos_lead' => 'تعرف على المزيد حول فلسفة المنصة، وعملية الطلب، والأسئلة الشائعة.',
+            'vid1_cap' => 'طلب منتج SaaS خطوة بخطوة',
+            'vid2_cap' => 'الأسئلة الشائعة',
+            'vid3_cap' => 'فلسفة تطوير المنصة وأساسياتها',
+            'todo_link' => '📋 المهام المطلوبة من الفريق',
+            'cv_link' => '👤 السيرة الذاتية لـ ماتي',
         )
     );
 
+    if (!isset($data[$lang])) {
+        $lang = 'en'; // fallback
+    }
     $s = $data[$lang];
 
     ob_start();
@@ -2937,16 +2999,21 @@ add_shortcode('i4ware_sdk_page', function() {
             <p><?php echo esc_html($s['hero_desc']); ?></p>
             <div class="ok-cta">
                 <a class="ok-btn ok-btn-primary" href="#tarjous"><?php echo esc_html($s['request_quote']); ?></a>
-                <a class="ok-btn ok-btn-ghost" href="https://github.com/foghorn-hash/i4ware_SDK" target="_blank" rel="noopener">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                <a class="ok-btn ok-btn-ghost" href="https://github.com/foghorn-hash/i4ware_SDK" target="_blank"
+                    rel="noopener">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                        </path>
                     </svg>
                     <?php echo esc_html($s['github_code']); ?>
                 </a>
             </div>
             <div class="ok-links">
                 <a class="ok-chip" href="https://antigravity.google/" target="_blank" rel="noopener">⚡ Antigravity</a>
-                <a class="ok-chip" href="https://github.com/features/copilot" target="_blank" rel="noopener">🤖 GitHub Copilot</a>
+                <a class="ok-chip" href="https://github.com/features/copilot" target="_blank" rel="noopener">🤖 GitHub
+                    Copilot</a>
                 <a class="ok-chip" href="https://code.visualstudio.com/" target="_blank" rel="noopener">💻 VS Code</a>
             </div>
         </section>
@@ -2964,7 +3031,9 @@ add_shortcode('i4ware_sdk_page', function() {
                     <p><?php echo esc_html($s['coop_p1']); ?></p>
                     <p><?php echo esc_html($s['coop_p2']); ?></p>
                     <div class="ok-links" style="margin-top: 20px;">
-                        <a class="ok-chip" href="https://catalog.redhat.com/en/software/container-stacks/detail/6559987a23420e5882e0f61c" target="_blank" rel="noopener">
+                        <a class="ok-chip"
+                            href="https://catalog.redhat.com/en/software/container-stacks/detail/6559987a23420e5882e0f61c"
+                            target="_blank" rel="noopener">
                             <?php echo esc_html($s['redhat_catalog']); ?>
                         </a>
                         <a class="ok-chip" href="https://github.com/foghorn-hash/i4ware_SDK" target="_blank" rel="noopener">
@@ -3004,7 +3073,8 @@ add_shortcode('i4ware_sdk_page', function() {
             <div class="ok-grid">
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                         </svg>
                     </div>
@@ -3013,7 +3083,8 @@ add_shortcode('i4ware_sdk_page', function() {
                 </div>
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="3" width="7" height="9"></rect>
                             <rect x="14" y="3" width="7" height="5"></rect>
                             <rect x="14" y="12" width="7" height="9"></rect>
@@ -3025,7 +3096,8 @@ add_shortcode('i4ware_sdk_page', function() {
                 </div>
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         </svg>
                     </div>
@@ -3034,7 +3106,8 @@ add_shortcode('i4ware_sdk_page', function() {
                 </div>
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="16 3 21 3 21 8"></polyline>
                             <line x1="4" y1="20" x2="21" y2="3"></line>
                             <polyline points="21 16 21 21 16 21"></polyline>
@@ -3047,7 +3120,8 @@ add_shortcode('i4ware_sdk_page', function() {
                 </div>
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
                             <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
                             <line x1="6" y1="6" x2="6.01" y2="6"></line>
@@ -3059,7 +3133,8 @@ add_shortcode('i4ware_sdk_page', function() {
                 </div>
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
                             <line x1="12" y1="18" x2="12.01" y2="18"></line>
                         </svg>
@@ -3079,7 +3154,8 @@ add_shortcode('i4ware_sdk_page', function() {
             </div>
 
             <div class="ok-table-scroll-hint">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
                     <circle cx="12" cy="12" r="10"></circle>
                     <polyline points="12 16 16 12 12 8"></polyline>
                     <line x1="8" y1="12" x2="16" y2="12"></line>
@@ -3170,7 +3246,8 @@ add_shortcode('i4ware_sdk_page', function() {
 
             <div class="ok-form-area">
                 <div class="ok-note" style="margin-bottom: 28px;">
-                    <strong><?php echo wp_kses($s['help_text'], array('strong' => array())); ?></strong> <a href="mailto:matti.kiviharju@i4ware.fi">matti.kiviharju@i4ware.fi</a>.
+                    <strong><?php echo wp_kses($s['help_text'], array('strong' => array())); ?></strong> <a
+                        href="mailto:matti.kiviharju@i4ware.fi">matti.kiviharju@i4ware.fi</a>.
                 </div>
                 <?php echo do_shortcode('[i4ware_saas_order_form]'); ?>
             </div>
@@ -3187,29 +3264,36 @@ add_shortcode('i4ware_sdk_page', function() {
             <div class="ok-videos">
                 <div class="ok-video-card">
                     <div class="ok-video">
-                        <iframe src="https://www.youtube.com/embed/TIo-szPd4PI" title="Tilaa SaaS tuoteesi i4ware SDK low-code-alustalla" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                        <iframe src="https://www.youtube.com/embed/TIo-szPd4PI"
+                            title="Tilaa SaaS tuoteesi i4ware SDK low-code-alustalla"
+                            allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+                            allowfullscreen></iframe>
                     </div>
                     <p class="ok-video-cap"><?php echo esc_html($s['vid1_cap']); ?></p>
                 </div>
 
                 <div class="ok-video-card">
                     <div class="ok-video">
-                        <iframe src="https://www.youtube.com/embed/gGYLYKyQ1Bc" title="SDK UKK #sdk #react #laravel" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                        <iframe src="https://www.youtube.com/embed/gGYLYKyQ1Bc" title="SDK UKK #sdk #react #laravel"
+                            allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+                            allowfullscreen></iframe>
                     </div>
                     <p class="ok-video-cap"><?php echo esc_html($s['vid2_cap']); ?></p>
                 </div>
 
                 <div class="ok-video-card">
                     <div class="ok-video">
-                        <iframe src="https://www.youtube.com/embed/5bzoizWG3aM" title="i4ware SDK low-code-alustan idea" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                        <iframe src="https://www.youtube.com/embed/5bzoizWG3aM" title="i4ware SDK low-code-alustan idea"
+                            allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture"
+                            allowfullscreen></iframe>
                     </div>
                     <p class="ok-video-cap"><?php echo esc_html($s['vid3_cap']); ?></p>
                 </div>
             </div>
 
             <div class="ok-links" style="margin-top: 32px">
-                <a class="ok-chip" href="https://i4ware-sdk.atlassian.net/wiki/spaces/IS/overview" target="_blank" rel="noopener"><?php echo esc_html($s['todo_link']); ?></a>
-                <a class="ok-chip" href="https://www.i4ware.fi/matti-kiviharjun-ansioluettelo/" target="_blank" rel="noopener"><?php echo esc_html($s['cv_link']); ?></a>
+                <a class="ok-chip" href="https://i4ware-sdk.atlassian.net/wiki/spaces/IS/overview" target="_blank"
+                    rel="noopener"><?php echo esc_html($s['todo_link']); ?></a>
             </div>
         </section>
 
@@ -3219,147 +3303,155 @@ add_shortcode('i4ware_sdk_page', function() {
 });
 
 // Vanilla JS/CSS Lightbox for Certificate Images in [i4ware_team] / [i4ware_team_members]
-add_action('wp_footer', function() {
+add_action('wp_footer', function () {
     ?>
     <style>
-    /* i4ware Lightbox Styles */
-    .i4ware-lightbox {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(10, 10, 15, 0.95);
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 999999;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
-    .i4ware-lightbox.active {
-        opacity: 1;
-        visibility: visible;
-    }
-    .i4ware-lightbox-content {
-        max-width: 90%;
-        max-height: 90%;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .i4ware-lightbox-img {
-        max-width: 100%;
-        max-height: 80vh;
-        object-fit: contain;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        transform: scale(0.9);
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .i4ware-lightbox.active .i4ware-lightbox-img {
-        transform: scale(1);
-    }
-    .i4ware-lightbox-close {
-        position: absolute;
-        top: -48px;
-        right: 0;
-        color: #fff;
-        font-size: 32px;
-        cursor: pointer;
-        background: none;
-        border: none;
-        padding: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: color 0.2s, transform 0.2s;
-    }
-    .i4ware-lightbox-close:hover {
-        color: #6366f1;
-        transform: scale(1.1);
-    }
-    .i4ware-lightbox-caption {
-        color: #94a3b8;
-        margin-top: 16px;
-        font-family: 'Outfit', sans-serif;
-        font-size: 16px;
-        text-align: center;
-    }
-    .certificate-container img {
-        cursor: pointer;
-    }
+        /* i4ware Lightbox Styles */
+        .i4ware-lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .i4ware-lightbox.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .i4ware-lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .i4ware-lightbox-img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .i4ware-lightbox.active .i4ware-lightbox-img {
+            transform: scale(1);
+        }
+
+        .i4ware-lightbox-close {
+            position: absolute;
+            top: -48px;
+            right: 0;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .i4ware-lightbox-close:hover {
+            color: #6366f1;
+            transform: scale(1.1);
+        }
+
+        .i4ware-lightbox-caption {
+            color: #94a3b8;
+            margin-top: 16px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .certificate-container img {
+            cursor: pointer;
+        }
     </style>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Create Lightbox Markup dynamically
-        const lightbox = document.createElement('div');
-        lightbox.className = 'i4ware-lightbox';
-        lightbox.setAttribute('role', 'dialog');
-        lightbox.setAttribute('aria-modal', 'true');
-        lightbox.innerHTML = `
+        document.addEventListener('DOMContentLoaded', function () {
+            // Create Lightbox Markup dynamically
+            const lightbox = document.createElement('div');
+            lightbox.className = 'i4ware-lightbox';
+            lightbox.setAttribute('role', 'dialog');
+            lightbox.setAttribute('aria-modal', 'true');
+            lightbox.innerHTML = `
             <div class="i4ware-lightbox-content">
                 <button class="i4ware-lightbox-close" aria-label="Close">&times;</button>
                 <img class="i4ware-lightbox-img" src="" alt="" />
                 <div class="i4ware-lightbox-caption"></div>
             </div>
         `;
-        document.body.appendChild(lightbox);
+            document.body.appendChild(lightbox);
 
-        const lightboxImg = lightbox.querySelector('.i4ware-lightbox-img');
-        const lightboxClose = lightbox.querySelector('.i4ware-lightbox-close');
-        const lightboxCaption = lightbox.querySelector('.i4ware-lightbox-caption');
+            const lightboxImg = lightbox.querySelector('.i4ware-lightbox-img');
+            const lightboxClose = lightbox.querySelector('.i4ware-lightbox-close');
+            const lightboxCaption = lightbox.querySelector('.i4ware-lightbox-caption');
 
-        // Add click event for certificate images
-        document.body.addEventListener('click', function(e) {
-            const target = e.target;
-            // Check if the clicked element is an image inside a certificate container
-            if (target.closest('.certificate-container') && target.tagName === 'IMG') {
-                const src = target.src;
-                const alt = target.alt || '';
-                
-                // Set image source and caption
-                lightboxImg.src = src;
-                lightboxImg.alt = alt;
-                lightboxCaption.textContent = alt;
-                
-                // Open lightbox
-                lightbox.classList.add('active');
-                document.body.style.overflow = 'hidden'; // prevent scrolling
+            // Add click event for certificate images
+            document.body.addEventListener('click', function (e) {
+                const target = e.target;
+                // Check if the clicked element is an image inside a certificate container
+                if (target.closest('.certificate-container') && target.tagName === 'IMG') {
+                    const src = target.src;
+                    const alt = target.alt || '';
+
+                    // Set image source and caption
+                    lightboxImg.src = src;
+                    lightboxImg.alt = alt;
+                    lightboxCaption.textContent = alt;
+
+                    // Open lightbox
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden'; // prevent scrolling
+                }
+            });
+
+            // Close lightbox
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    lightboxImg.src = '';
+                    lightboxImg.alt = '';
+                    lightboxCaption.textContent = '';
+                }, 300);
             }
-        });
 
-        // Close lightbox
-        function closeLightbox() {
-            lightbox.classList.remove('active');
-            document.body.style.overflow = '';
-            setTimeout(() => {
-                lightboxImg.src = '';
-                lightboxImg.alt = '';
-                lightboxCaption.textContent = '';
-            }, 300);
-        }
+            lightboxClose.addEventListener('click', closeLightbox);
+            lightbox.addEventListener('click', function (e) {
+                if (e.target === lightbox || e.target.classList.contains('i4ware-lightbox-content')) {
+                    closeLightbox();
+                }
+            });
 
-        lightboxClose.addEventListener('click', closeLightbox);
-        lightbox.addEventListener('click', function(e) {
-            if (e.target === lightbox || e.target.classList.contains('i4ware-lightbox-content')) {
-                closeLightbox();
-            }
+            // Close with Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+                    closeLightbox();
+                }
+            });
         });
-
-        // Close with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-                closeLightbox();
-            }
-        });
-    });
     </script>
     <?php
 });

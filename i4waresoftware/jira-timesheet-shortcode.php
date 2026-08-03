@@ -244,6 +244,123 @@ $tfj_defaults = array(
             array('text' => 'Tietosuojaseloste', 'url' => 'https://www.i4ware.fi/en/privacy-policy/'),
             array('text' => 'Lähetä tukea & lahjoituksia', 'url' => 'https://www.i4ware.fi/kauppa/', 'class' => 'tfj-footer-highlight'),
         ),
+    ),
+    'ar' => array(
+        'hero_badge' => 'تطبيق متجر Atlassian',
+        'hero_title' => 'تسجيل الوقت في Jira <span>أسرع بـ 10 مرات</span>',
+        'hero_lead' => 'استبدل النوافذ المتكررة والنقرات الكثيرة بشبكة مفاتيح شبيهة ببرنامج Excel. ابدأ التتبع، واعتمد سجلات العمل، وصدّر الساعات القابلة للطلب مباشرة داخل Jira.',
+        'btn_1_text' => 'ابدأ تجربة مجانية لمدة 30 يومًا',
+        'btn_1_url' => 'https://marketplace.atlassian.com/apps/1223446/timesheet-for-jira',
+        'btn_2_text' => 'عرض في متجر Atlassian',
+        'btn_2_url' => 'https://marketplace.atlassian.com/apps/1223446/timesheet-for-jira',
+        
+        'trust_bar_1' => 'معتمد من متجر Atlassian',
+        'trust_bar_2' => 'تكامل Jira الأصلي',
+        'trust_bar_3' => 'دعم إدارة خدمات Jira (JSM)',
+        'trust_bar_4' => 'تقارير جاهزة للمؤسسات',
+        
+        'benefits_title' => 'اقضِ وقتًا أقل في التتبع ووقتًا أطول في البناء',
+        'benefits_subtitle' => 'إدارة وقت بسيطة وقوية مدمجة مباشرة في مساحة عمل Jira الخاصة بك.',
+        
+        'benefit_1_title' => 'تتبع الوقت المعتمد على لوحة المفاتيح أولاً',
+        'benefit_1_desc' => 'التنقل وتسجيل الوقت عبر مهام Jira متعددة بالكامل باستخدام لوحة المفاتيح.',
+        'benefit_2_title' => 'مؤقتات الوقت الفعلي',
+        'benefit_2_desc' => 'بدء وإيقاف المؤقتات النشطة مباشرة داخل المهام لتسجيل العمل تلقائيًا.',
+        'benefit_3_title' => 'أسرع بـ 10 مرات من التتبع الأصلي',
+        'benefit_3_desc' => 'تخلص من النوافذ المنبثقة البطيئة والحوارات كثيرة النقرات لتوفير ساعات أسبوعياً للمطورين.',
+        'benefit_4_title' => 'سير عمل موافقة المدير',
+        'benefit_4_desc' => 'مراجعة أو اعتماد أو رفض جداول الموظفين الزمنية مع إضافة ملاحظات مباشرة في Jira.',
+        'benefit_5_title' => 'تتبع الساعات القابلة للفوترة',
+        'benefit_5_desc' => 'تكوين الأسعار بناءً على الأدوار لتتبع تكاليف المشروع وربحيته في الوقت الفعلي.',
+        'benefit_6_title' => 'تصدير التقارير إلى Excel',
+        'benefit_6_desc' => 'تصدير جداول زمنية نظيفة وجاهزة للفوترة مباشرة إلى ملفات XLSX بنقرة واحدة.',
+        
+        'shortcuts_badge' => 'الكفاءة أولاً',
+        'shortcuts_title' => 'تتبع حقيقي بدون الحاجة للماوس',
+        'shortcuts_lead' => 'لقد قمنا ببناء Timesheet for Jira حول سير عمل عالي الأداء. لا تفقد تركيزك أبدًا ولا تبحث عن الماوس. تحكم في سجلاتك بالكامل باستخدام أوامر لوحة المفاتيح البسيطة.',
+        'shortcuts_accent' => 'اختصارات لوحة المفاتيح مدعومة وجاهزة للاستخدام',
+        
+        'shortcut_1_key' => 'Tab',
+        'shortcut_1_action' => 'نقل المؤشر للأسفل إلى الصف التالي',
+        'shortcut_2_key' => 'Shift + Tab',
+        'shortcut_2_action' => 'نقل المؤشر للأعلى إلى الصف السابق',
+        'shortcut_3_key' => 'Enter',
+        'shortcut_3_action' => 'تعديل قيمة الخلية أو تنفيذ العملية',
+        'shortcut_4_key' => 'Space',
+        'shortcut_4_action' => 'تغيير الحالة أو فتح القوائم المنسدلة',
+        'shortcut_5_key' => 'Escape',
+        'shortcut_5_action' => 'إغلاق وضع التعديل الحالي أو النافذة المنبثقة',
+        
+        'video_title' => 'شاهد Timesheet في العمل',
+        'video_desc' => 'شاهد مدى سرعة تسجيل العمل واستكشاف أتمتة الذكاء الاصطناعي مباشرة في Jira.',
+        'video_1_title' => 'استعراض المنتج',
+        'video_1_lang' => 'الإنجليزية',
+        'video_1_id' => 'K8XBQzz0yuY',
+        'video_1_desc' => 'استعراض شامل لشبكة لوحة المفاتيح أولاً، المؤقتات النشطة، سير عمل موافقة المدير، وتقارير التصدير بصيغة XLSX.',
+        'video_2_title' => 'نظرة عامة على أتمتة الذكاء الاصطناعي',
+        'video_2_lang' => 'الإنجليزية',
+        'video_2_id' => 'qoh-hIkkIEA',
+        'video_2_desc' => 'غوص عميق في ميزات أتمتة سجل العمل المدعومة بالذكاء الاصطناعي المدمجة وإعدادات الواجهة المحلية.',
+        
+        'gallery_title' => 'مبني لسير عمل Jira الحديث',
+        'gallery_desc' => 'واجهة خالية من المتاعب مخصصة للمطورين والمدراء وفرق الفوترة. انقر على أي لقطة شاشة أدناه للتكبير.',
+        'gallery_tab_all' => 'جميع الميزات',
+        'gallery_tab_dev' => 'للمطورين',
+        'gallery_tab_mgr' => 'للمدراء',
+        'gallery_tab_billing' => 'الفوترة و JSM',
+        'gallery_tab_customers' => 'للعملاء',
+        
+        'gallery_img_1_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Dashboard-7-1024x576.png',
+        'gallery_img_1_caption' => 'لوحة تحكم المسؤول — نظرة عامة أسبوعية على الفريق',
+        'gallery_img_1_category' => 'mgr',
+        
+        'gallery_img_2_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/My-Timesheets-9-1024x576.png',
+        'gallery_img_2_caption' => 'جداول البيانات الخاصة بي — عرض شبكة بنمط Excel',
+        'gallery_img_2_category' => 'dev',
+        
+        'gallery_img_3_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Approve-7-1024x576.png',
+        'gallery_img_3_caption' => 'سير عمل الموافقة على سجل العمل',
+        'gallery_img_3_category' => 'mgr',
+        
+        'gallery_img_4_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Reject-10-1024x576.png',
+        'gallery_img_4_caption' => 'رفض سجل العمل مع إضافة ملاحظات',
+        'gallery_img_4_category' => 'mgr',
+        
+        'gallery_img_5_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Click-Start-8-1024x576.png',
+        'gallery_img_5_caption' => 'مؤقت — ابدأ التتبع',
+        'gallery_img_5_category' => 'dev',
+        
+        'gallery_img_6_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Billable-Work-hours-MS-Excel-Export-8-1024x576.png',
+        'gallery_img_6_caption' => 'تصدير الساعات القابلة للفوترة إلى Excel',
+        'gallery_img_6_category' => 'billing',
+        
+        'gallery_img_7_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Customer-Complaints-3-1024x576.png',
+        'gallery_img_7_caption' => 'نزاع العملاء وسير عمل الفوترة',
+        'gallery_img_7_category' => 'billing',
+        
+        'gallery_img_8_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Disputed-Work-logs-in-JSM-7-1024x576.png',
+        'gallery_img_8_caption' => 'سجلات العمل المتنازع عليها في JSM',
+        'gallery_img_8_category' => 'billing',
+        
+        'cta_title' => 'ابدأ تتبع الوقت بشكل أسرع في Jira',
+        'cta_desc' => 'جرب Timesheet for Jira مجاناً لمدة 30 يوماً وشاهد مقدار الوقت الذي يوفره فريقك.',
+        'cta_btn_text' => 'ابدأ تجربة مجانية لمدة 30 يومًا',
+        'cta_btn_url' => 'https://marketplace.atlassian.com/apps/1223446/timesheet-for-jira',
+        'cta_trust_line' => 'لا حاجة لبطاقة ائتمان. إلغاء في أي وقت.',
+        
+        'footer_text' => '© 2026 i4ware. جميع الحقوق محفوظة. Timesheet for Jira هو منتج لشركة i4ware. تعد Atlassian و Jira و Jira Service Management علامات تجارية مسجلة لشركة Atlassian Pty Ltd.',
+        'footer_links' => array(
+            array('text' => 'التوثيق', 'url' => 'https://i4ware.atlassian.net/wiki/spaces/TFJ/overview'),
+            array('text' => 'مكتب الدعم', 'url' => 'https://i4ware.atlassian.net/servicedesk/customer/portal/6'),
+            array('text' => 'بوت دعم الذكاء الاصطناعي', 'url' => 'https://i4ware.atlassian.net/servicedesk/customer/portal/3'),
+            array('text' => 'الاتصال والفريق', 'url' => 'https://www.i4ware.fi/en/company/contact-us-team/'),
+            array('text' => 'شروط التسليم', 'url' => 'https://www.i4ware.fi/en/delivery-terms-and-conditions/'),
+            array('text' => 'خدمات المحاماة', 'url' => 'https://www.i4ware.fi/en/services/advocates-attorneys/'),
+            array('text' => 'اتفاقية ترخيص المستخدم (EULA)', 'url' => 'https://i4ware.atlassian.net/wiki/spaces/TFJ/pages/50495490/EULA'),
+            array('text' => 'اتفاقية مستوى الخدمة (SLA)', 'url' => 'https://i4ware.atlassian.net/wiki/spaces/TFJ/pages/50102283/Service+Level+Agreement'),
+            array('text' => 'سياسة الخصوصية', 'url' => 'https://www.i4ware.fi/en/privacy-policy/'),
+            array('text' => 'إرسال الدعم والتبرعات', 'url' => 'https://www.i4ware.fi/kauppa/', 'class' => 'tfj-footer-highlight'),
+        ),
     )
 );
 
@@ -253,11 +370,19 @@ $tfj_defaults = array(
 function get_tfj_landing_language() {
     if ( function_exists( 'pll_current_language' ) ) {
         $lang = pll_current_language();
-        return ( $lang === 'fi' ) ? 'fi' : 'en';
+        if ( in_array( $lang, array( 'fi', 'ar' ) ) ) {
+            return $lang;
+        }
+        return 'en';
     }
     
     $locale = get_locale();
-    return ( strpos( $locale, 'fi' ) === 0 ) ? 'fi' : 'en';
+    if ( strpos( $locale, 'fi' ) === 0 ) {
+        return 'fi';
+    } elseif ( strpos( $locale, 'ar' ) === 0 ) {
+        return 'ar';
+    }
+    return 'en';
 }
 
 /**
@@ -901,6 +1026,13 @@ function jira_timesheet_landing_shortcode( $atts ) {
             'prev' => 'Edellinen',
             'next' => 'Seuraava',
             'play_video' => 'Toista video',
+        ),
+        'ar' => array(
+            'image_viewer' => 'عرض الصور',
+            'close' => 'إغلاق',
+            'prev' => 'السابق',
+            'next' => 'التالي',
+            'play_video' => 'تشغيل الفيديو',
         ),
     );
     $l = isset( $labels[$lang] ) ? $labels[$lang] : $labels['en'];

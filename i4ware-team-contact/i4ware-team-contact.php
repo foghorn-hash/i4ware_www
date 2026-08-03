@@ -16,6 +16,8 @@ add_action('wp_enqueue_scripts', function() {
     $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
     if ($lang === 'fi') {
         wp_enqueue_script('team-contact', plugin_dir_url(__FILE__) . 'yhteys.js', array('jquery'), null, true);
+    } elseif ($lang === 'ar') {
+        wp_enqueue_script('team-contact', plugin_dir_url(__FILE__) . 'ittisal.js', array('jquery'), null, true);
     } else {
         wp_enqueue_script('team-contact', plugin_dir_url(__FILE__) . 'contact.js', array('jquery'), null, true);
     }

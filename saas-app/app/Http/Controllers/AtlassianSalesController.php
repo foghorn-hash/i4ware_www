@@ -29,36 +29,24 @@ class AtlassianSalesController extends Controller
             $query = DB::table('invoices');
 
             // Apply revenue source filter
-            if ($source === 'kela') {
-                $query->whereIn('customer_id', [1, 7]);
+            if ($source === 'kk') {
+                $query->whereIn('customer_id', [1, 7, 85, 88, 89]);
             } elseif ($source === 'hourly') {
                 // Hourly invoicing: exclude Kela, grandparents, student, toimtuki, and tyomarkkinatuki invoices (legacy ids)
                 $query->whereNotIn('customer_id', [1, 7, 85, 86, 88, 89]);
-            } elseif ($source === 'grandparents') {
-                $query->where('customer_id', 86); // Grandparents source (legacy id)
-            } elseif ($source === 'student') {
-                $query->where('customer_id', 85); // Student source (legacy id)
-            } elseif ($source === 'toimtuki') {
-                $query->where('customer_id', 89); // Toimtuki source (legacy id)
-            } elseif ($source === 'tyomarkkinatuki') {
-                $query->where('customer_id', 88); // Tyomarkkinatuki source (legacy id)
+            } elseif ($source === 'capital') {
+                $query->where('customer_id', 86);
             }
 
             // Build WHERE fragment for the subquery based on source
             $subWhere = '';
-            if ($source === 'kela') {
-                $subWhere = ' WHERE customer_id IN (1, 7)';
+            if ($source === 'kk') {
+                $subWhere = ' WHERE customer_id IN (1, 7, 85, 88, 89)';
             } elseif ($source === 'hourly') {
                 // Hourly invoicing: exclude Kela, grandparents, student, toimtuki, and tyomarkkinatuki invoices in subquery
                 $subWhere = ' WHERE customer_id NOT IN (1, 7, 85, 86, 88, 89)';
-            } elseif ($source === 'grandparents') {
+            } elseif ($source === 'capital') {
                 $subWhere = ' WHERE customer_id = 86';
-            } elseif ($source === 'student') {
-                $subWhere = ' WHERE customer_id = 85';
-            } elseif ($source === 'toimtuki') {
-                $subWhere = ' WHERE customer_id = 89';
-            } elseif ($source === 'tyomarkkinatuki') {
-                $subWhere = ' WHERE customer_id = 88';
             }
 
             $salesData = $query
@@ -154,21 +142,16 @@ class AtlassianSalesController extends Controller
 
             // --- Fetch local sales (if requested) ---
             $localSales = collect();
-            if (in_array($source, ['all', 'kela', 'hourly', 'grandparents', 'student', 'toimtuki', 'tyomarkkinatuki'], true)) {
+            if (in_array($source, ['all', 'capital', 'kk', 'hourly'], true)) {
                 $query = Invoice::with('customer')->orderBy('due_date');
-                if ($source === 'kela') {
-                    $query->whereIn('customer_id', [1, 7]);
+                if ($source === 'kk') {
+                    $query->whereIn('customer_id', [1, 7, 85, 88, 89]);
                 } elseif ($source === 'hourly') {
                     $query->whereNotIn('customer_id', [1, 7, 85, 86, 88, 89]);
-                } elseif ($source === 'grandparents') {
+                } elseif ($source === 'capital') {
                     $query->where('customer_id', 86);
-                } elseif ($source === 'student') {
-                    $query->where('customer_id', 85);
-                } elseif ($source === 'toimtuki') {
-                    $query->where('customer_id', 89);
-                } elseif ($source === 'tyomarkkinatuki') {
-                    $query->where('customer_id', 88);
                 }
+
                 $localSales = $query->get()->map(function ($invoice) {
                     $revenueSource = 'Confidential (Hourly)';
                     if ($invoice->customer_id == 85) {
@@ -291,20 +274,14 @@ class AtlassianSalesController extends Controller
 
             // Fetch local sales (from invoices) if needed
             $localSales = collect();
-            if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents' || $source === 'student' || $source === 'toimtuki' || $source === 'tyomarkkinatuki') {
+            if (in_array($source, ['all', 'capital', 'kk', 'hourly'], true)) {
                 $query = Invoice::with('customer')->orderBy('due_date');
-                if ($source === 'kela') {
-                    $query->whereIn('customer_id', [1, 7]);
+                if ($source === 'kk') {
+                    $query->whereIn('customer_id', [1, 7, 85, 88, 89]);
                 } elseif ($source === 'hourly') {
                     $query->whereNotIn('customer_id', [1, 7, 85, 86, 88, 89]);
-                } elseif ($source === 'grandparents') {
-                    $query->where('customer_id', 86); // grandparent source
-                } elseif ($source === 'student') {
-                    $query->where('customer_id', 85); // student source
-                } elseif ($source === 'toimtuki') {
-                    $query->where('customer_id', 89); // toimtuki source
-                } elseif ($source === 'tyomarkkinatuki') {
-                    $query->where('customer_id', 88); // tyomarkkinatuki source
+                } elseif ($source === 'capital') {
+                    $query->where('customer_id', 86);
                 }
                 $localSales = $query->get()->map(function ($invoice) {
                     $revenueSource = 'Confidential (Hourly)';
@@ -460,20 +437,14 @@ class AtlassianSalesController extends Controller
         }*/
 
         // Fetch local sales data if needed
-        if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents' || $source === 'student' || $source === 'toimtuki' || $source === 'tyomarkkinatuki') {
+        if (in_array($source, ['all', 'capital', 'kk', 'hourly'], true)) {
             $query = Invoice::orderBy('due_date');
-            if ($source === 'kela') {
-                $query->whereIn('customer_id', [1, 7]);
+            if ($source === 'kk') {
+                $query->whereIn('customer_id', [1, 7, 85, 88, 89]);
             } elseif ($source === 'hourly') {
                 $query->whereNotIn('customer_id', [1, 7, 85, 86, 88, 89]); // Exclude Kela, grandparents, student, tyomarkkinatuki, and toimtuki invoices
-            } elseif ($source === 'grandparents') {
-                $query->where('customer_id', 86); // Grandparents source
-            } elseif ($source === 'student') {
-                $query->where('customer_id', 85); // Student source
-            } elseif ($source === 'toimtuki') {
-                $query->where('customer_id', 89); // Toimtuki source
-            } elseif ($source === 'tyomarkkinatuki') {
-                $query->where('customer_id', 88); // Tyomarkkinatuki source
+            } elseif ($source === 'capital') {
+                $query->where('customer_id', 86);
             }
             $localSales = $query->get()->map(function ($invoice) {
                 return [
@@ -596,20 +567,14 @@ class AtlassianSalesController extends Controller
             }*/
 
             // Process local sales if needed
-            if ($source === 'all' || $source === 'kela' || $source === 'hourly' || $source === 'grandparents' || $source === 'student' || $source === 'toimtuki' || $source === 'tyomarkkinatuki') {
+            if (in_array($source, ['all', 'capital', 'kk', 'hourly'], true)) {
                 $query = Invoice::orderBy('due_date');
-                if ($source === 'kela') {
-                    $query->whereIn('customer_id', [1, 7]);
+                if ($source === 'kk') {
+                    $query->whereIn('customer_id', [1, 7, 85, 88, 89]);
                 } elseif ($source === 'hourly') {
                     $query->whereNotIn('customer_id', [1, 7, 85, 86, 88, 89]);
-                } elseif ($source === 'grandparents') {
-                    $query->where('customer_id', 86); // Grandparents source
-                } elseif ($source === 'student') {
-                    $query->where('customer_id', 85); // Student source
-                } elseif ($source === 'toimtuki') {
-                    $query->where('customer_id', 89); // Toimtuki source
-                } elseif ($source === 'tyomarkkinatuki') {
-                    $query->where('customer_id', 88); // Tyomarkkinatuki source
+                } elseif ($source === 'capital') {
+                    $query->where('customer_id', 86);
                 }
                 $localSales = $query->get()->map(function ($invoice) {
                     return [
@@ -693,20 +658,14 @@ class AtlassianSalesController extends Controller
 
             // --- Local invoices (if requested) ---
             $localRows = collect();
-            if (in_array($source, ['all', 'kela', 'hourly', 'grandparents', 'student', 'toimtuki', 'tyomarkkinatuki'], true)) {
+            if (in_array($source, ['all', 'capital', 'kk', 'hourly'], true)) {
                 $q = Invoice::with('customer')->orderBy('due_date');
-                if ($source === 'kela') {
-                    $q->whereIn('customer_id', [1, 7]);
+                if ($source === 'kk') {
+                    $q->whereIn('customer_id', [1, 7, 85, 88, 89]);
                 } elseif ($source === 'hourly') {
                     $q->whereNotIn('customer_id', [1, 7, 85, 86, 88, 89]);
-                } elseif ($source === 'grandparents') {
+                } elseif ($source === 'capital') {
                     $q->where('customer_id', 86);
-                } elseif ($source === 'student') {
-                    $q->where('customer_id', 85);
-                } elseif ($source === 'toimtuki') {
-                    $q->where('customer_id', 89);
-                } elseif ($source === 'tyomarkkinatuki') {
-                    $q->where('customer_id', 88);
                 }
 
                 $localRows = $q->get()->map(function ($inv) {
@@ -794,30 +753,29 @@ class AtlassianSalesController extends Controller
     public function getIncomeYears(Request $request)
     {
         try {
-            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'kela', 'hourly', 'grandparents', 'student', 'toimtuki', 'tyomarkkinatuki'
+            $source = $request->query('source', 'all'); // 'all', 'atlassian', 'capital', 'kk', 'hourly'
 
             // ---- Invoices (local DB) ----
             $invoiceQuery = Invoice::query();
-            if ($source === 'kela') {
-                $invoiceQuery->whereIn('customer_id', [1, 7]);
-            } elseif ($source === 'hourly') {
-                $invoiceQuery->whereNotIn('customer_id', [1, 7, 85, 86, 88, 89]);
-            } elseif ($source === 'grandparents') {
-                $invoiceQuery->where('customer_id', 86);
-            } elseif ($source === 'student') {
-                $invoiceQuery->where('customer_id', 85);
-            } elseif ($source === 'toimtuki') {
-                $invoiceQuery->where('customer_id', 89);
-            } elseif ($source === 'tyomarkkinatuki') {
-                $invoiceQuery->where('customer_id', 88);
+            if (in_array($source, ['all', 'capital', 'kk', 'hourly'], true)) {
+                if ($source === 'kk') {
+                    $invoiceQuery->whereIn('customer_id', [1, 7, 85, 88, 89]);
+                } elseif ($source === 'hourly') {
+                    $invoiceQuery->whereNotIn('customer_id', [1, 7, 85, 86, 88, 89]);
+                } elseif ($source === 'capital') {
+                    $invoiceQuery->where('customer_id', 86);
+                }
+                
+                // DISTINCT years from due_date
+                $invoiceYears = $invoiceQuery
+                    ->selectRaw('DISTINCT YEAR(due_date) as y')
+                    ->orderBy('y')
+                    ->pluck('y')
+                    ->map(fn($y) => (int) $y)
+                    ->all();
+            } else {
+                $invoiceYears = [];
             }
-            // DISTINCT years from due_date
-            $invoiceYears = $invoiceQuery
-                ->selectRaw('DISTINCT YEAR(due_date) as y')
-                ->orderBy('y')
-                ->pluck('y')
-                ->map(fn($y) => (int) $y)
-                ->all();
 
             // ---- Atlassian (optional) ----
             $atlassianYears = [];

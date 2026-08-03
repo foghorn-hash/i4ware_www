@@ -373,7 +373,7 @@ h4,
 h5,
 h6 {
   margin-top: 1rem;
-  text-align: left !important;
+  text-align: start !important;
   color: var(--accent);
 }
 
@@ -610,8 +610,8 @@ img.partner-logo {
 }
 
 .section-title {
-  text-align: left;
-  margin-left: 0 !important;
+  text-align: start !important;
+  margin-inline-start: 0 !important;
   margin-bottom: 2rem;
   color: var(--accent);
 }
@@ -634,7 +634,7 @@ img.partner-logo {
   border-radius: 12px;
   overflow: hidden;
   transition: transform .3s, box-shadow .3s;
-  text-align: left !important;
+  text-align: start !important;
 }
 
 .card:hover {
@@ -652,7 +652,7 @@ img.partner-logo {
   width: 100%;
   display: flex;
   flex-direction: column;
-  text-align: left !important;
+  text-align: start !important;
 }
 
 /* Video Release cards */
@@ -1090,7 +1090,7 @@ article[class^="post-"]:hover {
   width: 90%;
   padding: 0 !important;
   box-sizing: border-box;
-  text-align: left !important;
+  text-align: start !important;
 }
 
 .entry-header h1,
@@ -1101,7 +1101,7 @@ article[class^="post-"]:hover {
   line-height: 1.2;
   padding-left: 0 !important;
   margin-left: 0 !important;
-  text-align: left !important;
+  text-align: start !important;
 }
 
 .entry-header h2 a,
@@ -1981,6 +1981,18 @@ h2.wp-block-heading {
   top: 0;
   color: #a855f7;
   font-weight: bold;
+}
+
+/* RTL overrides for Arabic list markers */
+html[dir="rtl"] .i4w-features li {
+  padding-left: 0;
+  padding-right: 24px;
+}
+
+html[dir="rtl"] .i4w-features li::before {
+  content: "←";
+  left: auto;
+  right: 0;
 }
 
 .i4w-button {

@@ -7,15 +7,16 @@
  * License:     GPL-2.0+
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if (!defined('ABSPATH')) {
   exit;
 }
 
-define( 'JAF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'JAF_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
-define( 'JAF_PLUGIN_VER', '1.0.0' );
+define('JAF_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('JAF_PLUGIN_PATH', plugin_dir_path(__FILE__));
+define('JAF_PLUGIN_VER', '1.0.0');
 
-class JAF_Plugin {
+class JAF_Plugin
+{
   const OPTION_GROUP = 'mh_ats_settings';
   const OPTION_API_KEY = 'mh_ats_openai_api_key';
   const OPTION_JOB_TITLE = 'mh_ats_job_title';
@@ -28,35 +29,37 @@ class JAF_Plugin {
   const NONCE_ACTION = 'wp_rest';
   const SCHEMA_VERSION = 2;
 
-  public function __construct() {
-    register_activation_hook( __FILE__, [ $this, 'on_activate' ] );
-    add_action( 'admin_init', [ $this, 'register_settings' ] );
-    add_action( 'init', [ $this, 'maybe_upgrade_schema' ] );
-    add_action( 'admin_menu', [ $this, 'admin_menu' ] );
-    add_action( 'init', [ $this, 'register_shortcode' ] );
-    add_action( 'init', [ $this, 'register_polylang_strings' ] );
-    add_action( 'wp_enqueue_scripts', [ $this, 'register_assets' ] );
-    add_action( 'rest_api_init', [ $this, 'register_routes' ] );
-    add_filter( 'rest_authentication_errors', [ $this, 'allow_public_rest' ], 20 );
-    add_action( 'admin_post_jaf_download', [ $this, 'download_document' ] );
-    add_action( 'admin_post_jaf_delete_all', [ $this, 'delete_all_applications' ] );
-    add_action( 'admin_post_jaf_delete_old', [ $this, 'delete_old_applications' ] );
-    add_action( 'admin_post_jaf_export', [ $this, 'export_applicant_data' ] );
+  public function __construct()
+  {
+    register_activation_hook(__FILE__, [$this, 'on_activate']);
+    add_action('admin_init', [$this, 'register_settings']);
+    add_action('init', [$this, 'maybe_upgrade_schema']);
+    add_action('admin_menu', [$this, 'admin_menu']);
+    add_action('init', [$this, 'register_shortcode']);
+    add_action('init', [$this, 'register_polylang_strings']);
+    add_action('wp_enqueue_scripts', [$this, 'register_assets']);
+    add_action('rest_api_init', [$this, 'register_routes']);
+    add_filter('rest_authentication_errors', [$this, 'allow_public_rest'], 20);
+    add_action('admin_post_jaf_download', [$this, 'download_document']);
+    add_action('admin_post_jaf_delete_all', [$this, 'delete_all_applications']);
+    add_action('admin_post_jaf_delete_old', [$this, 'delete_old_applications']);
+    add_action('admin_post_jaf_export', [$this, 'export_applicant_data']);
   }
 
   /**
    * Register built assets (React bundle + CSS).
    */
-  public function register_assets() {
+  public function register_assets()
+  {
     // Päivitä polut vastaamaan buildiasi
     $css_rel = 'css/main.fbd31224.css';
-    $js_rel  = 'js/main.b29b4b46.js';
-    $plugin_url = plugin_dir_url( __FILE__ ) . 'static/';
+    $js_rel = 'js/main.b47b9911.js';
+    $plugin_url = plugin_dir_url(__FILE__) . 'static/';
     $css_path = JAF_PLUGIN_PATH . 'static/' . $css_rel;
-    $js_path  = JAF_PLUGIN_PATH . 'static/' . $js_rel;
+    $js_path = JAF_PLUGIN_PATH . 'static/' . $js_rel;
 
-    $css_ver = file_exists( $css_path ) ? filemtime( $css_path ) : JAF_PLUGIN_VER;
-    $js_ver  = file_exists( $js_path ) ? filemtime( $js_path )  : JAF_PLUGIN_VER;
+    $css_ver = file_exists($css_path) ? filemtime($css_path) : JAF_PLUGIN_VER;
+    $js_ver = file_exists($js_path) ? filemtime($js_path) : JAF_PLUGIN_VER;
 
     wp_register_style(
       'jaf-app',
@@ -78,21 +81,23 @@ class JAF_Plugin {
   /**
    * Register shortcode on init.
    */
-  public function register_shortcode() {
-    add_shortcode( 'job_application_form', [ $this, 'shortcode' ] );
-    add_shortcode( 'job_openings', [ $this, 'shortcode_job_openings' ] );
+  public function register_shortcode()
+  {
+    add_shortcode('job_application_form', [$this, 'shortcode']);
+    add_shortcode('job_openings', [$this, 'shortcode_job_openings']);
   }
 
   /**
    * Register strings for Polylang translation.
    */
-  public function register_polylang_strings() {
-    if ( function_exists( 'pll_register_string' ) ) {
-      pll_register_string( 
-        'mh_ats_job_openings', 
-        get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot"), 
-        'Job Application Form', 
-        true 
+  public function register_polylang_strings()
+  {
+    if (function_exists('pll_register_string')) {
+      pll_register_string(
+        'mh_ats_job_openings',
+        get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot"),
+        'Job Application Form',
+        true
       );
     }
   }
@@ -101,29 +106,31 @@ class JAF_Plugin {
    * Shortcode handler for open positions list.
    * Usage: [job_openings]
    */
-  public function shortcode_job_openings() {
+  public function shortcode_job_openings()
+  {
     $openings_text = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot");
-    
-    if ( function_exists( 'pll__' ) ) {
-      $openings_text = pll__( $openings_text );
+
+    if (function_exists('pll__')) {
+      $openings_text = pll__($openings_text);
     }
-    
+
     $lines = explode("\n", $openings_text);
-    
+
     ob_start();
     echo '<ul class="mh-ats-job-openings">';
     foreach ($lines as $line) {
       $line = trim($line);
-      if (!$line) continue;
-      
+      if (!$line)
+        continue;
+
       $parts = explode('|', $line, 2);
       $title = trim($parts[0]);
       $link = isset($parts[1]) ? trim($parts[1]) : '#jafroot';
-      
+
       echo '<li><a href="' . esc_url($link) . '">' . esc_html($title) . '</a></li>';
     }
     echo '</ul>';
-    
+
     return ob_get_clean();
   }
 
@@ -131,41 +138,46 @@ class JAF_Plugin {
    * Shortcode handler.
    * Usage: [job_application_form]
    */
-  public function shortcode() {
+  public function shortcode()
+  {
     // Enqueue assets
-    wp_enqueue_style( 'jaf-app' );
-    wp_enqueue_script( 'jaf-app' );
+    wp_enqueue_style('jaf-app');
+    wp_enqueue_script('jaf-app');
 
     $id = 'jafroot';
-    $nonce = wp_create_nonce( self::NONCE_ACTION );
-    $rest = esc_url_raw( rest_url( self::REST_NS . '/applications' ) );
+    $nonce = wp_create_nonce(self::NONCE_ACTION);
+    $rest = esc_url_raw(rest_url(self::REST_NS . '/applications'));
     $openings_html = do_shortcode('[job_openings]');
 
     ob_start();
     ?>
-      <div id="<?php echo esc_attr( $id ); ?>" class="job-app-form-root" data-endpoint="<?php echo esc_attr( $rest ); ?>" data-nonce="<?php echo esc_attr( $nonce ); ?>" data-openings="<?php echo esc_attr( $openings_html ); ?>"></div>
+    <div id="<?php echo esc_attr($id); ?>" class="job-app-form-root" data-endpoint="<?php echo esc_attr($rest); ?>"
+      data-nonce="<?php echo esc_attr($nonce); ?>" data-openings="<?php echo esc_attr($openings_html); ?>"></div>
     <?php
     return ob_get_clean();
   }
 
-  public function on_activate() {
+  public function on_activate()
+  {
     $this->maybe_upgrade_schema();
     $this->ensure_private_upload_dir();
   }
 
-  public function maybe_upgrade_schema() {
-    $current = (int) get_option( 'jaf_schema_version', 0 );
-    if ( $current >= self::SCHEMA_VERSION ) {
+  public function maybe_upgrade_schema()
+  {
+    $current = (int) get_option('jaf_schema_version', 0);
+    if ($current >= self::SCHEMA_VERSION) {
       return;
     }
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    dbDelta( $this->get_schema_sql() );
+    dbDelta($this->get_schema_sql());
     $this->ensure_documents_columns();
-    update_option( 'jaf_schema_version', self::SCHEMA_VERSION );
+    update_option('jaf_schema_version', self::SCHEMA_VERSION);
   }
 
-  private function get_schema_sql() {
+  private function get_schema_sql()
+  {
     global $wpdb;
     $charset = $wpdb->get_charset_collate();
     $applicants = $wpdb->prefix . 'mh_ats_applicants';
@@ -214,28 +226,30 @@ class JAF_Plugin {
     ) $charset;";
   }
 
-  private function ensure_documents_columns() {
+  private function ensure_documents_columns()
+  {
     global $wpdb;
     $docs = $wpdb->prefix . 'mh_ats_documents';
-    $columns = $wpdb->get_col( "SHOW COLUMNS FROM $docs", 0 );
+    $columns = $wpdb->get_col("SHOW COLUMNS FROM $docs", 0);
 
-    if ( empty( $columns ) ) {
+    if (empty($columns)) {
       return;
     }
 
-    if ( ! in_array( 'file_path', $columns, true ) ) {
-      $wpdb->query( "ALTER TABLE $docs ADD COLUMN file_path VARCHAR(255) NULL" );
+    if (!in_array('file_path', $columns, true)) {
+      $wpdb->query("ALTER TABLE $docs ADD COLUMN file_path VARCHAR(255) NULL");
     }
-    if ( ! in_array( 'file_name', $columns, true ) ) {
-      $wpdb->query( "ALTER TABLE $docs ADD COLUMN file_name VARCHAR(190) NULL" );
+    if (!in_array('file_name', $columns, true)) {
+      $wpdb->query("ALTER TABLE $docs ADD COLUMN file_name VARCHAR(190) NULL");
     }
 
-    if ( in_array( 'attachment_id', $columns, true ) ) {
-      $wpdb->query( "ALTER TABLE $docs MODIFY attachment_id BIGINT UNSIGNED NULL" );
+    if (in_array('attachment_id', $columns, true)) {
+      $wpdb->query("ALTER TABLE $docs MODIFY attachment_id BIGINT UNSIGNED NULL");
     }
   }
 
-  public function register_settings() {
+  public function register_settings()
+  {
     register_setting(self::OPTION_GROUP, self::OPTION_API_KEY);
     register_setting(self::OPTION_GROUP, self::OPTION_JOB_TITLE);
     register_setting(self::OPTION_GROUP, self::OPTION_REQUIRED_SKILLS);
@@ -243,48 +257,49 @@ class JAF_Plugin {
     register_setting(self::OPTION_GROUP, self::OPTION_PREFERRED_LOCATION);
     register_setting(self::OPTION_GROUP, self::OPTION_ADDITIONAL_CRITERIA);
     register_setting(self::OPTION_GROUP, self::OPTION_JOB_OPENINGS);
-    add_settings_section('mh_ats_sec', 'ATS asetukset', function(){
+    add_settings_section('mh_ats_sec', 'ATS asetukset', function () {
       echo '<p>Syötä OpenAI API -avain (tallennetaan WordPressin asetuksiin). Suosittelemme ympäristömuuttujaa tai Secret Manageria tuotannossa.</p>';
       echo '<p>Määritä myös ATS-parametrit työn vaatimusten mukaan.</p>';
     }, self::OPTION_GROUP);
-    add_settings_field(self::OPTION_API_KEY, 'OpenAI API Key', function(){
+    add_settings_field(self::OPTION_API_KEY, 'OpenAI API Key', function () {
       $key = esc_attr(get_option(self::OPTION_API_KEY));
-      echo '<input type="password" style="width:420px" name="'.self::OPTION_API_KEY.'" value="'.$key.'" placeholder="sk-..." />';
+      echo '<input type="password" style="width:420px" name="' . self::OPTION_API_KEY . '" value="' . $key . '" placeholder="sk-..." />';
     }, self::OPTION_GROUP, 'mh_ats_sec');
-    add_settings_field(self::OPTION_JOB_TITLE, 'Job Title', function(){
+    add_settings_field(self::OPTION_JOB_TITLE, 'Job Title', function () {
       $value = esc_attr(get_option(self::OPTION_JOB_TITLE, 'Full Stack Developer'));
-      echo '<input type="text" style="width:420px" name="'.self::OPTION_JOB_TITLE.'" value="'.$value.'" placeholder="e.g. Full Stack Developer" />';
+      echo '<input type="text" style="width:420px" name="' . self::OPTION_JOB_TITLE . '" value="' . $value . '" placeholder="e.g. Full Stack Developer" />';
     }, self::OPTION_GROUP, 'mh_ats_sec');
-    add_settings_field(self::OPTION_REQUIRED_SKILLS, 'Required Skills (comma-separated)', function(){
+    add_settings_field(self::OPTION_REQUIRED_SKILLS, 'Required Skills (comma-separated)', function () {
       $value = esc_attr(get_option(self::OPTION_REQUIRED_SKILLS, 'React, PHP, Laravel, SQL'));
-      echo '<input type="text" style="width:420px" name="'.self::OPTION_REQUIRED_SKILLS.'" value="'.$value.'" placeholder="e.g. React, PHP, Laravel, SQL" />';
+      echo '<input type="text" style="width:420px" name="' . self::OPTION_REQUIRED_SKILLS . '" value="' . $value . '" placeholder="e.g. React, PHP, Laravel, SQL" />';
     }, self::OPTION_GROUP, 'mh_ats_sec');
-    add_settings_field(self::OPTION_MIN_EXPERIENCE, 'Minimum Experience (years)', function(){
+    add_settings_field(self::OPTION_MIN_EXPERIENCE, 'Minimum Experience (years)', function () {
       $value = esc_attr(get_option(self::OPTION_MIN_EXPERIENCE, '5'));
-      echo '<input type="number" style="width:100px" name="'.self::OPTION_MIN_EXPERIENCE.'" value="'.$value.'" min="0" step="0.5" />';
+      echo '<input type="number" style="width:100px" name="' . self::OPTION_MIN_EXPERIENCE . '" value="' . $value . '" min="0" step="0.5" />';
     }, self::OPTION_GROUP, 'mh_ats_sec');
-    add_settings_field(self::OPTION_PREFERRED_LOCATION, 'Preferred Location', function(){
+    add_settings_field(self::OPTION_PREFERRED_LOCATION, 'Preferred Location', function () {
       $value = esc_attr(get_option(self::OPTION_PREFERRED_LOCATION, 'Finland'));
-      echo '<input type="text" style="width:420px" name="'.self::OPTION_PREFERRED_LOCATION.'" value="'.$value.'" placeholder="e.g. Finland, Tampere" />';
+      echo '<input type="text" style="width:420px" name="' . self::OPTION_PREFERRED_LOCATION . '" value="' . $value . '" placeholder="e.g. Finland, Tampere" />';
     }, self::OPTION_GROUP, 'mh_ats_sec');
-    add_settings_field(self::OPTION_ADDITIONAL_CRITERIA, 'Additional Criteria', function(){
+    add_settings_field(self::OPTION_ADDITIONAL_CRITERIA, 'Additional Criteria', function () {
       $value = esc_attr(get_option(self::OPTION_ADDITIONAL_CRITERIA, ''));
-      echo '<textarea style="width:420px; height:100px" name="'.self::OPTION_ADDITIONAL_CRITERIA.'" placeholder="Additional requirements or notes">'.esc_textarea($value).'</textarea>';
+      echo '<textarea style="width:420px; height:100px" name="' . self::OPTION_ADDITIONAL_CRITERIA . '" placeholder="Additional requirements or notes">' . esc_textarea($value) . '</textarea>';
     }, self::OPTION_GROUP, 'mh_ats_sec');
-    add_settings_field(self::OPTION_JOB_OPENINGS, 'Open Positions (Title | Link)', function(){
+    add_settings_field(self::OPTION_JOB_OPENINGS, 'Open Positions (Title | Link)', function () {
       $value = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot\nUX Designer | #jafroot");
-      echo '<textarea style="width:420px; height:100px" name="'.self::OPTION_JOB_OPENINGS.'" placeholder="Job Title | #jafroot">'.esc_textarea($value).'</textarea>';
+      echo '<textarea style="width:420px; height:100px" name="' . self::OPTION_JOB_OPENINGS . '" placeholder="Job Title | #jafroot">' . esc_textarea($value) . '</textarea>';
       echo '<p class="description">Use the shortcode <code>[job_openings]</code> to display this list.</p>';
     }, self::OPTION_GROUP, 'mh_ats_sec');
   }
 
-  public function admin_menu() {
+  public function admin_menu()
+  {
     add_menu_page(
       'Job Applications',
       'Job Applications',
       'manage_options',
       'jaf-applications',
-      [ $this, 'render_applications_page' ],
+      [$this, 'render_applications_page'],
       'dashicons-id',
       26
     );
@@ -295,7 +310,7 @@ class JAF_Plugin {
       'Applications',
       'manage_options',
       'jaf-applications',
-      [ $this, 'render_applications_page' ]
+      [$this, 'render_applications_page']
     );
 
     add_submenu_page(
@@ -304,11 +319,12 @@ class JAF_Plugin {
       'Settings',
       'manage_options',
       'mh-ats',
-      [ $this, 'render_settings_page' ]
+      [$this, 'render_settings_page']
     );
   }
 
-  public function render_settings_page() {
+  public function render_settings_page()
+  {
     echo '<div class="wrap"><h1>ATS</h1><form method="post" action="options.php">';
     settings_fields(self::OPTION_GROUP);
     do_settings_sections(self::OPTION_GROUP);
@@ -316,7 +332,8 @@ class JAF_Plugin {
     echo '</form></div>';
   }
 
-  public function render_applications_page() {
+  public function render_applications_page()
+  {
     global $wpdb;
     $applicants = $wpdb->prefix . 'mh_ats_applicants';
     $scores = $wpdb->prefix . 'mh_ats_scores';
@@ -326,14 +343,14 @@ class JAF_Plugin {
 
     echo '<div class="wrap"><h1>Job Applications</h1>';
 
-    if ( isset( $_GET['jaf_notice'] ) ) {
-      $notice = sanitize_key( $_GET['jaf_notice'] );
-      if ( $notice === 'deleted_all' ) {
+    if (isset($_GET['jaf_notice'])) {
+      $notice = sanitize_key($_GET['jaf_notice']);
+      if ($notice === 'deleted_all') {
         echo '<div class="notice notice-success"><p>All applications deleted.</p></div>';
-      } elseif ( $notice === 'deleted_old' ) {
-        $count = isset( $_GET['count'] ) ? absint( $_GET['count'] ) : 0;
-        echo '<div class="notice notice-success"><p>Deleted ' . esc_html( $count ) . ' old applications.</p></div>';
-      } elseif ( $notice === 'export_failed' ) {
+      } elseif ($notice === 'deleted_old') {
+        $count = isset($_GET['count']) ? absint($_GET['count']) : 0;
+        echo '<div class="notice notice-success"><p>Deleted ' . esc_html($count) . ' old applications.</p></div>';
+      } elseif ($notice === 'export_failed') {
         echo '<div class="notice notice-error"><p>Export failed.</p></div>';
       }
     }
@@ -366,7 +383,7 @@ class JAF_Plugin {
       echo '<p><a class="button" href="' . esc_url($back_url) . '">Back to list</a></p>';
 
       $export_url = wp_nonce_url(
-        admin_url('admin-post.php?action=jaf_export&applicant_id=' . (int)$applicant_id),
+        admin_url('admin-post.php?action=jaf_export&applicant_id=' . (int) $applicant_id),
         'jaf_export_' . $applicant_id
       );
 
@@ -421,7 +438,7 @@ class JAF_Plugin {
         $doc_meta = $docs_by_type[$type] ?? null;
         if ($doc_meta && (!empty($doc_meta['file_path']) || !empty($doc_meta['attachment_id']))) {
           $download_url = wp_nonce_url(
-            admin_url('admin-post.php?action=jaf_download&applicant_id=' . (int)$applicant_id . '&type=' . urlencode($type)),
+            admin_url('admin-post.php?action=jaf_download&applicant_id=' . (int) $applicant_id . '&type=' . urlencode($type)),
             'jaf_download_' . $applicant_id . '_' . $type
           );
           $doc_links[] = '<a href="' . esc_url($download_url) . '">' . esc_html($label) . '</a>';
@@ -430,7 +447,7 @@ class JAF_Plugin {
       echo $doc_links ? implode(' | ', $doc_links) : 'No documents';
       echo '</td></tr>';
 
-      echo '<tr><th>GDPR Export</th><td><a class="button" href="' . esc_url( $export_url ) . '">Export applicant data</a></td></tr>';
+      echo '<tr><th>GDPR Export</th><td><a class="button" href="' . esc_url($export_url) . '">Export applicant data</a></td></tr>';
 
       echo '</tbody></table>';
       echo '</div>';
@@ -455,10 +472,10 @@ class JAF_Plugin {
     );
 
     echo '<div style="margin: 12px 0 18px; display: flex; gap: 10px;">';
-    echo '<form method="post" action="' . esc_url( $delete_all_url ) . '" onsubmit="return confirm(\'Delete ALL applications? This cannot be undone.\');">';
+    echo '<form method="post" action="' . esc_url($delete_all_url) . '" onsubmit="return confirm(\'Delete ALL applications? This cannot be undone.\');">';
     echo '<button type="submit" class="button button-secondary">Delete all applications</button>';
     echo '</form>';
-    echo '<form method="post" action="' . esc_url( $delete_old_url ) . '" onsubmit="return confirm(\'Delete applications older than 6 months?\');">';
+    echo '<form method="post" action="' . esc_url($delete_old_url) . '" onsubmit="return confirm(\'Delete applications older than 6 months?\');">';
     echo '<button type="submit" class="button">Delete old applications (6 months)</button>';
     echo '</form>';
     echo '</div>';
@@ -472,10 +489,10 @@ class JAF_Plugin {
       echo '<tr><td colspan="6">No applications found.</td></tr>';
     } else {
       foreach ($rows as $row) {
-        $view_url = admin_url('admin.php?page=jaf-applications&applicant_id=' . (int)$row->id);
+        $view_url = admin_url('admin.php?page=jaf-applications&applicant_id=' . (int) $row->id);
         $export_url = wp_nonce_url(
-          admin_url('admin-post.php?action=jaf_export&applicant_id=' . (int)$row->id),
-          'jaf_export_' . (int)$row->id
+          admin_url('admin-post.php?action=jaf_export&applicant_id=' . (int) $row->id),
+          'jaf_export_' . (int) $row->id
         );
         echo '<tr>';
         echo '<td>' . esc_html($row->created_at) . '</td>';
@@ -492,120 +509,126 @@ class JAF_Plugin {
     echo '</div>';
   }
 
-  public function register_routes() {
+  public function register_routes()
+  {
     register_rest_route(self::REST_NS, '/applications', [
       'methods' => 'POST',
-      'callback' => [ $this, 'handle_submit' ],
+      'callback' => [$this, 'handle_submit'],
       'permission_callback' => '__return_true',
     ]);
   }
 
-  private function format_multiline_field( $text ) {
-    $value = trim( (string) $text );
-    $lines = preg_split( "/\r\n|\r|\n/", $value );
+  private function format_multiline_field($text)
+  {
+    $value = trim((string) $text);
+    $lines = preg_split("/\r\n|\r|\n/", $value);
 
-    if ( count( $lines ) <= 1 ) {
-      if ( strpos( $value, ';' ) !== false ) {
-        $lines = explode( ';', $value );
+    if (count($lines) <= 1) {
+      if (strpos($value, ';') !== false) {
+        $lines = explode(';', $value);
       } else {
-        $lines = preg_split( '/(?<=\.)\s+/', $value );
+        $lines = preg_split('/(?<=\.)\s+/', $value);
       }
     }
 
-    $lines = array_values( array_filter( array_map( 'trim', $lines ), 'strlen' ) );
-    if ( $lines ) {
-      return '<div>' . implode( '<br>', array_map( 'esc_html', $lines ) ) . '</div>';
+    $lines = array_values(array_filter(array_map('trim', $lines), 'strlen'));
+    if ($lines) {
+      return '<div>' . implode('<br>', array_map('esc_html', $lines)) . '</div>';
     }
 
-    return esc_html( $value );
+    return esc_html($value);
   }
 
-  public function allow_public_rest( $result ) {
-    if ( is_wp_error( $result ) && $result->get_error_code() === 'rest_cookie_invalid_nonce' ) {
-      $uri = isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '';
+  public function allow_public_rest($result)
+  {
+    if (is_wp_error($result) && $result->get_error_code() === 'rest_cookie_invalid_nonce') {
+      $uri = isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : '';
       $prefix = '/' . rest_get_url_prefix() . '/' . self::REST_NS . '/applications';
-      if ( $uri && strpos( $uri, $prefix ) !== false ) {
+      if ($uri && strpos($uri, $prefix) !== false) {
         return null;
       }
 
       // Support non-pretty permalinks: /?rest_route=/mh-ats/v1/applications
       $rest_route = '';
-      if ( isset( $_GET['rest_route'] ) ) {
-        $rest_route = wp_unslash( $_GET['rest_route'] );
-      } elseif ( $uri ) {
-        $parts = wp_parse_url( $uri );
-        if ( ! empty( $parts['query'] ) ) {
-          parse_str( $parts['query'], $query );
-          $rest_route = isset( $query['rest_route'] ) ? $query['rest_route'] : '';
+      if (isset($_GET['rest_route'])) {
+        $rest_route = wp_unslash($_GET['rest_route']);
+      } elseif ($uri) {
+        $parts = wp_parse_url($uri);
+        if (!empty($parts['query'])) {
+          parse_str($parts['query'], $query);
+          $rest_route = isset($query['rest_route']) ? $query['rest_route'] : '';
         }
       }
 
-      if ( $rest_route && strpos( $rest_route, '/' . self::REST_NS . '/applications' ) !== false ) {
+      if ($rest_route && strpos($rest_route, '/' . self::REST_NS . '/applications') !== false) {
         return null;
       }
     }
     return $result;
   }
 
-  public function delete_all_applications() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-      wp_die( 'Forbidden', 403 );
+  public function delete_all_applications()
+  {
+    if (!current_user_can('manage_options')) {
+      wp_die('Forbidden', 403);
     }
-    if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'jaf_delete_all' ) ) {
-      wp_die( 'Invalid nonce', 403 );
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'jaf_delete_all')) {
+      wp_die('Invalid nonce', 403);
     }
 
     global $wpdb;
     $applicants = $wpdb->prefix . 'mh_ats_applicants';
-    $ids = $wpdb->get_col( "SELECT id FROM $applicants" );
-    foreach ( $ids as $id ) {
-      $this->delete_applicant_and_files( (int) $id );
+    $ids = $wpdb->get_col("SELECT id FROM $applicants");
+    foreach ($ids as $id) {
+      $this->delete_applicant_and_files((int) $id);
     }
 
-    wp_safe_redirect( admin_url( 'admin.php?page=jaf-applications&jaf_notice=deleted_all' ) );
+    wp_safe_redirect(admin_url('admin.php?page=jaf-applications&jaf_notice=deleted_all'));
     exit;
   }
 
-  public function delete_old_applications() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-      wp_die( 'Forbidden', 403 );
+  public function delete_old_applications()
+  {
+    if (!current_user_can('manage_options')) {
+      wp_die('Forbidden', 403);
     }
-    if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], 'jaf_delete_old' ) ) {
-      wp_die( 'Invalid nonce', 403 );
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'jaf_delete_old')) {
+      wp_die('Invalid nonce', 403);
     }
 
-    $cutoff = gmdate( 'Y-m-d H:i:s', strtotime( '-6 months' ) );
+    $cutoff = gmdate('Y-m-d H:i:s', strtotime('-6 months'));
 
     global $wpdb;
     $applicants = $wpdb->prefix . 'mh_ats_applicants';
-    $ids = $wpdb->get_col( $wpdb->prepare(
+    $ids = $wpdb->get_col($wpdb->prepare(
       "SELECT id FROM $applicants WHERE created_at < %s",
       $cutoff
-    ) );
+    ));
 
     $count = 0;
-    foreach ( $ids as $id ) {
-      $this->delete_applicant_and_files( (int) $id );
+    foreach ($ids as $id) {
+      $this->delete_applicant_and_files((int) $id);
       $count++;
     }
 
-    wp_safe_redirect( admin_url( 'admin.php?page=jaf-applications&jaf_notice=deleted_old&count=' . (int) $count ) );
+    wp_safe_redirect(admin_url('admin.php?page=jaf-applications&jaf_notice=deleted_old&count=' . (int) $count));
     exit;
   }
 
-  public function export_applicant_data() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-      wp_die( 'Forbidden', 403 );
+  public function export_applicant_data()
+  {
+    if (!current_user_can('manage_options')) {
+      wp_die('Forbidden', 403);
     }
 
-    $applicant_id = isset( $_GET['applicant_id'] ) ? absint( $_GET['applicant_id'] ) : 0;
-    if ( ! $applicant_id ) {
-      wp_die( 'Not found', 404 );
+    $applicant_id = isset($_GET['applicant_id']) ? absint($_GET['applicant_id']) : 0;
+    if (!$applicant_id) {
+      wp_die('Not found', 404);
     }
 
     $nonce_action = 'jaf_export_' . $applicant_id;
-    if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], $nonce_action ) ) {
-      wp_die( 'Invalid nonce', 403 );
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], $nonce_action)) {
+      wp_die('Invalid nonce', 403);
     }
 
     global $wpdb;
@@ -613,24 +636,24 @@ class JAF_Plugin {
     $scores = $wpdb->prefix . 'mh_ats_scores';
     $docs = $wpdb->prefix . 'mh_ats_documents';
 
-    $applicant = $wpdb->get_row( $wpdb->prepare(
+    $applicant = $wpdb->get_row($wpdb->prepare(
       "SELECT * FROM $applicants WHERE id = %d",
       $applicant_id
-    ), ARRAY_A );
+    ), ARRAY_A);
 
-    if ( ! $applicant ) {
-      wp_die( 'Not found', 404 );
+    if (!$applicant) {
+      wp_die('Not found', 404);
     }
 
-    $score = $wpdb->get_row( $wpdb->prepare(
+    $score = $wpdb->get_row($wpdb->prepare(
       "SELECT score, status, reason FROM $scores WHERE applicant_id = %d",
       $applicant_id
-    ), ARRAY_A );
+    ), ARRAY_A);
 
-    $doc_rows = $wpdb->get_results( $wpdb->prepare(
+    $doc_rows = $wpdb->get_results($wpdb->prepare(
       "SELECT type, attachment_id, file_path, file_name FROM $docs WHERE applicant_id = %d",
       $applicant_id
-    ), ARRAY_A );
+    ), ARRAY_A);
 
     $export = [
       'applicant' => $applicant,
@@ -638,7 +661,7 @@ class JAF_Plugin {
       'documents' => []
     ];
 
-    foreach ( $doc_rows as $doc_row ) {
+    foreach ($doc_rows as $doc_row) {
       $export['documents'][] = [
         'type' => $doc_row['type'],
         'file_name' => $doc_row['file_name'],
@@ -647,140 +670,143 @@ class JAF_Plugin {
       ];
     }
 
-    if ( ! class_exists( 'ZipArchive' ) ) {
-      wp_safe_redirect( admin_url( 'admin.php?page=jaf-applications&jaf_notice=export_failed' ) );
+    if (!class_exists('ZipArchive')) {
+      wp_safe_redirect(admin_url('admin.php?page=jaf-applications&jaf_notice=export_failed'));
       exit;
     }
 
-    $zip_path = wp_tempnam( 'jaf-export' );
+    $zip_path = wp_tempnam('jaf-export');
     $zip = new ZipArchive();
-    if ( $zip->open( $zip_path, ZipArchive::OVERWRITE ) !== true ) {
-      wp_safe_redirect( admin_url( 'admin.php?page=jaf-applications&jaf_notice=export_failed' ) );
+    if ($zip->open($zip_path, ZipArchive::OVERWRITE) !== true) {
+      wp_safe_redirect(admin_url('admin.php?page=jaf-applications&jaf_notice=export_failed'));
       exit;
     }
 
-    $json = wp_json_encode( $export, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
-    $zip->addFromString( 'applicant.json', $json );
+    $json = wp_json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    $zip->addFromString('applicant.json', $json);
 
-    foreach ( $doc_rows as $doc_row ) {
+    foreach ($doc_rows as $doc_row) {
       $file_path = $doc_row['file_path'];
-      if ( ! $file_path && ! empty( $doc_row['attachment_id'] ) ) {
-        $file_path = get_attached_file( (int) $doc_row['attachment_id'] );
+      if (!$file_path && !empty($doc_row['attachment_id'])) {
+        $file_path = get_attached_file((int) $doc_row['attachment_id']);
       }
 
-      if ( $file_path && file_exists( $file_path ) ) {
-        $safe_name = $doc_row['file_name'] ? $doc_row['file_name'] : basename( $file_path );
-        $safe_name = sanitize_file_name( $safe_name );
-        $zip->addFile( $file_path, $doc_row['type'] . '-' . $safe_name );
+      if ($file_path && file_exists($file_path)) {
+        $safe_name = $doc_row['file_name'] ? $doc_row['file_name'] : basename($file_path);
+        $safe_name = sanitize_file_name($safe_name);
+        $zip->addFile($file_path, $doc_row['type'] . '-' . $safe_name);
       }
     }
 
     $zip->close();
 
     $download_name = 'applicant-' . $applicant_id . '-export.zip';
-    header( 'Content-Type: application/zip' );
-    header( 'Content-Disposition: attachment; filename="' . $download_name . '"' );
-    header( 'Content-Length: ' . filesize( $zip_path ) );
-    readfile( $zip_path );
-    @unlink( $zip_path );
+    header('Content-Type: application/zip');
+    header('Content-Disposition: attachment; filename="' . $download_name . '"');
+    header('Content-Length: ' . filesize($zip_path));
+    readfile($zip_path);
+    @unlink($zip_path);
     exit;
   }
 
-  private function delete_applicant_and_files( $applicant_id ) {
+  private function delete_applicant_and_files($applicant_id)
+  {
     global $wpdb;
     $docs_table = $wpdb->prefix . 'mh_ats_documents';
     $applicants = $wpdb->prefix . 'mh_ats_applicants';
 
-    $doc_rows = $wpdb->get_results( $wpdb->prepare(
+    $doc_rows = $wpdb->get_results($wpdb->prepare(
       "SELECT attachment_id, file_path FROM $docs_table WHERE applicant_id = %d",
       $applicant_id
-    ) );
+    ));
 
-    foreach ( $doc_rows as $doc_row ) {
-      if ( ! empty( $doc_row->file_path ) && file_exists( $doc_row->file_path ) ) {
-        @unlink( $doc_row->file_path );
+    foreach ($doc_rows as $doc_row) {
+      if (!empty($doc_row->file_path) && file_exists($doc_row->file_path)) {
+        @unlink($doc_row->file_path);
       }
-      if ( ! empty( $doc_row->attachment_id ) ) {
-        wp_delete_attachment( (int) $doc_row->attachment_id, true );
+      if (!empty($doc_row->attachment_id)) {
+        wp_delete_attachment((int) $doc_row->attachment_id, true);
       }
     }
 
-    $wpdb->delete( $applicants, [ 'id' => $applicant_id ], [ '%d' ] );
+    $wpdb->delete($applicants, ['id' => $applicant_id], ['%d']);
   }
 
-  public function download_document() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-      wp_die( 'Forbidden', 403 );
+  public function download_document()
+  {
+    if (!current_user_can('manage_options')) {
+      wp_die('Forbidden', 403);
     }
 
-    $applicant_id = isset( $_GET['applicant_id'] ) ? absint( $_GET['applicant_id'] ) : 0;
-    $type = isset( $_GET['type'] ) ? sanitize_key( $_GET['type'] ) : '';
+    $applicant_id = isset($_GET['applicant_id']) ? absint($_GET['applicant_id']) : 0;
+    $type = isset($_GET['type']) ? sanitize_key($_GET['type']) : '';
 
-    if ( ! $applicant_id || ! in_array( $type, [ 'cv', 'motivation', 'application' ], true ) ) {
-      wp_die( 'Not found', 404 );
+    if (!$applicant_id || !in_array($type, ['cv', 'motivation', 'application'], true)) {
+      wp_die('Not found', 404);
     }
 
     $nonce_action = 'jaf_download_' . $applicant_id . '_' . $type;
-    if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( $_GET['_wpnonce'], $nonce_action ) ) {
-      wp_die( 'Invalid nonce', 403 );
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], $nonce_action)) {
+      wp_die('Invalid nonce', 403);
     }
 
     global $wpdb;
     $docs_table = $wpdb->prefix . 'mh_ats_documents';
-    $row = $wpdb->get_row( $wpdb->prepare(
+    $row = $wpdb->get_row($wpdb->prepare(
       "SELECT attachment_id, file_path, file_name FROM $docs_table WHERE applicant_id = %d AND type = %s",
       $applicant_id,
       $type
-    ) );
+    ));
 
-    if ( ! $row ) {
-      wp_die( 'Not found', 404 );
+    if (!$row) {
+      wp_die('Not found', 404);
     }
 
     $file_path = $row->file_path;
-    if ( ! $file_path && ! empty( $row->attachment_id ) ) {
-      $file_path = get_attached_file( (int) $row->attachment_id );
+    if (!$file_path && !empty($row->attachment_id)) {
+      $file_path = get_attached_file((int) $row->attachment_id);
     }
 
-    if ( ! $file_path || ! file_exists( $file_path ) ) {
-      wp_die( 'Not found', 404 );
+    if (!$file_path || !file_exists($file_path)) {
+      wp_die('Not found', 404);
     }
 
     $uploads = wp_upload_dir();
-    $private_dir = trailingslashit( $uploads['basedir'] ) . 'jaf-private';
-    $real_private = realpath( $private_dir );
-    $real_file = realpath( $file_path );
+    $private_dir = trailingslashit($uploads['basedir']) . 'jaf-private';
+    $real_private = realpath($private_dir);
+    $real_file = realpath($file_path);
 
-    if ( ! $real_private || ! $real_file || strpos( $real_file, $real_private ) !== 0 ) {
-      wp_die( 'Forbidden', 403 );
+    if (!$real_private || !$real_file || strpos($real_file, $real_private) !== 0) {
+      wp_die('Forbidden', 403);
     }
 
-    $filename = $row->file_name ? $row->file_name : basename( $file_path );
-    $filename = sanitize_file_name( $filename );
+    $filename = $row->file_name ? $row->file_name : basename($file_path);
+    $filename = sanitize_file_name($filename);
 
-    header( 'Content-Type: application/pdf' );
-    header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
-    header( 'Content-Length: ' . filesize( $file_path ) );
-    readfile( $file_path );
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Content-Length: ' . filesize($file_path));
+    readfile($file_path);
     exit;
   }
 
-  private function ensure_private_upload_dir() {
+  private function ensure_private_upload_dir()
+  {
     $uploads = wp_upload_dir();
-    $private_dir = trailingslashit( $uploads['basedir'] ) . 'jaf-private';
+    $private_dir = trailingslashit($uploads['basedir']) . 'jaf-private';
 
-    if ( ! file_exists( $private_dir ) ) {
-      wp_mkdir_p( $private_dir );
+    if (!file_exists($private_dir)) {
+      wp_mkdir_p($private_dir);
     }
 
     $htaccess = $private_dir . '/.htaccess';
-    if ( ! file_exists( $htaccess ) ) {
-      file_put_contents( $htaccess, "Deny from all\n" );
+    if (!file_exists($htaccess)) {
+      file_put_contents($htaccess, "Deny from all\n");
     }
 
     $index = $private_dir . '/index.php';
-    if ( ! file_exists( $index ) ) {
-      file_put_contents( $index, "<?php\n// Silence is golden.\n" );
+    if (!file_exists($index)) {
+      file_put_contents($index, "<?php\n// Silence is golden.\n");
     }
   }
 
@@ -789,66 +815,68 @@ class JAF_Plugin {
    * @param string $file_path Full path to PDF file
    * @return string|WP_Error Extracted text or error
    */
-  private function extract_pdf_text( $file_path ) {
-    if ( ! file_exists( $file_path ) ) {
-      return new WP_Error( 'file_not_found', 'PDF file not found' );
+  private function extract_pdf_text($file_path)
+  {
+    if (!file_exists($file_path)) {
+      return new WP_Error('file_not_found', 'PDF file not found');
     }
 
     // Try using pdftotext command line tool if available
     $pdftotext = 'pdftotext';
-    $test = shell_exec( "where $pdftotext 2>NUL" ); // Windows
-    if ( ! $test ) {
-      $test = shell_exec( "which $pdftotext 2>/dev/null" ); // Linux/Mac
+    $test = shell_exec("where $pdftotext 2>NUL"); // Windows
+    if (!$test) {
+      $test = shell_exec("which $pdftotext 2>/dev/null"); // Linux/Mac
     }
 
-    if ( $test ) {
-      $temp_txt = tempnam( sys_get_temp_dir(), 'pdf_' );
-      $escaped_pdf = escapeshellarg( $file_path );
-      $escaped_txt = escapeshellarg( $temp_txt );
-      exec( "$pdftotext -layout $escaped_pdf $escaped_txt 2>&1", $output, $return_code );
-      
-      if ( $return_code === 0 && file_exists( $temp_txt ) ) {
-        $text = file_get_contents( $temp_txt );
-        @unlink( $temp_txt );
+    if ($test) {
+      $temp_txt = tempnam(sys_get_temp_dir(), 'pdf_');
+      $escaped_pdf = escapeshellarg($file_path);
+      $escaped_txt = escapeshellarg($temp_txt);
+      exec("$pdftotext -layout $escaped_pdf $escaped_txt 2>&1", $output, $return_code);
+
+      if ($return_code === 0 && file_exists($temp_txt)) {
+        $text = file_get_contents($temp_txt);
+        @unlink($temp_txt);
         return $text;
       }
     }
 
     // Fallback: Read first 50KB of PDF as-is (useful for simple PDFs)
-    $content = file_get_contents( $file_path, false, null, 0, 51200 );
-    
+    $content = file_get_contents($file_path, false, null, 0, 51200);
+
     // Try to extract readable text from PDF content
-    if ( preg_match_all( '/\(([^\)]+)\)/', $content, $matches ) ) {
-      $extracted = implode( ' ', $matches[1] );
-      if ( strlen( trim( $extracted ) ) > 100 ) {
+    if (preg_match_all('/\(([^\)]+)\)/', $content, $matches)) {
+      $extracted = implode(' ', $matches[1]);
+      if (strlen(trim($extracted)) > 100) {
         return $extracted;
       }
     }
 
     // If we get here, return what we have (may be binary)
-    return substr( $content, 0, 2000 ); // Limit size
+    return substr($content, 0, 2000); // Limit size
   }
 
-  private function handle_upload($file_array) {
-    require_once ABSPATH.'wp-admin/includes/file.php';
+  private function handle_upload($file_array)
+  {
+    require_once ABSPATH . 'wp-admin/includes/file.php';
     $this->ensure_private_upload_dir();
 
     $original_name = sanitize_file_name($file_array['name']);
     $timestamp = gmdate('Ymd_His');
     $file_array['name'] = $timestamp . '_' . $original_name;
 
-    $upload_filter = function( $dirs ) {
-      $private_dir = trailingslashit( $dirs['basedir'] ) . 'jaf-private';
+    $upload_filter = function ($dirs) {
+      $private_dir = trailingslashit($dirs['basedir']) . 'jaf-private';
       $dirs['path'] = $private_dir;
       $dirs['url'] = $dirs['baseurl'] . '/jaf-private';
       $dirs['subdir'] = '';
       return $dirs;
     };
 
-    add_filter( 'upload_dir', $upload_filter );
-    $overrides = [ 'test_form' => false, 'mimes' => ['pdf' => 'application/pdf'] ];
+    add_filter('upload_dir', $upload_filter);
+    $overrides = ['test_form' => false, 'mimes' => ['pdf' => 'application/pdf']];
     $movefile = wp_handle_upload($file_array, $overrides);
-    remove_filter( 'upload_dir', $upload_filter );
+    remove_filter('upload_dir', $upload_filter);
     if ($movefile && !isset($movefile['error'])) {
       return [
         'file_path' => $movefile['file'],
@@ -858,7 +886,8 @@ class JAF_Plugin {
     return new WP_Error('upload_error', $movefile['error'] ?? 'Upload failed');
   }
 
-  public function handle_submit(WP_REST_Request $req) {
+  public function handle_submit(WP_REST_Request $req)
+  {
     try {
       $this->ensure_documents_columns();
       // CSRF (optional for public form)
@@ -868,10 +897,12 @@ class JAF_Plugin {
       }
 
       // Validate size & type quickly
-      foreach (['cv','motivation','application'] as $key) {
+      foreach (['cv', 'motivation', 'application'] as $key) {
         if (!empty($_FILES[$key]['name'])) {
-          if ($_FILES[$key]['type'] !== 'application/pdf') return new WP_REST_Response(['message'=> 'Only PDF allowed for '.$key], 400);
-          if ($_FILES[$key]['size'] > 8192*1024) return new WP_REST_Response(['message'=> 'File too large for '.$key], 400);
+          if ($_FILES[$key]['type'] !== 'application/pdf')
+            return new WP_REST_Response(['message' => 'Only PDF allowed for ' . $key], 400);
+          if ($_FILES[$key]['size'] > 8192 * 1024)
+            return new WP_REST_Response(['message' => 'File too large for ' . $key], 400);
         }
       }
 
@@ -895,22 +926,24 @@ class JAF_Plugin {
       ];
 
       // Required fields check
-      foreach (['firstname','lastname','email','country','address1','zip','city','mobile','additional','education','qualifications','skills','workexp'] as $reqf) {
-        if (empty($payload[$reqf])) return new WP_REST_Response(['message'=> 'Missing field: '.$reqf], 400);
+      foreach (['firstname', 'lastname', 'email', 'country', 'address1', 'zip', 'city', 'mobile', 'additional', 'education', 'qualifications', 'skills', 'workexp'] as $reqf) {
+        if (empty($payload[$reqf]))
+          return new WP_REST_Response(['message' => 'Missing field: ' . $reqf], 400);
       }
 
       // Store applicant
-      global $wpdb; 
-      $applicants = $wpdb->prefix.'mh_ats_applicants';
+      global $wpdb;
+      $applicants = $wpdb->prefix . 'mh_ats_applicants';
       $wpdb->insert($applicants, $payload);
-      $applicant_id = (int)$wpdb->insert_id;
+      $applicant_id = (int) $wpdb->insert_id;
 
       // Upload files
-      $docs_table = $wpdb->prefix.'mh_ats_documents';
-      foreach (['cv','motivation','application'] as $type) {
+      $docs_table = $wpdb->prefix . 'mh_ats_documents';
+      foreach (['cv', 'motivation', 'application'] as $type) {
         if (!empty($_FILES[$type]['name'])) {
           $upload = $this->handle_upload($_FILES[$type]);
-          if (is_wp_error($upload)) return new WP_REST_Response(['message'=> $upload->get_error_message()], 400);
+          if (is_wp_error($upload))
+            return new WP_REST_Response(['message' => $upload->get_error_message()], 400);
           $inserted = $wpdb->insert($docs_table, [
             'applicant_id' => $applicant_id,
             'type' => $type,
@@ -918,7 +951,7 @@ class JAF_Plugin {
             'file_path' => $upload['file_path'],
             'file_name' => $upload['file_name'],
           ]);
-          if ( $inserted === false ) {
+          if ($inserted === false) {
             return new WP_REST_Response([
               'message' => 'Failed to store document metadata',
               'error' => $wpdb->last_error
@@ -939,7 +972,8 @@ class JAF_Plugin {
       $required_skills_lower = array_map('strtolower', $required_skills);
 
       // ATS-sääntöjä (esimerkki) ennen OpenAI:ta
-      $rule_score = 0; $reasons = [];
+      $rule_score = 0;
+      $reasons = [];
 
       // Check required skills
       $found_skills = 0;
@@ -958,7 +992,7 @@ class JAF_Plugin {
       }
 
       // Työkokemus tarkistetaan OpenAI:n kautta CV:stä, ei lomakkeesta
-      if (!preg_match('/\b(' . (int)$min_experience . '|' . ((int)$min_experience + 1) . '|' . ((int)$min_experience + 2) . '|10)\+?\s*(years|v|vuotta)/i', $payload['workexp'])) {
+      if (!preg_match('/\b(' . (int) $min_experience . '|' . ((int) $min_experience + 1) . '|' . ((int) $min_experience + 2) . '|10)\+?\s*(years|v|vuotta)/i', $payload['workexp'])) {
         $reasons[] = 'Work experience in form may be insufficient (checked from CV)';
       }
 
@@ -977,12 +1011,15 @@ class JAF_Plugin {
         $reasons[] = 'Location not in preferred area: ' . $preferred_location;
       }
 
-      if (!empty($payload['www'])) $rule_score += 5;
-      if (!empty($payload['phone'])) $rule_score += 5;
+      if (!empty($payload['www']))
+        $rule_score += 5;
+      if (!empty($payload['phone']))
+        $rule_score += 5;
 
       // OpenAI PDF-parsaus + pisteytys kaikille dokumenteille
       $openai_key = get_option(self::OPTION_API_KEY);
-      $ai_score = 0; $ai_reason = '';
+      $ai_score = 0;
+      $ai_reason = '';
       if ($openai_key) {
         // Hae kaikki dokumentit
         $doc_rows = $wpdb->get_results($wpdb->prepare(
@@ -994,9 +1031,9 @@ class JAF_Plugin {
         foreach ($doc_rows as $doc) {
           $file_path = $doc->file_path;
           if (!$file_path && !empty($doc->attachment_id)) {
-            $file_path = get_attached_file((int)$doc->attachment_id);
+            $file_path = get_attached_file((int) $doc->attachment_id);
           }
-          
+
           if ($file_path && file_exists($file_path)) {
             $text = $this->extract_pdf_text($file_path);
             if (!is_wp_error($text)) {
@@ -1018,32 +1055,32 @@ class JAF_Plugin {
           $content_parts[] = "Qualifications: {$payload['qualifications']}";
           $content_parts[] = "Additional info: {$payload['additional']}";
           $content_parts[] = "\n--- DOCUMENTS ---";
-          
+
           foreach ($documents_content as $type => $content) {
             $label = strtoupper($type);
             $content_parts[] = "\n=== $label ===\n" . $content;
           }
-          
+
           $full_content = implode("\n", $content_parts);
-          
+
           $prompt = [
             'role' => 'user',
             'content' => "You are an ATS (Applicant Tracking System) expert. Analyze the job application including CV, motivation letter, and application form.\n\nJob requirements: " . implode(', ', $required_skills) . ", {$min_experience}+ years experience, {$preferred_location}-based." . ($additional_criteria ? " Additional criteria: {$additional_criteria}." : "") . "\n\nIMPORTANT: Analyze work experience PRIMARILY from the CV PDF document, not from the form fields. The applicant may not have filled the form fields properly. Calculate total years of work experience from CV positions/dates.\n\nCompare CV content vs form fields and note if applicant provided insufficient information in form fields.\n\nReturn ONLY a valid JSON object (no markdown, no extra text) with these fields:\n{\n  \"skills\": [\"skill1\", \"skill2\"],\n  \"total_experience_years\": number (from CV),\n  \"cv_experience_summary\": \"brief summary of work experience from CV\",\n  \"form_vs_cv_quality\": \"excellent\" or \"good\" or \"poor\" (did applicant fill form properly compared to CV?),\n  \"seniority\": \"junior\" or \"mid\" or \"senior\",\n  \"score0to100\": number,\n  \"reasons\": [\"reason1\", \"reason2\"],\n  \"motivation_quality\": \"poor\" or \"average\" or \"good\" or \"excellent\",\n  \"overall_fit\": \"poor\" or \"moderate\" or \"good\" or \"excellent\"\n}\n\n" . $full_content
           ];
-          
+
           $body = json_encode([
             'model' => 'gpt-4o-mini',
             'messages' => [$prompt],
             'temperature' => 0.2,
             'max_tokens' => 1000
           ], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
-          
+
           // Check if json_encode succeeded
           if ($body === false) {
             error_log('JAF: JSON encode failed: ' . json_last_error_msg());
             // Skip OpenAI processing but continue with rule-based scoring
           } else {
-            
+
             $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
               'headers' => [
                 'Authorization' => 'Bearer ' . $openai_key,
@@ -1052,22 +1089,22 @@ class JAF_Plugin {
               'body' => $body,
               'timeout' => 60
             ]);
-            
+
             if (!is_wp_error($response)) {
               $js = json_decode(wp_remote_retrieve_body($response), true);
               $txt = $js['choices'][0]['message']['content'] ?? '';
-              
+
               // Yritä irrottaa JSON (poista mahdolliset markdown-merkit)
               $txt = preg_replace('/```json\s*/', '', $txt);
               $txt = preg_replace('/```\s*$/', '', $txt);
               $txt = trim($txt);
-              
+
               if (preg_match('/\{[\s\S]*\}/', $txt, $m)) {
                 $parsed = json_decode($m[0], true);
                 if (is_array($parsed)) {
-                  $ai_score = (float)($parsed['score0to100'] ?? 0);
-                  $ai_reasons = (array)($parsed['reasons'] ?? []);
-                  
+                  $ai_score = (float) ($parsed['score0to100'] ?? 0);
+                  $ai_reasons = (array) ($parsed['reasons'] ?? []);
+
                   // Lisää CV:stä laskettu työkokemus
                   $cv_experience = $parsed['total_experience_years'] ?? null;
                   $cv_summary = $parsed['cv_experience_summary'] ?? '';
@@ -1081,7 +1118,7 @@ class JAF_Plugin {
                       $rule_score += 20; // Lisää säännölliseen pisteeseen CV:n mukaan
                     }
                   }
-                  
+
                   // Huomautus jos lomake täytetty huonosti
                   $form_quality = $parsed['form_vs_cv_quality'] ?? '';
                   if ($form_quality === 'poor') {
@@ -1089,18 +1126,18 @@ class JAF_Plugin {
                   } elseif ($form_quality === 'good' || $form_quality === 'excellent') {
                     $ai_reasons[] = "Form filled properly";
                   }
-                  
+
                   // Lisää motivaation laatu ja yleinen soveltuvuus
                   $motivation_quality = $parsed['motivation_quality'] ?? '';
                   $overall_fit = $parsed['overall_fit'] ?? '';
-                  
+
                   if ($motivation_quality) {
                     $ai_reasons[] = "Motivation: $motivation_quality";
                   }
                   if ($overall_fit) {
                     $ai_reasons[] = "Overall fit: $overall_fit";
                   }
-                  
+
                   $ai_reason = 'AI: ' . implode('; ', $ai_reasons);
                 }
               }
@@ -1111,11 +1148,11 @@ class JAF_Plugin {
         }
       }
 
-      $total = min(100, $rule_score + (int)round($ai_score * 0.5));
+      $total = min(100, $rule_score + (int) round($ai_score * 0.5));
       $status = $total >= 70 ? 'accepted' : ($total >= 50 ? 'maybe' : 'rejected');
-      $reason = trim(implode('; ', $reasons).($ai_reason? '; '.$ai_reason : ''));
+      $reason = trim(implode('; ', $reasons) . ($ai_reason ? '; ' . $ai_reason : ''));
 
-      $scores_table = $wpdb->prefix.'mh_ats_scores';
+      $scores_table = $wpdb->prefix . 'mh_ats_scores';
       $wpdb->insert($scores_table, [
         'applicant_id' => $applicant_id,
         'score' => $total,

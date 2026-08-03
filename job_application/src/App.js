@@ -189,6 +189,67 @@ let strings = new LocalizedStrings({
     chooseLang: "Språk",
     formSubmitted: "Formuläret skickades! (Backendintegration på gång)",
   },
+  ar: {
+    appTitle: "نموذج طلب الوظيفة",
+    // Generic / buttons
+    submit: "إرسال",
+    reset: "إعادة تعيين",
+    requiredMark: "*",
+
+    // Validation & errors
+    errPdfOnly: "يُسمح فقط بملفات PDF.",
+    errMaxSize: "يتجاوز حجم الملف 8 ميجابايت.",
+
+    // Section labels
+    personalInfo: "المعلومات الشخصية",
+    educationInfo: "التعليم والخبرة",
+
+    // Fields
+    firstname: "الاسم الأول",
+    lastname: "الاسم الأخير",
+    email: "البريد الإلكتروني",
+    country: "البلد",
+    address1: "سطر العنوان 1",
+    address2: "سطر العنوان 2",
+    zip: "الرمز البريدي",
+    city: "المدينة",
+    phone: "الهاتف",
+    mobile: "الهاتف المحمول",
+    www: "الموقع الإلكتروني",
+    cv: "السيرة الذاتية (PDF، الحد الأقصى 8 ميجابايت)",
+    motivation: "خطاب التحفيز (PDF، الحد الأقصى 8 ميجابايت)",
+    application: "طلب الوظيفة (PDF، الحد الأقصى 8 ميجابايت)",
+    additional: "معلومات إضافية",
+    notRobot: "أنا لست برنامج روبوت",
+
+    education: "التعليم",
+    qualifications: "المؤهلات",
+    skills: "المهارات والمعرفة",
+    workexp: "الخبرة العملية",
+
+    // Placeholders
+    phFirstname: "جون",
+    phLastname: "دو",
+    phEmail: "john.doe@example.com",
+    phCountry: "فنلندا",
+    phAddress1: "شارع مثال 123",
+    phAddress2: "شقة 45B",
+    phZip: "33100",
+    phCity: "تامبيري",
+    phPhone: "+358 3 123 4567",
+    phMobile: "+358 40 123 4567",
+    phWWW: "http://www.example.com",
+    phAdditional:
+      "لدي 16 عامًا من الخبرة في العمل في مجال تكنولوجيا المعلومات/تطوير البرمجيات...",
+    phEducation: "برنامج درجة تكنولوجيا معلومات الأعمال، TAMK، 2007-2011",
+    phQualifications: "بائع معتمد من ريد هات، جامعة ريد هات، 2011",
+    phSkills: "HTML, CSS, JavaScript, React, SQL, Java, PHP, Python...",
+    phWorkexp: "i4ware Software، مالك المنتج، 2004 - حتى الآن",
+
+    // UI
+    chooseLang: "اللغة",
+    formSubmitted: "تم تقديم النموذج! (في انتظار ربط الواجهة الخلفية)",
+  },
 });
 
 export default function App() {
