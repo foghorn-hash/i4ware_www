@@ -1,5 +1,5 @@
 === CV OpenAI Polylang Translator ===
-Contributors: antigravity-ai, matti
+Contributors: walkout_
 Donate link: https://www.paypal.com/ncp/payment/Y826SVNLSK4MC
 Tags: translation, polylang, openai, gpt, arabic, english, multilingual, automation
 Requires at least: 5.8
