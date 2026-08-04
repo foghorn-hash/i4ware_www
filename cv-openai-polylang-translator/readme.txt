@@ -1,7 +1,9 @@
 === CV OpenAI Polylang Translator ===
 Contributors: antigravity-ai, matti
+Donate link: https://www.paypal.com/ncp/payment/Y826SVNLSK4MC
 Tags: translation, polylang, openai, gpt, arabic, english, multilingual, automation
 Requires at least: 5.8
+Requires PHP: 7.4
 Tested up to: 6.5
 Stable tag: 2.0.0
 License: GPLv2 or later
@@ -58,3 +60,14 @@ Specifically optimized for Finnish to Modern Standard Arabic (B2B Dubai and GCC 
 * Strict Integrity checks (anti-hallucination).
 * History logs interface.
 * Refactoring codebase into structured OOP design.
+
+== Screenshots ==
+
+1. The OpenAI Polylang settings page showing model configuration, post types, and ACF field selectors.
+2. Sidebar translation metabox in the block editor showing translation target language options.
+3. The translation draft review warning block checking if translated text is human-reviewed.
+
+== Upgrade Notice ==
+
+= 2.0.0 =
+Complete refactoring to OOP, added translation lock support, single post metabox translation, and security compliance updates. Recommended upgrade.

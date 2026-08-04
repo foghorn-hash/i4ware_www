@@ -4,6 +4,8 @@
  * Description: Manually translate Finnish pages/posts into English and B2B Arabic drafts using OpenAI and Polylang.
  * Version: 2.0.0
  * Author: Antigravity AI
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
  * Text Domain: cv-openai-polylang-translator
  * Domain Path: /languages
  * License: GPLv2 or later
