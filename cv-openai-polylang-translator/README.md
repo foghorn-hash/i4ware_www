@@ -80,7 +80,3 @@ In the translated draft post edit screen, review:
 7. Confirm no AI hallucinations exist.
 8. Check the **Translation reviewed by a human** box in the sidebar (saves status).
 9. Publish the post manually.
-
-## 5. Donate
-
-https://www.paypal.com/ncp/payment/Y826SVNLSK4MC
