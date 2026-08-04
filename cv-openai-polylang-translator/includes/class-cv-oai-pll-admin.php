@@ -39,12 +39,37 @@ class CV_OAI_PLL_Admin {
      * Registers settings in WordPress.
      */
     public function register_settings() {
-        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_api_key');
-        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_model');
-        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_post_types');
-        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_acf_fields');
-        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_cooldown');
-        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_custom_fields');
+        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_api_key', [
+            'sanitize_callback' => 'sanitize_text_field'
+        ]);
+        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_model', [
+            'sanitize_callback' => 'sanitize_text_field'
+        ]);
+        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_post_types', [
+            'sanitize_callback' => [$this, 'sanitize_array_of_slugs']
+        ]);
+        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_acf_fields', [
+            'sanitize_callback' => [$this, 'sanitize_array_of_slugs']
+        ]);
+        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_cooldown', [
+            'sanitize_callback' => 'absint'
+        ]);
+        register_setting('cv_oai_pll_settings_group', 'cv_oai_pll_custom_fields', [
+            'sanitize_callback' => 'sanitize_textarea_field'
+        ]);
+    }
+
+    /**
+     * Sanitizes an array of keys/slugs.
+     *
+     * @param mixed $input
+     * @return array
+     */
+    public function sanitize_array_of_slugs($input) {
+        if (!is_array($input)) {
+            return [];
+        }
+        return array_map('sanitize_key', $input);
     }
 
     /**
@@ -722,6 +747,7 @@ class CV_OAI_PLL_Admin {
         $target_lang     = get_post_meta($post->ID, '_cv_oai_target_language', true);
         ?>
         <div class="cv-oai-pll-review-box-inner" data-is-translation-draft="1" data-review-required="<?php echo esc_attr($review_required); ?>">
+            <?php wp_nonce_field('cv_oai_pll_save_review_status', 'cv_oai_pll_review_status_nonce'); ?>
             <p style="background: #fff8e5; border-left: 4px solid #f0b840; padding: 10px; color: #2c3338; font-size:12px; margin:0 0 12px 0;">
                 <strong><?php esc_html_e('Warning:', 'cv-openai-polylang-translator'); ?></strong><br />
                 <?php esc_html_e('This content was translated by OpenAI and may contain errors or hallucinations. Check all facts, terminology, links, numbers, customer claims and formatting before publishing.', 'cv-openai-polylang-translator'); ?>
@@ -750,6 +776,16 @@ class CV_OAI_PLL_Admin {
      * Saves the meta box data when a post/page is saved.
      */
     public function save_meta_box_data($post_id) {
+        // Verify nonce
+        if (!isset($_POST['cv_oai_pll_review_status_nonce']) || !wp_verify_nonce($_POST['cv_oai_pll_review_status_nonce'], 'cv_oai_pll_save_review_status')) {
+            return;
+        }
+
+        // Check user capabilities
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
         }
