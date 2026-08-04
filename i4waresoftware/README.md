@@ -188,10 +188,11 @@ The theme provides the following custom shortcodes:
   - `url` (string, default: `"#"`): Fallback URL.
   - `url_en` (string, default: `""`): Optional English target URL.
   - `url_fi` (string, default: `""`): Optional Finnish target URL.
+  - `url_ar` (string, default: `""`): Optional Arabic target URL.
   - `class` (string, default: `""`): Extra CSS class names.
 - **Usage**:
   ```wordpress
-  [i4ware_cta url_fi="/hanki-sdk/" url_en="/get-sdk/" class="custom-cta"]
+  [i4ware_cta url_fi="/hanki-sdk/" url_en="/get-sdk/" url_ar="/ar/sdk/" class="custom-cta"]
   ```
 
 ### 9. `[i4ware_video]`
@@ -223,7 +224,9 @@ The theme provides the following custom shortcodes:
 
 ### 12. `[i4ware_sdk_page]`
 - **Source**: `functions.php`
-- **Purpose**: Renders the low-code MIT-licensed i4ware SDK landing page, loaded with localized components, features lists, cooperation descriptions, and source code links.
+- **Purpose**: Renders the low-code MIT-licensed i4ware SDK landing page, loaded with localized components, features lists, cooperation descriptions, interactive Lightbox Screenshot Gallery (`sdk_screenshot` CPT), and source code links. Supports Polylang localizations (FI / EN / AR).
+- **Custom Post Type**: `sdk_screenshot` (SDK Screenshots in WP Admin menu)
+- **ACF Field Group**: `import-sdk-screenshots-acf.json` / `SDK Screenshot Fields` (`sdk_screenshot_image`, `sdk_screenshot_external_url`, `sdk_screenshot_badge`)
 - **Attributes**: None.
 - **Usage**:
   ```wordpress

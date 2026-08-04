@@ -62,13 +62,19 @@ function i4ware_customize_register($wp_customize)
     // Add customizer settings for the hero section and footer
     $languages = array(
         'fi' => __('Finnish', 'i4waresoftware'),
-        'en' => __('English', 'i4waresoftware')
+        'en' => __('English', 'i4waresoftware'),
+        'ar' => __('Arabic', 'i4waresoftware'),
     );
     if (function_exists('pll_languages_list')) {
         $pll_langs = pll_languages_list();
+        $lang_names = array(
+            'fi' => __('Finnish', 'i4waresoftware'),
+            'en' => __('English', 'i4waresoftware'),
+            'ar' => __('Arabic', 'i4waresoftware'),
+        );
         $languages = array();
         foreach ($pll_langs as $lang) {
-            $languages[$lang] = strtoupper($lang);
+            $languages[$lang] = isset($lang_names[$lang]) ? $lang_names[$lang] : strtoupper($lang);
         }
     }
 
@@ -159,6 +165,26 @@ function i4ware_customize_register($wp_customize)
         'title' => __('CTA Painike', 'i4ware'),
         'priority' => 30,
     ]);
+
+    // SDK Page Links Section (FI / EN / AR)
+    $wp_customize->add_section('i4ware_sdk_section', [
+        'title' => __('SDK Page Links', 'i4ware'),
+        'priority' => 31,
+    ]);
+
+    foreach ($languages as $lang_code => $lang_label) {
+        $wp_customize->add_setting("i4ware_sdk_url_$lang_code", [
+            'default' => '',
+            'transport' => 'refresh',
+            'sanitize_callback' => 'esc_url_raw',
+        ]);
+        $wp_customize->add_control("i4ware_sdk_url_control_$lang_code", [
+            'label' => __('SDK Page URL', 'i4ware') . " ($lang_label)",
+            'section' => 'i4ware_sdk_section',
+            'settings' => "i4ware_sdk_url_$lang_code",
+            'type' => 'url',
+        ]);
+    }
 
     foreach ($languages as $lang_code => $lang_label) {
         $wp_customize->add_setting("i4ware_cta_url_$lang_code", [
@@ -543,6 +569,99 @@ add_action('init', function () {
     }
 });
 
+if (!function_exists('i4ware_get_sdk_page_url')) {
+    /**
+     * Resolves the localized SDK page URL for FI, EN, and AR.
+     */
+    function i4ware_get_sdk_page_url($lang = null)
+    {
+        if (!$lang) {
+            $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+        }
+        if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
+            $lang = 'en';
+        }
+
+        // 1. Check Customizer setting if user set a non-empty custom URL
+        $customizer_url = get_theme_mod("i4ware_sdk_url_{$lang}", '');
+        if (!empty($customizer_url) && $customizer_url !== '#') {
+            if (strpos($customizer_url, 'http://') === 0 || strpos($customizer_url, 'https://') === 0) {
+                return esc_url($customizer_url);
+            } else {
+                $trimmed = ltrim($customizer_url, '/');
+                return esc_url(site_url('/' . $trimmed));
+            }
+        }
+
+        // 2. Query published WordPress page containing [i4ware_sdk_page] shortcode or SDK page slug
+        static $sdk_page_urls = array();
+        if (!isset($sdk_page_urls[$lang])) {
+            $sdk_page_urls[$lang] = false;
+
+            $pages = get_posts(array(
+                'post_type'      => 'page',
+                'posts_per_page' => 5,
+                's'              => '[i4ware_sdk_page]',
+                'post_status'    => 'publish',
+            ));
+
+            $found_id = false;
+            if (!empty($pages)) {
+                foreach ($pages as $p) {
+                    if (function_exists('pll_get_post_language')) {
+                        $p_lang = pll_get_post_language($p->ID);
+                        if ($p_lang === $lang) {
+                            $found_id = $p->ID;
+                            break;
+                        }
+                    } else {
+                        $found_id = $p->ID;
+                        break;
+                    }
+                }
+                if (!$found_id && !empty($pages[0])) {
+                    $found_id = $pages[0]->ID;
+                }
+            }
+
+            if (!$found_id) {
+                $page_by_slug = get_page_by_path('i4ware-sdk');
+                if (!$page_by_slug) {
+                    $page_by_slug = get_page_by_path('sdk');
+                }
+                if (!$page_by_slug) {
+                    $page_by_slug = get_page_by_path('hanki-sdk');
+                }
+                if ($page_by_slug) {
+                    $found_id = $page_by_slug->ID;
+                }
+            }
+
+            if ($found_id) {
+                if (function_exists('pll_get_post')) {
+                    $tr_id = pll_get_post($found_id, $lang);
+                    if ($tr_id) {
+                        $found_id = $tr_id;
+                    }
+                }
+                $sdk_page_urls[$lang] = get_permalink($found_id);
+            }
+        }
+
+        if (!empty($sdk_page_urls[$lang])) {
+            return $sdk_page_urls[$lang];
+        }
+
+        // 3. Default localized fallback URLs for SDK page
+        if ($lang === 'ar') {
+            return site_url('/ar/i4ware-sdk/');
+        } elseif ($lang === 'en') {
+            return site_url('/en/i4ware-sdk/');
+        }
+        return site_url('/i4ware-sdk/');
+    }
+}
+
 if (!function_exists('i4ware_pricing_shortcode')) {
     function i4ware_pricing_shortcode($atts)
     {
@@ -550,29 +669,69 @@ if (!function_exists('i4ware_pricing_shortcode')) {
         $atts = array_change_key_case($atts, CASE_LOWER);
 
         $a = shortcode_atts([
+            'sdk_page_id'     => '',
+            'sdk_url'         => '',
+            'sdk_url_fi'      => '',
+            'sdk_url_en'      => '',
+            'sdk_url_ar'      => '',
             'contact_page_id' => '',
-            'contact_url' => '/ota-yhteytta/',
-            'default_tab' => 'journey'
+            'contact_url'     => '',
+            'contact_url_fi'  => '',
+            'contact_url_en'  => '',
+            'contact_url_ar'  => '',
+            'default_tab'     => 'journey'
         ], $atts, 'i4ware_pricing');
-
-        // Get the target contact URL
-        $url = '';
-        if (!empty($a['contact_page_id'])) {
-            $page_id = intval($a['contact_page_id']);
-            if (function_exists('pll_get_post')) {
-                $tr_id = pll_get_post($page_id);
-                if ($tr_id)
-                    $page_id = $tr_id;
-            }
-            $url = get_permalink($page_id);
-        }
-        if (!$url)
-            $url = esc_url($a['contact_url']);
 
         // Detect language
         $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
         if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
             $lang = 'en'; // fallback
+        }
+
+        // Target URL for buttons (defaults to localized SDK page URL)
+        $url = '';
+
+        // 1. Shortcode explicit SDK URL attributes
+        if ($lang === 'ar' && !empty($a['sdk_url_ar'])) {
+            $url = esc_url($a['sdk_url_ar']);
+        } elseif ($lang === 'en' && !empty($a['sdk_url_en'])) {
+            $url = esc_url($a['sdk_url_en']);
+        } elseif ($lang === 'fi' && !empty($a['sdk_url_fi'])) {
+            $url = esc_url($a['sdk_url_fi']);
+        }
+        if (!$url && !empty($a['sdk_url'])) {
+            $url = esc_url($a['sdk_url']);
+        }
+
+        // 2. Polylang translated page ID if sdk_page_id passed
+        if (!$url && !empty($a['sdk_page_id'])) {
+            $page_id = intval($a['sdk_page_id']);
+            if (function_exists('pll_get_post')) {
+                $tr_id = pll_get_post($page_id, $lang);
+                if ($tr_id) {
+                    $page_id = $tr_id;
+                }
+            }
+            $url = get_permalink($page_id);
+        }
+
+        // 3. Shortcode explicit contact URL attributes if provided
+        if (!$url) {
+            if ($lang === 'ar' && !empty($a['contact_url_ar'])) {
+                $url = esc_url($a['contact_url_ar']);
+            } elseif ($lang === 'en' && !empty($a['contact_url_en'])) {
+                $url = esc_url($a['contact_url_en']);
+            } elseif ($lang === 'fi' && !empty($a['contact_url_fi'])) {
+                $url = esc_url($a['contact_url_fi']);
+            }
+        }
+        if (!$url && !empty($a['contact_url']) && $a['contact_url'] !== '/ota-yhteytta/') {
+            $url = esc_url($a['contact_url']);
+        }
+
+        // 4. Default to resolved SDK Page URL for active language (FI / EN / AR)
+        if (!$url) {
+            $url = i4ware_get_sdk_page_url($lang);
         }
 
         // High-end multi-concept dictionary
@@ -1532,8 +1691,9 @@ function jaf_handle_submit(WP_REST_Request $req)
 
 function i4ware_add_cta_button()
 {
-    $cta_text = get_theme_mod('i4ware_cta_text', __('Pyydä tarjous', 'i4ware'));
-    $cta_url = get_theme_mod('i4ware_cta_url', '#');
+    $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+    $cta_text = get_theme_mod("i4ware_cta_text_$lang", get_theme_mod('i4ware_cta_text', __('Pyydä tarjous', 'i4ware')));
+    $cta_url = get_theme_mod("i4ware_cta_url_$lang", get_theme_mod('i4ware_cta_url', '#'));
 
     echo '<div class="header-cta"><a class="cta-button" href="' . esc_url($cta_url) . '">' . esc_html($cta_text) . '</a></div>';
 }
@@ -1541,8 +1701,9 @@ function i4ware_add_cta_button()
 // Lisää CTA painike wp_nav_menu() -funktion eteen
 add_action('wp_nav_menu_items', function ($items, $args) {
     if ($args->theme_location == 'primary') {
-        $cta_text = get_theme_mod('i4ware_cta_text', __('Pyydä tarjous', 'i4ware'));
-        $cta_url = get_theme_mod('i4ware_cta_url', '#');
+        $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+        $cta_text = get_theme_mod("i4ware_cta_text_$lang", get_theme_mod('i4ware_cta_text', __('Pyydä tarjous', 'i4ware')));
+        $cta_url = get_theme_mod("i4ware_cta_url_$lang", get_theme_mod('i4ware_cta_url', '#'));
 
         $cta_html = '<li class="menu-item cta-button"><a href="' . esc_url($cta_url) . '">' . esc_html($cta_text) . '</a></li>';
 
@@ -1559,6 +1720,7 @@ function i4ware_cta_shortcode($atts)
         'url' => '#',     // default fallback URL
         'url_en' => '',      // optional language specific URL for English
         'url_fi' => '',      // optional language specific URL for Finnish
+        'url_ar' => '',      // optional language specific URL for Arabic
         'class' => '',      // extra classes
     ), $atts, 'i4ware_cta');
 
@@ -1581,6 +1743,11 @@ function i4ware_cta_shortcode($atts)
             'desc' => 'Rakennamme MVP- ja SaaS-ratkaisut puolestasi. Low-code i4ware SDK ja AI-avusteinen kehitys mahdollistavat nopean ja kustannustehokkaan toteutuksen.',
             'button' => 'Pyydä tarjous',
         ),
+        'ar' => array(
+            'headline' => 'احصل على منتج SaaS الخاص بك في السوق بتكلفة فعالة مع i4ware SDK',
+            'desc' => 'نحن نبني حلول MVP و SaaS لأجلك. تتيح لك منصة i4ware SDK المنخفضة البرمجة والتطوير المدعوم بالذكاء الاصطناعي تسليماً سريعاً وفعالاً من حيث التكلفة.',
+            'button' => 'اطلب عرض سعر',
+        ),
     );
 
     // Use language-specific Customizer values when available
@@ -1592,6 +1759,8 @@ function i4ware_cta_shortcode($atts)
 
     // choose best URL (language-specific > attribute url > fallback url)
     $url = $atts['url'];
+    if ($lang === 'ar' && !empty($atts['url_ar']))
+        $url = $atts['url_ar'];
     if ($lang === 'en' && !empty($atts['url_en']))
         $url = $atts['url_en'];
     if ($lang === 'fi' && !empty($atts['url_fi']))
@@ -2582,7 +2751,15 @@ function wp_quote_send_handler()
 
 function wp_quote_customizer_settings($wp_customize)
 {
-    $languages = array('fi' => 'Suomi', 'en' => 'English');
+    $languages = array('fi' => 'Suomi', 'en' => 'English', 'ar' => 'Arabic');
+    if (function_exists('pll_languages_list')) {
+        $pll_langs = pll_languages_list();
+        $lang_names = array('fi' => 'Suomi', 'en' => 'English', 'ar' => 'Arabic');
+        $languages = array();
+        foreach ($pll_langs as $lang) {
+            $languages[$lang] = isset($lang_names[$lang]) ? $lang_names[$lang] : strtoupper($lang);
+        }
+    }
 
     foreach ($languages as $lang_code => $lang_name) {
         $wp_customize->add_section("wp_quote_links_section_$lang_code", array(
@@ -2870,6 +3047,21 @@ add_shortcode('i4ware_sdk_page', function () {
             'vid3_cap' => 'Alustan kehitysfilosofia & perusteet',
             'todo_link' => '📋 Tiimin To-Do',
             'cv_link' => '👤 Matin CV',
+            'gallery_eyebrow' => 'Kuvagalleria & Demot',
+            'gallery_title' => 'Kuvakaappaukset ja käyttöliittymä',
+            'gallery_lead' => 'Katso i4ware SDK:n käyttöliittymäkomponentteja, hallintapaneelia ja työnkulkuja toiminnassa. Klikkaa kuvaa suurentaaksesi.',
+            'image_viewer' => 'Kuvakatselin',
+            'lb_close' => 'Sulje (Esc)',
+            'lb_prev' => 'Edellinen kuva',
+            'lb_next' => 'Seuraava kuva',
+            'gallery_item1_title' => 'SDK Hallintapaneeli & Moduulit',
+            'gallery_item1_desc' => 'Monipuolinen ja selkeä nollakoodi/low-code hallintapaneeli sovellusten nopeaan rakentamiseen.',
+            'gallery_item2_title' => 'OpenAI API & Tekoälyautomaatio',
+            'gallery_item2_desc' => 'Valmiit OpenAI GPT-4o tekoälyagentti- ja dataintegraatiot tietojen automaattiseen käsittelyyn ja suomenkieliseen sisällöntuotantoon.',
+            'gallery_item3_title' => 'React UI & Komponenttikirjasto',
+            'gallery_item3_desc' => 'Responsiiviset ja skaalautuvat käyttöliittymäelementit kaikille näyttökoolle.',
+            'gallery_item4_title' => 'Turvallinen Arkkitehtuuri & Taustajärjestelmät',
+            'gallery_item4_desc' => 'Laravel-taustajärjestelmä, roolipohjainen käyttäjähallinta (RBAC) ja korkea tietoturva.',
         ),
         'en' => array(
             'eyebrow' => 'Low-code · Open Source · MIT',
@@ -2925,6 +3117,21 @@ add_shortcode('i4ware_sdk_page', function () {
             'vid3_cap' => 'Platform development philosophy & basics',
             'todo_link' => '📋 Team To-Do',
             'cv_link' => '👤 Matti\'s CV',
+            'gallery_eyebrow' => 'Screenshot Gallery & Demos',
+            'gallery_title' => 'Screenshots & User Interface',
+            'gallery_lead' => 'Explore i4ware SDK UI components, management dashboard, and workflows in action. Click any image to expand.',
+            'image_viewer' => 'Image Viewer',
+            'lb_close' => 'Close (Esc)',
+            'lb_prev' => 'Previous image',
+            'lb_next' => 'Next image',
+            'gallery_item1_title' => 'SDK Management Dashboard & Modules',
+            'gallery_item1_desc' => 'Versatile low-code management dashboard for rapid application deployment and monitoring.',
+            'gallery_item2_title' => 'OpenAI API & AI Automation',
+            'gallery_item2_desc' => 'Pre-built OpenAI GPT-4o AI agent and data pipeline integrations for automated information processing.',
+            'gallery_item3_title' => 'React UI & Component Library',
+            'gallery_item3_desc' => 'Responsive and scalable frontend components optimized for all screen sizes.',
+            'gallery_item4_title' => 'Secure Architecture & Backend Services',
+            'gallery_item4_desc' => 'Robust Laravel backend architecture with role-based access control and high security.',
         ),
         'ar' => array(
             'eyebrow' => 'Low-code · Open Source · MIT',
@@ -2980,6 +3187,21 @@ add_shortcode('i4ware_sdk_page', function () {
             'vid3_cap' => 'فلسفة تطوير المنصة وأساسياتها',
             'todo_link' => '📋 المهام المطلوبة من الفريق',
             'cv_link' => '👤 السيرة الذاتية لـ ماتي',
+            'gallery_eyebrow' => 'معرض الصور والعروض التوضيحية',
+            'gallery_title' => 'لقطات الشاشة وواجهة المستخدم',
+            'gallery_lead' => 'استكشف مكونات واجهة المستخدم لمنصة i4ware SDK، ولوحة التحكم، وسير العمل أثناء التشغيل. انقر على أي صورة للتكبير.',
+            'image_viewer' => 'عارض الصور',
+            'lb_close' => 'إغلاق (Esc)',
+            'lb_prev' => 'الصورة السابقة',
+            'lb_next' => 'الصورة التالية',
+            'gallery_item1_title' => 'لوحة تحكم وحدة SDK ووحدات البرمجة',
+            'gallery_item1_desc' => 'لوحة تحكم منخفضة البرمجة متعددة الاستخدامات لنشر التطبيقات ومراقبتها بسرعة.',
+            'gallery_item2_title' => 'أتمتة الذكاء الاصطناعي مع OpenAI API',
+            'gallery_item2_desc' => 'تكاملات جاهزة مسبقاً مع OpenAI GPT-4o لمعالجة المعلومات وإنشاء المحتوى تلقائياً.',
+            'gallery_item3_title' => 'مكتبة مكونات React وواجهة المستخدم',
+            'gallery_item3_desc' => 'مكونات واجهة أمامية متجاوبة وقابلة للتطوير محسّنة لجميع أحجام الشاشات.',
+            'gallery_item4_title' => 'بنية برمجية آمنة وخدمات خلفية',
+            'gallery_item4_desc' => 'بنية خلفية قوية مبنية على Laravel مع التحكم في الوصول القائم على الأدوار وأمان عالٍ.',
         )
     );
 
@@ -2987,6 +3209,108 @@ add_shortcode('i4ware_sdk_page', function () {
         $lang = 'en'; // fallback
     }
     $s = $data[$lang];
+
+    // Fetch Screenshots ONLY from CPT 'sdk_screenshot'
+    $gallery_items = array();
+
+    $cpt_args = array(
+        'post_type' => array('sdk_screenshot', 'i4ware_sdk_screenshot'),
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+        'orderby' => 'menu_order title',
+        'order' => 'ASC',
+    );
+    if (function_exists('pll_current_language')) {
+        $cpt_args['lang'] = $lang;
+    }
+
+    $cpt_query = new WP_Query($cpt_args);
+
+    if ($cpt_query->have_posts()) {
+        while ($cpt_query->have_posts()) {
+            $cpt_query->the_post();
+            $p_id = get_the_ID();
+            $img_url = get_the_post_thumbnail_url($p_id, 'full');
+
+            if (!$img_url && function_exists('get_field')) {
+                $acf_img = get_field('sdk_screenshot_image', $p_id);
+                if ($acf_img) {
+                    $img_url = is_array($acf_img) ? $acf_img['url'] : (is_numeric($acf_img) ? wp_get_attachment_url($acf_img) : $acf_img);
+                }
+            }
+
+            if ($img_url) {
+                $badge = function_exists('get_field') ? get_field('sdk_screenshot_badge', $p_id) : '';
+                $ext_url = function_exists('get_field') ? get_field('sdk_screenshot_external_url', $p_id) : '';
+
+                $gallery_items[] = array(
+                    'url' => $img_url,
+                    'title' => get_the_title(),
+                    'desc' => get_the_excerpt(),
+                    'badge' => $badge,
+                    'ext_url' => $ext_url,
+                );
+            }
+        }
+        wp_reset_postdata();
+    }
+
+    // Check ACF Page Fields if CPT is empty
+    if (empty($gallery_items) && function_exists('get_field')) {
+        $acf_repeater = get_field('sdk_page_screenshots');
+        if (!empty($acf_repeater) && is_array($acf_repeater)) {
+            foreach ($acf_repeater as $row) {
+                $img_url = '';
+                if (!empty($row['image'])) {
+                    $img_url = is_array($row['image']) ? $row['image']['url'] : (is_numeric($row['image']) ? wp_get_attachment_url($row['image']) : $row['image']);
+                }
+                if ($img_url) {
+                    $title_key = 'title_' . $lang;
+                    $desc_key = 'description_' . $lang;
+                    $title = !empty($row[$title_key]) ? $row[$title_key] : (!empty($row['title']) ? $row['title'] : '');
+                    $desc = !empty($row[$desc_key]) ? $row[$desc_key] : (!empty($row['description']) ? $row['description'] : '');
+                    $badge = !empty($row['badge']) ? $row['badge'] : '';
+
+                    $gallery_items[] = array(
+                        'url' => $img_url,
+                        'title' => $title,
+                        'desc' => $desc,
+                        'badge' => $badge,
+                    );
+                }
+            }
+        }
+    }
+
+    // Fallback gallery items
+    if (empty($gallery_items)) {
+        $gallery_items = array(
+            array(
+                'url' => get_template_directory_uri() . '/assets/businessman-working-on-tablet-using-ai.jpg',
+                'title' => $s['gallery_item1_title'],
+                'desc' => $s['gallery_item1_desc'],
+                'badge' => 'Low-Code Panel',
+            ),
+            array(
+                'url' => get_template_directory_uri() . '/assets/businessman-working-on-tablet-using-ai.jpg',
+                'title' => $s['gallery_item2_title'],
+                'desc' => $s['gallery_item2_desc'],
+                'badge' => 'OpenAI API',
+            ),
+            array(
+                'url' => get_template_directory_uri() . '/assets/i4ware-software-og.jpg',
+                'title' => $s['gallery_item3_title'],
+                'desc' => $s['gallery_item3_desc'],
+                'badge' => 'React UI',
+            ),
+            array(
+                'url' => get_template_directory_uri() . '/assets/52311-background.png',
+                'title' => $s['gallery_item4_title'],
+                'desc' => $s['gallery_item4_desc'],
+                'badge' => 'Laravel Security',
+            ),
+        );
+    }
 
     ob_start();
     ?>
@@ -3012,6 +3336,7 @@ add_shortcode('i4ware_sdk_page', function () {
             </div>
             <div class="ok-links">
                 <a class="ok-chip" href="https://antigravity.google/" target="_blank" rel="noopener">⚡ Antigravity</a>
+                <a class="ok-chip" href="https://openai.com/" target="_blank" rel="noopener">🤖 OpenAI API</a>
                 <a class="ok-chip" href="https://github.com/features/copilot" target="_blank" rel="noopener">🤖 GitHub
                     Copilot</a>
                 <a class="ok-chip" href="https://code.visualstudio.com/" target="_blank" rel="noopener">💻 VS Code</a>
@@ -3144,6 +3469,62 @@ add_shortcode('i4ware_sdk_page', function () {
                 </div>
             </div>
         </section>
+
+        <!-- SCREENSHOT GALLERY (LIGHTBOX) -->
+        <section class="ok-section" id="galleria">
+            <div class="ok-section-header">
+                <span class="ok-eyebrow"><?php echo esc_html($s['gallery_eyebrow']); ?></span>
+                <h2><?php echo esc_html($s['gallery_title']); ?></h2>
+                <p class="ok-lead"><?php echo esc_html($s['gallery_lead']); ?></p>
+            </div>
+
+            <div class="ok-gallery-grid">
+                <?php foreach ($gallery_items as $idx => $item):
+                    $item_title = !empty($item['title']) ? $item['title'] : ($s['gallery_title'] . ' ' . ($idx + 1));
+                    $item_desc = !empty($item['desc']) ? $item['desc'] : '';
+                    $caption = $item_title . ($item_desc ? ' - ' . $item_desc : '');
+                    ?>
+                    <div class="ok-gallery-card" data-src="<?php echo esc_url($item['url']); ?>"
+                        data-caption="<?php echo esc_attr($caption); ?>">
+                        <div class="ok-gallery-thumb">
+                            <img src="<?php echo esc_url($item['url']); ?>" alt="<?php echo esc_attr($item_title); ?>"
+                                loading="lazy" />
+                            <?php if (!empty($item['badge'])): ?>
+                                <span class="ok-gallery-badge"><?php echo esc_html($item['badge']); ?></span>
+                            <?php endif; ?>
+                            <div class="ok-gallery-overlay">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                    <line x1="11" y1="8" x2="11" y2="14"></line>
+                                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ok-gallery-info">
+                            <h3><?php echo esc_html($item_title); ?></h3>
+                            <?php if ($item_desc): ?>
+                                <p><?php echo esc_html($item_desc); ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+
+        <!-- LIGHTBOX MODAL -->
+        <div class="ok-lightbox" id="okSdkLightbox" role="dialog" aria-modal="true"
+            aria-label="<?php echo esc_attr($s['image_viewer']); ?>">
+            <button class="ok-lb-close" id="okSdkLbClose" aria-label="<?php echo esc_attr($s['lb_close']); ?>">✕</button>
+            <button class="ok-lb-prev" id="okSdkLbPrev" aria-label="<?php echo esc_attr($s['lb_prev']); ?>">‹</button>
+            <div class="ok-lb-content">
+                <img id="okSdkLbImg" src="" alt="" />
+                <div class="ok-lb-caption" id="okSdkLbCaption"></div>
+                <div class="ok-lb-counter" id="okSdkLbCounter"></div>
+            </div>
+            <button class="ok-lb-next" id="okSdkLbNext" aria-label="<?php echo esc_attr($s['lb_next']); ?>">›</button>
+        </div>
 
         <!-- MATRIX -->
         <section class="ok-section">
@@ -3298,6 +3679,75 @@ add_shortcode('i4ware_sdk_page', function () {
         </section>
 
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const galleryCards = Array.from(document.querySelectorAll('.ok-wrap .ok-gallery-card'));
+            const lightbox = document.getElementById('okSdkLightbox');
+            if (!lightbox || galleryCards.length === 0) return;
+
+            const lbImg = document.getElementById('okSdkLbImg');
+            const lbCaption = document.getElementById('okSdkLbCaption');
+            const lbCounter = document.getElementById('okSdkLbCounter');
+            const lbClose = document.getElementById('okSdkLbClose');
+            const lbPrev = document.getElementById('okSdkLbPrev');
+            const lbNext = document.getElementById('okSdkLbNext');
+
+            let currentIndex = 0;
+
+            function openLightbox(index) {
+                currentIndex = index;
+                const card = galleryCards[currentIndex];
+                const src = card.getAttribute('data-src');
+                const caption = card.getAttribute('data-caption');
+
+                lbImg.src = src;
+                lbCaption.textContent = caption;
+                lbCounter.textContent = (currentIndex + 1) + ' / ' + galleryCards.length;
+
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeLightbox() {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            function showPrev() {
+                currentIndex = (currentIndex - 1 + galleryCards.length) % galleryCards.length;
+                openLightbox(currentIndex);
+            }
+
+            function showNext() {
+                currentIndex = (currentIndex + 1) % galleryCards.length;
+                openLightbox(currentIndex);
+            }
+
+            galleryCards.forEach((card, index) => {
+                card.addEventListener('click', function () {
+                    openLightbox(index);
+                });
+            });
+
+            if (lbClose) lbClose.addEventListener('click', closeLightbox);
+            if (lbPrev) lbPrev.addEventListener('click', function (e) { e.stopPropagation(); showPrev(); });
+            if (lbNext) lbNext.addEventListener('click', function (e) { e.stopPropagation(); showNext(); });
+
+            lightbox.addEventListener('click', function (e) {
+                if (e.target === lightbox || e.target.classList.contains('ok-lb-content')) {
+                    closeLightbox();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (!lightbox.classList.contains('active')) return;
+                if (e.key === 'Escape') closeLightbox();
+                if (e.key === 'ArrowLeft') showPrev();
+                if (e.key === 'ArrowRight') showNext();
+            });
+        });
+    </script>
     <?php
     return ob_get_clean();
 });
@@ -3455,5 +3905,112 @@ add_action('wp_footer', function () {
     </script>
     <?php
 });
+
+/**
+ * Register SDK Screenshots Custom Post Type [SDK Screenshots]
+ * Works 100% with Free ACF (Advanced Custom Fields free version) and Polylang translations!
+ */
+add_action('init', 'i4ware_register_sdk_screenshot_cpt');
+function i4ware_register_sdk_screenshot_cpt()
+{
+    $labels = array(
+        'name' => 'SDK Screenshots',
+        'singular_name' => 'SDK Screenshot',
+        'menu_name' => 'SDK Screenshots',
+        'name_admin_bar' => 'SDK Screenshot',
+        'add_new' => 'Add New Screenshot',
+        'add_new_item' => 'Add New SDK Screenshot',
+        'new_item' => 'New SDK Screenshot',
+        'edit_item' => 'Edit SDK Screenshot',
+        'view_item' => 'View SDK Screenshot',
+        'all_items' => 'All SDK Screenshots',
+        'search_items' => 'Search SDK Screenshots',
+        'parent_item_colon' => 'Parent SDK Screenshots:',
+        'not_found' => 'No SDK screenshots found.',
+        'not_found_in_trash' => 'No SDK screenshots found in Trash.',
+    );
+
+    $args = array(
+        'labels' => $labels,
+        'public' => true,
+        'publicly_queryable' => false,
+        'show_ui' => true,
+        'show_in_menu' => true,
+        'query_var' => true,
+        'rewrite' => array('slug' => 'sdk-screenshot'),
+        'capability_type' => 'post',
+        'has_archive' => false,
+        'hierarchical' => false,
+        'menu_position' => 22,
+        'menu_icon' => 'dashicons-desktop',
+        'supports' => array('title', 'thumbnail', 'excerpt', 'page-attributes'),
+    );
+
+    register_post_type('sdk_screenshot', $args);
+}
+
+/**
+ * Register CPT with Polylang for language translations & admin flags (FI, EN, AR)
+ */
+add_filter('pll_get_post_types', function ($post_types) {
+    $post_types['sdk_screenshot'] = 'sdk_screenshot';
+    return $post_types;
+});
+
+/**
+ * Register ACF field group for SDK Screenshots CPT
+ */
+add_action('acf/init', 'i4ware_register_sdk_screenshot_acf_fields');
+function i4ware_register_sdk_screenshot_acf_fields()
+{
+    if (!function_exists('acf_add_local_field_group')) {
+        return;
+    }
+
+    acf_add_local_field_group(array(
+        'key' => 'group_sdk_screenshot_fields',
+        'title' => 'SDK Screenshot Fields (Free ACF Compatible)',
+        'fields' => array(
+            array(
+                'key' => 'field_sdk_screenshot_image',
+                'label' => 'Screenshot Image',
+                'name' => 'sdk_screenshot_image',
+                'type' => 'image',
+                'instructions' => 'Upload or select a screenshot image (or use WordPress Featured Image).',
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+            ),
+            array(
+                'key' => 'field_sdk_screenshot_external_url',
+                'label' => 'External Project / Demo URL',
+                'name' => 'sdk_screenshot_external_url',
+                'type' => 'url',
+                'instructions' => 'Optional URL link to live project or demo.',
+            ),
+            array(
+                'key' => 'field_sdk_screenshot_badge',
+                'label' => 'Badge / Tag Label',
+                'name' => 'sdk_screenshot_badge',
+                'type' => 'text',
+                'instructions' => 'e.g. Low-Code, React UI, Laravel Backend, REST API',
+            ),
+        ),
+        'location' => array(
+            array(
+                array(
+                    'param' => 'post_type',
+                    'operator' => '==',
+                    'value' => 'sdk_screenshot',
+                ),
+            ),
+        ),
+        'menu_order' => 0,
+        'position' => 'normal',
+        'style' => 'default',
+        'label_placement' => 'top',
+        'instruction_placement' => 'label',
+        'active' => true,
+    ));
+}
 
 ?>

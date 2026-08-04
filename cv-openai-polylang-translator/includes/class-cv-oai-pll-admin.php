@@ -100,9 +100,9 @@ class CV_OAI_PLL_Admin {
         $cooldown      = get_option('cv_oai_pll_cooldown', '0');
         $custom_fields = get_option('cv_oai_pll_custom_fields', "_yoast_wpseo_title\n_yoast_wpseo_metadesc\n_rank_math_title\n_rank_math_description");
         
-        $post_types = get_option('cv_oai_pll_post_types', ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot']);
+        $post_types = get_option('cv_oai_pll_post_types', ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot', 'sdk_screenshot']);
         if (!is_array($post_types)) {
-            $post_types = ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot'];
+            $post_types = ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot', 'sdk_screenshot'];
         }
 
         $acf_fields = get_option('cv_oai_pll_acf_fields', []);
@@ -524,9 +524,9 @@ class CV_OAI_PLL_Admin {
      * Registers meta boxes for supported content types and translations.
      */
     public function add_meta_boxes($post_type) {
-        $supported_post_types = get_option('cv_oai_pll_post_types', ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot']);
+        $supported_post_types = get_option('cv_oai_pll_post_types', ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot', 'sdk_screenshot']);
         if (!is_array($supported_post_types)) {
-            $supported_post_types = ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot'];
+            $supported_post_types = ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot', 'sdk_screenshot'];
         }
 
         // 1. Meta Box on source posts: OpenAI translation action interface

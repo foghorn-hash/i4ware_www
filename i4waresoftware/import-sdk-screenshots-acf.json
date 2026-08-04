@@ -1,0 +1,46 @@
+[
+    {
+        "key": "group_sdk_screenshot_fields",
+        "title": "SDK Screenshot Fields (Free ACF Compatible)",
+        "fields": [
+            {
+                "key": "field_sdk_screenshot_image",
+                "label": "Screenshot Image",
+                "name": "sdk_screenshot_image",
+                "type": "image",
+                "instructions": "Upload or select a screenshot image (or use WordPress Featured Image).",
+                "return_format": "array",
+                "preview_size": "medium"
+            },
+            {
+                "key": "field_sdk_screenshot_external_url",
+                "label": "External Project / Demo URL",
+                "name": "sdk_screenshot_external_url",
+                "type": "url",
+                "instructions": "Optional URL link to live project or demo."
+            },
+            {
+                "key": "field_sdk_screenshot_badge",
+                "label": "Badge / Tag Label",
+                "name": "sdk_screenshot_badge",
+                "type": "text",
+                "instructions": "e.g. Low-Code, React UI, Laravel Backend, REST API"
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "sdk_screenshot"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "active": true
+    }
+]
