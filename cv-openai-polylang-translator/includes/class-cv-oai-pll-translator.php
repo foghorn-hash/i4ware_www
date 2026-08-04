@@ -43,10 +43,13 @@ class CV_OAI_PLL_Translator {
             return new WP_Error('openai_missing_key', __('OpenAI API key is missing. Please configure it in settings.', 'cv-openai-polylang-translator'));
         }
 
-        // Check if source post is in Finnish
+        // Check source post language
         $source_lang = pll_get_post_language($post_id);
-        if ($source_lang !== 'fi') {
-            return new WP_Error('invalid_source_lang', __('Only Finnish source content can be translated.', 'cv-openai-polylang-translator'));
+        if (empty($source_lang)) {
+            return new WP_Error('invalid_source_lang', __('Please set post language in Polylang before translating.', 'cv-openai-polylang-translator'));
+        }
+        if ($source_lang === $target_lang) {
+            return new WP_Error('invalid_target_lang', __('Target language must be different from source language.', 'cv-openai-polylang-translator'));
         }
 
         // 2. Existing translation check

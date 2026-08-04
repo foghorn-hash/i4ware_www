@@ -29,18 +29,13 @@ if (have_posts()) :
 
                     <?php the_content(); ?>
 
-                    <!-- Alasivut ja niiden excerptit -->
+                    <!-- Alasivut -->
                     <ul class="child-pages">
                         <?php foreach ($child_pages as $page) : ?>
                             <li>
                                 <a href="<?php echo esc_url(get_permalink($page->ID)); ?>">
                                     <?php echo esc_html($page->post_title); ?>
                                 </a>
-                                <?php 
-                                $excerpt = get_the_excerpt($page->ID);
-                                if ($excerpt) : ?>
-                                    <p><?php echo esc_html($excerpt); ?></p>
-                                <?php endif; ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>

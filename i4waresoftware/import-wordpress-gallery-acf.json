@@ -1,0 +1,104 @@
+[
+    {
+        "key": "group_wordpress_page_gallery",
+        "title": "WordPress Page Screenshots & Gallery",
+        "fields": [
+            {
+                "key": "field_wordpress_page_gallery",
+                "label": "Screenshot Gallery (ACF Gallery)",
+                "name": "wordpress_page_gallery",
+                "type": "gallery",
+                "instructions": "Select or upload screenshot images for the WordPress development page gallery.",
+                "return_format": "array",
+                "preview_size": "medium",
+                "insert": "append"
+            },
+            {
+                "key": "field_wordpress_page_screenshots",
+                "label": "Custom Screenshots Repeater",
+                "name": "wordpress_page_screenshots",
+                "type": "repeater",
+                "instructions": "Add custom screenshots with localized titles and descriptions.",
+                "layout": "block",
+                "button_label": "Add Screenshot",
+                "sub_fields": [
+                    {
+                        "key": "field_wp_shot_image",
+                        "label": "Screenshot Image",
+                        "name": "image",
+                        "type": "image",
+                        "return_format": "array",
+                        "preview_size": "medium"
+                    },
+                    {
+                        "key": "field_wp_shot_title",
+                        "label": "Default Title",
+                        "name": "title",
+                        "type": "text"
+                    },
+                    {
+                        "key": "field_wp_shot_title_fi",
+                        "label": "Title (Finnish)",
+                        "name": "title_fi",
+                        "type": "text"
+                    },
+                    {
+                        "key": "field_wp_shot_title_en",
+                        "label": "Title (English)",
+                        "name": "title_en",
+                        "type": "text"
+                    },
+                    {
+                        "key": "field_wp_shot_title_ar",
+                        "label": "Title (Arabic)",
+                        "name": "title_ar",
+                        "type": "text"
+                    },
+                    {
+                        "key": "field_wp_shot_desc",
+                        "label": "Default Description",
+                        "name": "description",
+                        "type": "textarea",
+                        "rows": 2
+                    },
+                    {
+                        "key": "field_wp_shot_desc_fi",
+                        "label": "Description (Finnish)",
+                        "name": "description_fi",
+                        "type": "textarea",
+                        "rows": 2
+                    },
+                    {
+                        "key": "field_wp_shot_desc_en",
+                        "label": "Description (English)",
+                        "name": "description_en",
+                        "type": "textarea",
+                        "rows": 2
+                    },
+                    {
+                        "key": "field_wp_shot_desc_ar",
+                        "label": "Description (Arabic)",
+                        "name": "description_ar",
+                        "type": "textarea",
+                        "rows": 2
+                    }
+                ]
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "page"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "active": true
+    }
+]

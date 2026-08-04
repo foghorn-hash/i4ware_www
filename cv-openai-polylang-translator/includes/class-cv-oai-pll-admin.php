@@ -100,9 +100,9 @@ class CV_OAI_PLL_Admin {
         $cooldown      = get_option('cv_oai_pll_cooldown', '0');
         $custom_fields = get_option('cv_oai_pll_custom_fields', "_yoast_wpseo_title\n_yoast_wpseo_metadesc\n_rank_math_title\n_rank_math_description");
         
-        $post_types = get_option('cv_oai_pll_post_types', ['post', 'page']);
+        $post_types = get_option('cv_oai_pll_post_types', ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot']);
         if (!is_array($post_types)) {
-            $post_types = ['post', 'page'];
+            $post_types = ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot'];
         }
 
         $acf_fields = get_option('cv_oai_pll_acf_fields', []);
@@ -524,9 +524,9 @@ class CV_OAI_PLL_Admin {
      * Registers meta boxes for supported content types and translations.
      */
     public function add_meta_boxes($post_type) {
-        $supported_post_types = get_option('cv_oai_pll_post_types', ['post', 'page']);
+        $supported_post_types = get_option('cv_oai_pll_post_types', ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot']);
         if (!is_array($supported_post_types)) {
-            $supported_post_types = ['post', 'page'];
+            $supported_post_types = ['post', 'page', 'wordpress_screenshot', 'tfj_screenshot', 'i4ware_screenshot'];
         }
 
         // 1. Meta Box on source posts: OpenAI translation action interface
@@ -570,8 +570,8 @@ class CV_OAI_PLL_Admin {
         $post_id     = $post->ID;
         $source_lang = pll_get_post_language($post_id);
 
-        if ($source_lang !== 'fi') {
-            echo '<p class="description">' . esc_html__('Only posts in Finnish (fi) can be translated using this plugin.', 'cv-openai-polylang-translator') . '</p>';
+        if (empty($source_lang)) {
+            echo '<p class="description">' . esc_html__('Please set the post language in Polylang before translating.', 'cv-openai-polylang-translator') . '</p>';
             return;
         }
 
@@ -583,7 +583,7 @@ class CV_OAI_PLL_Admin {
         $target_languages = [];
         if (is_array($pll_languages)) {
             foreach ($pll_languages as $l) {
-                if ($l->slug !== 'fi') {
+                if ($l->slug !== $source_lang) {
                     $target_languages[] = $l;
                 }
             }
