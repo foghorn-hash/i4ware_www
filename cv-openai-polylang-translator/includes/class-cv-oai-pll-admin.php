@@ -131,6 +131,9 @@ class CV_OAI_PLL_Admin {
                 <a href="?page=cv-oai-polylang-translator&tab=queue" class="nav-tab <?php echo $active_tab === 'queue' ? 'nav-tab-active' : ''; ?>">
                     <?php esc_html_e('Translation Queue & Worker', 'cv-openai-polylang-translator'); ?>
                 </a>
+                <a href="?page=cv-oai-polylang-translator&tab=media" class="nav-tab <?php echo $active_tab === 'media' ? 'nav-tab-active' : ''; ?>">
+                    <?php esc_html_e('Media AI Analyzer', 'cv-openai-polylang-translator'); ?>
+                </a>
             </h2>
 
             <div class="tab-content">
@@ -406,6 +409,83 @@ class CV_OAI_PLL_Admin {
                             
                             <div id="cv-oai-pll-error-log-table-wrap">
                                 <p class="description"><?php esc_html_e('No failed items logged in the queue.', 'cv-openai-polylang-translator'); ?></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($active_tab === 'media') : ?>
+                    <!-- Media Analyzer Tab Content -->
+                    <div id="cv-oai-pll-media-panel" style="background:#fff; border:1px solid #ccd0d4; padding:20px; border-radius:4px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+                        <h3><?php esc_html_e('Media AI Alt & Metadata Generator', 'cv-openai-polylang-translator'); ?></h3>
+                        <p><?php esc_html_e('Scan, translate, and automatically generate image title, alt, caption, and description in Finnish, English, and Arabic using OpenAI Vision.', 'cv-openai-polylang-translator'); ?></p>
+
+                        <!-- Search and filter controls -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; gap: 15px; flex-wrap: wrap;">
+                            <div style="display:flex; gap:10px;">
+                                <input type="text" id="cv-oai-media-search-input" placeholder="<?php esc_attr_e('Search images...', 'cv-openai-polylang-translator'); ?>" class="regular-text" style="margin:0; height:30px; line-height:30px;" />
+                                <button type="button" id="cv-oai-media-search-btn" class="button"><?php esc_html_e('Search', 'cv-openai-polylang-translator'); ?></button>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <label for="cv-oai-media-filter-status"><strong><?php esc_html_e('Status:', 'cv-openai-polylang-translator'); ?></strong></label>
+                                <select id="cv-oai-media-filter-status" style="height:30px; margin:0;">
+                                    <option value="all"><?php esc_html_e('All Images', 'cv-openai-polylang-translator'); ?></option>
+                                    <option value="missing"><?php esc_html_e('Missing Metadata', 'cv-openai-polylang-translator'); ?></option>
+                                    <option value="completed"><?php esc_html_e('Completed Metadata', 'cv-openai-polylang-translator'); ?></option>
+                                </select>
+                                <button type="button" id="cv-oai-media-bulk-run-btn" class="button button-primary" disabled>
+                                    <?php esc_html_e('Run Bulk Analysis', 'cv-openai-polylang-translator'); ?>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar (Bulk) -->
+                        <div id="cv-oai-media-progress-wrap" style="display:none; background:#f6f7f7; border: 1px solid #dcdcde; padding: 15px; border-radius: 3px; margin-bottom: 20px;">
+                            <h4 style="margin:0 0 10px 0;"><?php esc_html_e('Bulk Processing Progress', 'cv-openai-polylang-translator'); ?></h4>
+                            <div class="progress-bar-wrapper" style="background:#f0f0f1; border-radius:4px; height:20px; width:100%; overflow:hidden; border: 1px solid #c3c4c7; position: relative; margin-bottom:10px;">
+                                <div id="cv-oai-media-progress-bar" style="background:#2271b1; height:100%; width:0%; transition: width 0.2s ease;"></div>
+                                <div id="cv-oai-media-progress-text" style="position: absolute; width: 100%; text-align: center; top: 0; line-height: 20px; font-weight: 600; color: #1d2327; font-size:11px;">0%</div>
+                            </div>
+                            <div style="display: flex; gap: 40px;">
+                                <div>
+                                    <span style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #646970; display: block;"><?php esc_html_e('API Tokens Used', 'cv-openai-polylang-translator'); ?></span>
+                                    <span id="cv-oai-media-stat-tokens" style="font-size: 16px; font-weight: bold;">0</span>
+                                </div>
+                                <div>
+                                    <span style="font-weight: 600; font-size: 11px; text-transform: uppercase; color: #646970; display: block;"><?php esc_html_e('Cost Estimate', 'cv-openai-polylang-translator'); ?></span>
+                                    <span id="cv-oai-media-stat-cost" style="font-size: 16px; font-weight: bold; color: green;">$0.0000</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Console Logs -->
+                        <div id="cv-oai-media-live-log" style="display:none; max-height: 120px; overflow-y: auto; background: #222; color: #00ff00; padding: 10px; font-family: monospace; font-size: 11px; border-radius: 3px; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);"></div>
+
+                        <!-- Media listing table -->
+                        <table class="wp-list-table widefat fixed striped">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30px;"><input type="checkbox" id="cv-oai-media-select-all" /></th>
+                                    <th style="width: 60px;"><?php esc_html_e('Thumbnail', 'cv-openai-polylang-translator'); ?></th>
+                                    <th><?php esc_html_e('Filename', 'cv-openai-polylang-translator'); ?></th>
+                                    <th style="width: 150px;"><?php esc_html_e('AI Meta (Fi/En/Ar)', 'cv-openai-polylang-translator'); ?></th>
+                                    <th style="width: 110px;"><?php esc_html_e('Actions', 'cv-openai-polylang-translator'); ?></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cv-oai-media-list-table-body">
+                                <tr>
+                                    <td colspan="5" style="text-align:center; padding: 20px;"><?php esc_html_e('Loading images...', 'cv-openai-polylang-translator'); ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Table Pagination -->
+                        <div style="margin-top: 15px; display:flex; justify-content:space-between; align-items:center;">
+                            <span class="description"><?php esc_html_e('Finnish (fi) primary attachments are listed. Translations are synchronized automatically.', 'cv-openai-polylang-translator'); ?></span>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <button type="button" id="cv-oai-media-prev-page" class="button" disabled>&laquo; <?php esc_html_e('Prev', 'cv-openai-polylang-translator'); ?></button>
+                                <span id="cv-oai-media-page-info" style="font-weight:600;">1 / 1</span>
+                                <button type="button" id="cv-oai-media-next-page" class="button" disabled><?php esc_html_e('Next', 'cv-openai-polylang-translator'); ?> &raquo;</button>
                             </div>
                         </div>
                     </div>
@@ -688,7 +768,7 @@ class CV_OAI_PLL_Admin {
      * Enqueues administration JS and CSS assets.
      */
     public function enqueue_assets($hook) {
-        if (in_array($hook, ['post.php', 'post-new.php', 'settings_page_cv-oai-polylang-translator'], true)) {
+        if (in_array($hook, ['post.php', 'post-new.php', 'settings_page_cv-oai-polylang-translator', 'upload.php'], true)) {
             // CSS
             wp_enqueue_style(
                 'cv-oai-pll-admin-css',
@@ -717,17 +797,17 @@ class CV_OAI_PLL_Admin {
                 'translation_failed_lbl'   => __('Translation failed: ', 'cv-openai-polylang-translator'),
             ]);
 
-            // Queue JavaScript loader (only on our settings tabs pages)
-            if ($hook === 'settings_page_cv-oai-polylang-translator') {
+            // Queue & Media JavaScript loaders
+            if ($hook === 'settings_page_cv-oai-polylang-translator' || $hook === 'upload.php') {
                 wp_enqueue_script(
-                    'cv-oai-pll-admin-queue-js',
-                    plugins_url('assets/js/admin-queue.js', dirname(__FILE__)),
+                    'cv-oai-pll-admin-media-js',
+                    plugins_url('assets/js/admin-media.js', dirname(__FILE__)),
                     ['jquery'],
                     '1.0.0',
                     true
                 );
 
-                wp_localize_script('cv-oai-pll-admin-queue-js', 'cvOaiPllQueueL10n', [
+                wp_localize_script('cv-oai-pll-admin-media-js', 'cvOaiPllQueueL10n', [
                     'ajax_url'            => admin_url('admin-ajax.php'),
                     'nonce'               => wp_create_nonce('cv_oai_pll_queue_nonce'),
                     'scanning_msg'        => __('Scanning and populating queue...', 'cv-openai-polylang-translator'),
@@ -738,7 +818,18 @@ class CV_OAI_PLL_Admin {
                     'confirm_clear_queue' => __('Are you sure you want to clear the entire translation queue?', 'cv-openai-polylang-translator'),
                     'worker_running_lbl'  => __('Pause Queue Worker', 'cv-openai-polylang-translator'),
                     'worker_paused_lbl'   => __('Resume Queue Worker', 'cv-openai-polylang-translator'),
+                    'run_bulk_label'      => __('Run Bulk Analysis (%d)', 'cv-openai-polylang-translator'),
                 ]);
+            }
+
+            if ($hook === 'settings_page_cv-oai-polylang-translator') {
+                wp_enqueue_script(
+                    'cv-oai-pll-admin-queue-js',
+                    plugins_url('assets/js/admin-queue.js', dirname(__FILE__)),
+                    ['jquery'],
+                    '1.0.0',
+                    true
+                );
             }
         }
     }

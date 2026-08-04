@@ -1,0 +1,80 @@
+/**
+ * Editor styling for the i4ware Lightbox Gallery Gutenberg Block.
+ */
+
+.i4ware-gallery-placeholder {
+    background: #f6f7f7;
+    border: 2px dashed #ccd0d4;
+    border-radius: 4px;
+    padding: 30px;
+    text-align: center;
+    max-width: 600px;
+    margin: 15px auto;
+}
+
+.i4ware-gallery-placeholder-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.i4ware-gallery-placeholder h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: #1d2327;
+}
+
+.i4ware-gallery-placeholder p {
+    margin: 0 0 15px 0;
+    font-size: 13px;
+    color: #646970;
+}
+
+.i4ware-gallery-select-btn {
+    margin: 0 auto !important;
+}
+
+/* Previews Grid in Editor */
+.i4ware-gallery-editor-grid {
+    display: grid;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.i4ware-gallery-editor-grid.columns-1 { grid-template-columns: repeat(1, 1fr); }
+.i4ware-gallery-editor-grid.columns-2 { grid-template-columns: repeat(2, 1fr); }
+.i4ware-gallery-editor-grid.columns-3 { grid-template-columns: repeat(3, 1fr); }
+.i4ware-gallery-editor-grid.columns-4 { grid-template-columns: repeat(4, 1fr); }
+.i4ware-gallery-editor-grid.columns-5 { grid-template-columns: repeat(5, 1fr); }
+.i4ware-gallery-editor-grid.columns-6 { grid-template-columns: repeat(6, 1fr); }
+
+.i4ware-gallery-editor-item {
+    position: relative;
+    border: 1px solid #ccd0d4;
+    background: #fff;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.i4ware-gallery-editor-item img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+}
+
+.i4ware-gallery-editor-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-size: 10px;
+    padding: 4px 6px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}

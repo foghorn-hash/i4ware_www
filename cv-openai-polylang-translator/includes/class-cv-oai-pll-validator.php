@@ -168,26 +168,35 @@ class CV_OAI_PLL_Validator {
 
                 // Check critical B2B terms and product names (must remain in Latin)
                 $product_names = [
-                    'i4ware',
-                    'i4ware Software',
-                    'i4ware®',
-                    'Timesheet for Jira',
-                    'Jira',
-                    'Atlassian',
-                    'OpenAI',
-                    'Microsoft',
-                    'SAP',
-                    'WordPress',
-                    'Polylang',
-                    'Advanced Custom Fields',
-                    'ACF',
-                    'Freshworks',
-                    'Freshchat',
-                    'Microsoft Teams'
+                    'i4ware'                 => ['i4ware', 'i4ware Software', 'i4ware®'],
+                    'i4ware Software'        => ['i4ware Software', 'i4ware', 'i4ware®'],
+                    'i4ware®'                => ['i4ware®', 'i4ware', 'i4ware Software'],
+                    'Timesheet for Jira'     => ['Timesheet for Jira', 'Timesheet'],
+                    'Jira'                   => ['Jira'],
+                    'Atlassian'              => ['Atlassian'],
+                    'OpenAI'                 => ['OpenAI'],
+                    'Microsoft'              => ['Microsoft'],
+                    'SAP'                    => ['SAP'],
+                    'WordPress'              => ['WordPress'],
+                    'Polylang'               => ['Polylang'],
+                    'Advanced Custom Fields' => ['Advanced Custom Fields', 'ACF'],
+                    'ACF'                    => ['ACF', 'Advanced Custom Fields'],
+                    'Freshworks'             => ['Freshworks'],
+                    'Freshchat'              => ['Freshchat'],
+                    'Microsoft Teams'        => ['Microsoft Teams', 'Teams']
                 ];
-                foreach ($product_names as $product) {
-                    if (stripos($source_val_clean, $product) !== false) {
-                        if (stripos($trans_val_clean, $product) === false) {
+                foreach ($product_names as $product => $synonyms) {
+                    $pattern = '/(?<![a-zA-Z0-9])' . preg_quote($product, '/') . '(?![a-zA-Z0-9])/i';
+                    if (preg_match($pattern, $source_val_clean)) {
+                        $matched_translation = false;
+                        foreach ($synonyms as $syn) {
+                            $syn_pattern = '/(?<![a-zA-Z0-9])' . preg_quote($syn, '/') . '(?![a-zA-Z0-9])/i';
+                            if (preg_match($syn_pattern, $trans_val_clean)) {
+                                $matched_translation = true;
+                                break;
+                            }
+                        }
+                        if (!$matched_translation) {
                             return new WP_Error(
                                 'validation_missing_product',
                                 sprintf(__('Validation failed: Product name or trademark "%s" was missing or altered in translation.', 'cv-openai-polylang-translator'), $product)
@@ -215,13 +224,13 @@ class CV_OAI_PLL_Validator {
                     $source_plain = preg_replace('/\[[^\]]+\]/', '', $source_plain); // shortcodes
                     $source_plain = preg_replace('/URLPLACEHOLDER_\d+/i', '', $source_plain);
                     $source_plain = preg_replace('/EMAILPLACEHOLDER_\d+/i', '', $source_plain);
-                    $source_plain = preg_replace('/%(?:\d+\$)?[-+0-9#\. ]*[a-zA-Z%]/', '', $source_plain); // sprintf
+                    $source_plain = preg_replace('/%(?:\d+\$)?[-+0-9#\.]*[a-zA-Z%]/', '', $source_plain); // sprintf
                     $source_plain = preg_replace('/\{\{[a-zA-Z0-9_\-]+\}\}|\{[a-zA-Z0-9_\-]+\}/', '', $source_plain); // curly variables
                     $source_plain = preg_replace('/(?<![a-zA-Z0-9_]):[a-zA-Z_][a-zA-Z0-9_\-]*/', '', $source_plain); // colon variables
                     
                     // Filter out brand names
                     $source_without_brands = $source_plain;
-                    foreach ($product_names as $p) {
+                    foreach (array_keys($product_names) as $p) {
                         $source_without_brands = str_replace($p, '', $source_without_brands);
                     }
                     
@@ -357,7 +366,7 @@ class CV_OAI_PLL_Validator {
      * @return array
      */
     private static function extract_sprintf_placeholders($text) {
-        preg_match_all('/%(?:\d+\$)?[-+0-9#\. ]*[a-zA-Z%]/', $text, $matches);
+        preg_match_all('/%(?:\d+\$)?[-+0-9#\.]*[a-zA-Z%]/', $text, $matches);
         return is_array($matches) && !empty($matches[0]) ? $matches[0] : [];
     }
 

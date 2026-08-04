@@ -1,0 +1,275 @@
+/**
+ * Frontend styles for the i4ware Lightbox Gallery.
+ * Includes responsive CSS grid layouts, hover micro-interactions, and premium glassmorphic lightbox overlays.
+ */
+
+/* Responsive Grid Layout */
+.i4ware-lightbox-gallery-wrap {
+    display: grid;
+    gap: 16px;
+    margin: 20px 0;
+}
+
+.i4ware-lightbox-gallery-wrap.columns-1 { grid-template-columns: repeat(1, 1fr); }
+.i4ware-lightbox-gallery-wrap.columns-2 { grid-template-columns: repeat(2, 1fr); }
+.i4ware-lightbox-gallery-wrap.columns-3 { grid-template-columns: repeat(3, 1fr); }
+.i4ware-lightbox-gallery-wrap.columns-4 { grid-template-columns: repeat(4, 1fr); }
+.i4ware-lightbox-gallery-wrap.columns-5 { grid-template-columns: repeat(5, 1fr); }
+.i4ware-lightbox-gallery-wrap.columns-6 { grid-template-columns: repeat(6, 1fr); }
+
+/* Grid Item Styles */
+.i4ware-lightbox-gallery-item {
+    position: relative;
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    background: #f7f7f7;
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.i4ware-lightbox-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Hover Micro-interactions */
+.i4ware-lightbox-gallery-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.i4ware-lightbox-gallery-item:hover img {
+    transform: scale(1.06);
+}
+
+/* Zoom Hover Overlay */
+.i4ware-gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 8px;
+}
+
+.i4ware-lightbox-gallery-item:hover .i4ware-gallery-overlay {
+    opacity: 1;
+}
+
+.i4ware-gallery-zoom-icon {
+    font-size: 26px;
+    font-weight: 300;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.i4ware-lightbox-gallery-item:hover .i4ware-gallery-zoom-icon {
+    transform: scale(1);
+}
+
+/* Responsive Grid Adapting */
+@media (max-width: 900px) {
+    .i4ware-lightbox-gallery-wrap.columns-4,
+    .i4ware-lightbox-gallery-wrap.columns-5,
+    .i4ware-lightbox-gallery-wrap.columns-6 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .i4ware-lightbox-gallery-wrap {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 400px) {
+    .i4ware-lightbox-gallery-wrap {
+        grid-template-columns: repeat(1, 1fr) !important;
+    }
+}
+
+/* Lightbox Premium Modal Overlay */
+.i4ware-lightbox-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(10, 10, 10, 0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    box-sizing: border-box;
+}
+
+.i4ware-lightbox-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.i4ware-lightbox-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Media Centered Container */
+.i4ware-lightbox-container {
+    position: relative;
+    max-width: 82%;
+    max-height: 85%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.i4ware-lightbox-img {
+    max-width: 100%;
+    max-height: 75vh;
+    object-fit: contain;
+    border-radius: 6px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Captions / Meta Info Box */
+.i4ware-lightbox-caption {
+    background: rgba(15, 15, 15, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 10px 18px;
+    color: #fff;
+    margin-top: 14px;
+    text-align: center;
+    max-width: 90%;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.i4ware-lightbox-caption-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.i4ware-lightbox-caption-desc {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Controls Buttons */
+.i4ware-lightbox-close,
+.i4ware-lightbox-nav {
+    position: fixed;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.75);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    outline: none;
+    z-index: 1000000;
+}
+
+.i4ware-lightbox-close:hover,
+.i4ware-lightbox-nav:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.i4ware-lightbox-close:active,
+.i4ware-lightbox-nav:active {
+    transform: scale(0.95);
+}
+
+/* Close Positioning */
+.i4ware-lightbox-close {
+    top: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+}
+
+/* Navigation Arrow Positioning */
+.i4ware-lightbox-nav {
+    top: 50%;
+    transform: translateY(-50%);
+    width: 52px;
+    height: 52px;
+}
+
+.i4ware-lightbox-nav:hover {
+    transform: translateY(-50%) scale(1.05);
+}
+
+.i4ware-lightbox-nav:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.i4ware-lightbox-nav.prev {
+    left: 28px;
+}
+
+.i4ware-lightbox-nav.next {
+    right: 28px;
+}
+
+/* Responsive modal scaling overrides */
+@media (max-width: 768px) {
+    .i4ware-lightbox-nav {
+        width: 42px;
+        height: 42px;
+    }
+    
+    .i4ware-lightbox-nav.prev { left: 12px; }
+    .i4ware-lightbox-nav.next { right: 12px; }
+    
+    .i4ware-lightbox-close {
+        top: 16px;
+        right: 16px;
+        width: 38px;
+        height: 38px;
+    }
+    
+    .i4ware-lightbox-container {
+        max-width: 90%;
+    }
+}

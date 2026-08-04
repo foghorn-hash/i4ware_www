@@ -43,6 +43,7 @@ class CV_OAI_PLL_Plugin {
         require_once $dir . '/class-cv-oai-pll-string-translator.php';
         require_once $dir . '/class-cv-oai-pll-queue.php';
         require_once $dir . '/class-cv-oai-pll-cron.php';
+        require_once $dir . '/class-cv-oai-pll-media-analyzer.php';
         require_once $dir . '/class-cv-oai-pll-admin.php';
     }
 
@@ -52,6 +53,7 @@ class CV_OAI_PLL_Plugin {
     public function run() {
         $this->admin->init();
         CV_OAI_PLL_Cron::init();
+        CV_OAI_PLL_Media_Analyzer::init();
 
         // Self-healing database tables creation
         $db_version = get_option('cv_oai_pll_db_version', '0');
