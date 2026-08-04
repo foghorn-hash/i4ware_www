@@ -1,7 +1,7 @@
 === CV OpenAI Polylang Translator ===
 Contributors: walkout_
 Donate link: https://www.paypal.com/ncp/payment/Y826SVNLSK4MC
-Tags: translation, polylang, openai, gpt, arabic, english, multilingual, automation
+Tags: translation, polylang, openai, gpt
 Requires at least: 5.8
 Requires PHP: 7.4
 Tested up to: 6.5
