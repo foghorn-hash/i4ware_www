@@ -3,7 +3,7 @@
  * Shortcode for Web Hosting page [i4ware_web_hosting_page]
  * Supports Polylang localizations and enqueues separate CSS from the SDK page.
  */
-add_shortcode('i4ware_web_hosting_page', function() {
+add_shortcode('i4ware_web_hosting_page', function () {
     $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
 
     // Enqueue the SDK page CSS for consistent layout and styling
@@ -88,6 +88,45 @@ add_shortcode('i4ware_web_hosting_page', function() {
             'quote_title' => 'Order web hosting or request more details.',
             'quote_desc' => 'Get in touch and choose reliable hosting for your website today!',
             'help_text' => '💡 Need help filling in? Call +358 40 8200 491 or email us at',
+        ),
+        'ar' => array(
+            'eyebrow' => 'استضافة المواقع · Leaseweb · الأمان',
+            'hero_title' => 'خدمة استضافة مواقع موثوقة لمواقع ووردبريس.',
+            'hero_desc' => 'تقدم i4ware Software خدمات استضافة مواقع موثوقة لمواقع ووردبريس وتطبيقات PHP مفتوحة المصدر الأخرى. تعمل الخدمة على خادم افتراضي خاص يقع في مركز بيانات Leaseweb المتطور في أمستردام.',
+            'ftp_notice' => '<strong>ملاحظة:</strong> لأسباب أمنية، لا تقدم i4ware Software بيانات اعتماد FTP. يتم تثبيت وتهيئة جميع البرامج (مثل ووردبريس وتطبيقات PHP الأخرى) بأمان مباشر على الخادم نيابة عن العملاء.',
+            'request_quote' => 'طلب عرض سعر ←',
+            'datacenter_link' => 'مركز بيانات Leaseweb',
+            'pricing_title' => 'أسعار واضحة بدون رسوم خفية.',
+            'pricing_lead' => 'نقدم استضافة عالية الأداء بسعر شهري ثابت.',
+            'price_label' => '20 €',
+            'price_unit' => '/ شهرياً + ضريبة القيمة المضافة 25.5%',
+            'billing_info' => 'دورة الفوترة: سنة واحدة · شروط الدفع: 14 يوماً صافياً',
+            'included' => 'ما تتضمنه الخدمة',
+            'inc_title' => 'كل ما تحتاجه لتطبيقات ووردبريس وPHP.',
+            'inc_lead' => 'استفد من التكنولوجيا الحديثة والموارد غير المحدودة لقواعد البيانات وحسابات البريد الإلكتروني.',
+            'feat1_title' => 'تقنية PHP FastCGI',
+            'feat1_desc' => 'يمكن تهيئة إصدار PHP بمرونة ليتناسب مع احتياجات العميل. تشمل الإصدارات المدعومة PHP 5.2 وPHP 7.0 وPHP 8.2.',
+            'feat2_title' => 'قواعد بيانات MySQL غير محدودة',
+            'feat2_desc' => 'أنشئ أي عدد تحتاجه من قواعد بيانات MySQL لخدماتك وتطبيقاتك الإلكترونية.',
+            'feat3_title' => 'قواعد بيانات PostgreSQL غير محدودة',
+            'feat3_desc' => 'دعم كامل لقواعد بيانات PostgreSQL غير المحدودة لاحتياجات إدارة البيانات المتقدمة.',
+            'feat4_title' => 'صناديق بريد إلكتروني غير محدودة',
+            'feat4_desc' => 'حسابات بريد إلكتروني على النطاق الخاص بك بدون قيود اصطناعية أو رسوم إضافية.',
+            'security' => 'الأمان وحماية البريد الإلكتروني',
+            'sec_title' => 'حماية استباقية متعددة الطبقات.',
+            'sec_lead' => 'نحمي حركة البريد الإلكتروني واتصالات الويب الخاصة بك باستخدام تقنيات حديثة.',
+            'sec_p1' => 'تضمن تصفية البريد العشوائي باستخدام تقنيات SpamAssassin وAbusix AI صندوق بريد نظيفاً. يتم فحص جميع الرسائل الإلكترونية بحثاً عن البرامج الضارة باستخدام برنامج ClamAV قبل أن تصل إلى جهازك، مما يمنع تنزيل المرفقات الضارة.',
+            'sec_p2' => 'يتم إعداد تشفير SSL باستخدام شهادة Let’s Encrypt SSL/TLS المجانية. تم تحسين تهيئة الخادم لتحقيق تصنيف أمان ممتاز Grade A أو A+ في خدمة اختبار SSL Labs SSL Test.',
+            'sec_badge1' => 'فلتر البريد العشوائي SpamAssassin & Abusix AI',
+            'sec_badge2' => 'فاحص البرامج الضارة ClamAV',
+            'sec_badge3' => 'تحسين SSL Labs Grade A / A+',
+            'target_group' => 'من المستهدف من هذه الخدمة؟',
+            'target_title' => 'خيار بسيط وآمن.',
+            'target_desc' => 'تعتبر الخدمة مناسبة بشكل خاص للعملاء الذين يحتاجون إلى استضافة مواقع مرنة وبأسعار معقولة لووردبريس وتطبيقات PHP والبريد الإلكتروني وقواعد البيانات، دون قيود معقدة وبمستوى عالٍ من الأمان.',
+            'quote_request' => 'طلب عرض سعر',
+            'quote_title' => 'اطلب خدمة استضافة المواقع أو استفسر عن المزيد.',
+            'quote_desc' => 'تواصل معنا واختر استضافة موثوقة لموقعك الإلكتروني اليوم!',
+            'help_text' => '💡 هل تحتاج مساعدة في التعبئة؟ اتصل على 491 8200 40 358+ أو أرسل بريداً إلكترونياً إلى',
         )
     );
 
@@ -103,13 +142,15 @@ add_shortcode('i4ware_web_hosting_page', function() {
             <span class="ok-eyebrow"><?php echo esc_html($s['eyebrow']); ?></span>
             <h1><?php echo esc_html($s['hero_title']); ?></h1>
             <p><?php echo esc_html($s['hero_desc']); ?></p>
-            <div class="ok-note" style="margin-top: 24px; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); color: #fff;">
+            <div class="ok-note"
+                style="margin-top: 24px; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05); color: #fff;">
                 <?php echo wp_kses($s['ftp_notice'], array('strong' => array())); ?>
             </div>
             <div class="ok-cta">
                 <a class="ok-btn ok-btn-primary" href="#tarjous"><?php echo esc_html($s['request_quote']); ?></a>
                 <a class="ok-btn ok-btn-ghost" href="https://www.leaseweb.com/" target="_blank" rel="noopener">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                         <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
                         <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"></path>
@@ -119,7 +160,8 @@ add_shortcode('i4ware_web_hosting_page', function() {
             </div>
             <div class="ok-links">
                 <a class="ok-chip" href="https://antigravity.google/" target="_blank" rel="noopener">⚡ Antigravity</a>
-                <a class="ok-chip" href="https://www.ssllabs.com/ssltest/" target="_blank" rel="noopener">🔒 SSL Labs Test</a>
+                <a class="ok-chip" href="https://www.ssllabs.com/ssltest/" target="_blank" rel="noopener">🔒 SSL Labs
+                    Test</a>
                 <a class="ok-chip" href="https://letsencrypt.org/" target="_blank" rel="noopener">🔑 Let's Encrypt</a>
             </div>
         </section>
@@ -132,12 +174,14 @@ add_shortcode('i4ware_web_hosting_page', function() {
                 <p class="ok-lead"><?php echo esc_html($s['pricing_lead']); ?></p>
             </div>
 
-            <div class="ok-form-area" style="padding: 40px; text-align: center; background: var(--ok-panel); border: 1px solid var(--ok-border); border-radius: 24px;">
+            <div class="ok-form-area"
+                style="padding: 40px; text-align: center; background: var(--ok-panel); border: 1px solid var(--ok-border); border-radius: 24px;">
                 <div class="ok-price-badge" style="margin: 0 auto 20px auto; display: inline-flex;">
                     <span class="ok-price-val"><?php echo esc_html($s['price_label']); ?></span>
                     <span class="ok-price-unit"><?php echo esc_html($s['price_unit']); ?></span>
                 </div>
-                <h3 style="margin-top: 10px; font-size: 18px; color: var(--ok-text);"><?php echo esc_html($s['billing_info']); ?></h3>
+                <h3 style="margin-top: 10px; font-size: 18px; color: var(--ok-text);">
+                    <?php echo esc_html($s['billing_info']); ?></h3>
             </div>
         </section>
 
@@ -153,7 +197,8 @@ add_shortcode('i4ware_web_hosting_page', function() {
                 <!-- PHP Support -->
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="16 18 22 12 16 6"></polyline>
                             <polyline points="8 6 2 12 8 18"></polyline>
                         </svg>
@@ -164,7 +209,8 @@ add_shortcode('i4ware_web_hosting_page', function() {
                 <!-- MySQL Databases -->
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                             <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
                             <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"></path>
@@ -176,7 +222,8 @@ add_shortcode('i4ware_web_hosting_page', function() {
                 <!-- PostgreSQL Databases -->
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
                             <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
                             <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"></path>
@@ -188,7 +235,8 @@ add_shortcode('i4ware_web_hosting_page', function() {
                 <!-- Email Accounts -->
                 <div class="ok-card">
                     <div class="ok-ico">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                             <polyline points="22,6 12,13 2,6"></polyline>
                         </svg>
@@ -240,8 +288,10 @@ add_shortcode('i4ware_web_hosting_page', function() {
                 <span class="ok-eyebrow"><?php echo esc_html($s['target_group']); ?></span>
                 <h2><?php echo esc_html($s['target_title']); ?></h2>
             </div>
-            <div class="ok-card" style="padding: 40px; background: linear-gradient(180deg, var(--ok-panel) 0%, rgba(17, 22, 37, 0.5) 100%); border: 1px solid var(--ok-border); border-radius: 24px;">
-                <p class="ok-lead" style="margin: 0; font-size: 18px; line-height: 1.7;"><?php echo esc_html($s['target_desc']); ?></p>
+            <div class="ok-card"
+                style="padding: 40px; background: linear-gradient(180deg, var(--ok-panel) 0%, rgba(17, 22, 37, 0.5) 100%); border: 1px solid var(--ok-border); border-radius: 24px;">
+                <p class="ok-lead" style="margin: 0; font-size: 18px; line-height: 1.7;">
+                    <?php echo esc_html($s['target_desc']); ?></p>
             </div>
         </section>
 
@@ -255,7 +305,8 @@ add_shortcode('i4ware_web_hosting_page', function() {
 
             <div class="ok-form-area">
                 <div class="ok-note" style="margin-bottom: 28px;">
-                    <strong><?php echo wp_kses($s['help_text'], array('strong' => array())); ?></strong> <a href="mailto:matti.kiviharju@i4ware.fi">matti.kiviharju@i4ware.fi</a>.
+                    <strong><?php echo wp_kses($s['help_text'], array('strong' => array())); ?></strong> <a
+                        href="mailto:matti.kiviharju@i4ware.fi">matti.kiviharju@i4ware.fi</a>.
                 </div>
                 <?php echo do_shortcode('[wp_quote]'); ?>
             </div>
