@@ -2,6 +2,18 @@
 
 A safe, resource-controlled WordPress plugin to translate content (Finnish to B2B Arabic and English) using OpenAI and Polylang.
 
+## Features & Capabilities
+
+- **Single-Post Translation metabox**: Translate content manually one post at a time via the sidebar metabox, protecting your server against resource constraints.
+- **B2B Modern Standard Arabic**: Custom AI prompts tailored for the Dubai and GCC region B2B communication style, while ensuring trademark names remain in Latin characters.
+- **Resource Control & Translation Locking**: A transient-based global locking mechanism (`cv_oai_pll_global_lock`) with an automatic 10-minute timeout prevents concurrent, resource-heavy execution threads.
+- **Gutenberg block-safe parser**: Separates text elements from Gutenberg markup structure dynamically.
+- **Recursive ACF Translation**: Traverses and translates nested Advanced Custom Fields (Groups, Repeaters, text areas) while preserving structural layout references.
+- **Human-in-the-loop validation**: Forces a human review checkmark on translated drafts before publication to prevent unintended AI hallucinations.
+- **Strict Integrity Checks**: Automated validators protecting against code/script injection and preventing AI modification of URLs, emails, phone numbers, and trademark terms.
+- **History Logs**: Full database-stored audit trails visible in settings and individual post meta histories.
+- **Compliance & Security**: Implemented strict WordPress nonce verification fields, user role permission verification, and sanitize callbacks on all settings.
+
 ---
 
 ## 1. Prerequisites and Installation
