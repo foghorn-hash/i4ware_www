@@ -4252,6 +4252,7 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
                 'price'         => 'Hinta',
                 'subscribe'     => 'Tilaa',
                 'month'         => 'kk',
+                'incl_vat'      => 'sis. ALV',
                 'alert_thanks'  => 'Kiitos tuestasi! Tilaustunnuksesi on: ',
                 'error_missing' => 'Virhe: [paypal_support_table] shortcode vaatii \'client_id\' -attribuutin.',
                 'error_no_plans'=> 'Huomio: Yhtään tilaussuunnitelman ID:tä ei ole määritetty [paypal_support_table] -lyhytkoodiin.',
@@ -4269,6 +4270,7 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
                 'price'         => 'Price',
                 'subscribe'     => 'Subscribe',
                 'month'         => 'month',
+                'incl_vat'      => 'incl. VAT',
                 'alert_thanks'  => 'Thank you for your support! Your subscription ID is: ',
                 'error_missing' => 'Error: The [paypal_support_table] shortcode requires the \'client_id\' attribute.',
                 'error_no_plans'=> 'Warning: No subscription plan IDs have been configured in the [paypal_support_table] shortcode.',
@@ -4286,6 +4288,7 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
                 'price'         => 'السعر',
                 'subscribe'     => 'اشترك',
                 'month'         => 'شهر',
+                'incl_vat'      => 'شامل ضريبة القيمة المضافة',
                 'alert_thanks'  => 'شكراً لدعمك! معرف الاشتراك الخاص بك هو: ',
                 'error_missing' => 'خطأ: يتطلب الكود القصير [paypal_support_table] سمة \'client_id\'.',
                 'error_no_plans'=> 'تنبيه: لم يتم تكوين أي معرفات لخطط الاشتراك في الكود القصير [paypal_support_table].',
@@ -4314,32 +4317,32 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
         $levels = [
             [
                 'name' => $t['levels']['community'],
-                'price' => '€5 / ' . $t['month'],
+                'price' => '€5 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['community']),
             ],
             [
                 'name' => $t['levels']['opensource'],
-                'price' => '€10 / ' . $t['month'],
+                'price' => '€10 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['opensource']),
             ],
             [
                 'name' => $t['levels']['development'],
-                'price' => '€25 / ' . $t['month'],
+                'price' => '€25 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['development']),
             ],
             [
                 'name' => $t['levels']['professional'],
-                'price' => '€50 / ' . $t['month'],
+                'price' => '€50 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['professional']),
             ],
             [
                 'name' => $t['levels']['business'],
-                'price' => '€100 / ' . $t['month'],
+                'price' => '€100 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['business']),
             ],
             [
                 'name' => $t['levels']['enterprise'],
-                'price' => '€250 / ' . $t['month'],
+                'price' => '€250 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['enterprise']),
             ]
         ];
