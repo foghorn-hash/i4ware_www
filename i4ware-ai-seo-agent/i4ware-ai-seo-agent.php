@@ -632,8 +632,23 @@ function i4ware_ai_seo_filter_title($title_parts) {
 
         $custom_title = get_post_meta($post_id, '_ai_seo_title', true);
         if ($custom_title) {
-            $title_parts['title'] = $custom_title;
+            $search = array(
+                'Innovatiivinen Ohjelmistoyritys Suomessa &#8211; ',
+                'Innovatiivinen Ohjelmistoyritys Suomessa &ndash; ',
+                'Innovatiivinen Ohjelmistoyritys Suomessa – ',
+                'Innovatiivinen Ohjelmistoyritys Suomessa - ',
+                ' &#8211; Innovatiivinen Ohjelmistoyritys Suomessa',
+                ' &ndash; Innovatiivinen Ohjelmistoyritys Suomessa',
+                ' – Innovatiivinen Ohjelmistoyritys Suomessa',
+                ' - Innovatiivinen Ohjelmistoyritys Suomessa',
+                'Innovatiivinen Ohjelmistoyritys Suomessa',
+            );
+            $custom_title = trim(str_replace($search, '', $custom_title), " \t\n\r\0\x0B–-");
+            if (!empty($custom_title)) {
+                $title_parts['title'] = $custom_title;
+            }
         }
     }
     return $title_parts;
 }
+
