@@ -599,10 +599,10 @@ if (!function_exists('i4ware_get_sdk_page_url')) {
             $sdk_page_urls[$lang] = false;
 
             $pages = get_posts(array(
-                'post_type'      => 'page',
+                'post_type' => 'page',
                 'posts_per_page' => 5,
-                's'              => '[i4ware_sdk_page]',
-                'post_status'    => 'publish',
+                's' => '[i4ware_sdk_page]',
+                'post_status' => 'publish',
             ));
 
             $found_id = false;
@@ -669,17 +669,17 @@ if (!function_exists('i4ware_pricing_shortcode')) {
         $atts = array_change_key_case($atts, CASE_LOWER);
 
         $a = shortcode_atts([
-            'sdk_page_id'     => '',
-            'sdk_url'         => '',
-            'sdk_url_fi'      => '',
-            'sdk_url_en'      => '',
-            'sdk_url_ar'      => '',
+            'sdk_page_id' => '',
+            'sdk_url' => '',
+            'sdk_url_fi' => '',
+            'sdk_url_en' => '',
+            'sdk_url_ar' => '',
             'contact_page_id' => '',
-            'contact_url'     => '',
-            'contact_url_fi'  => '',
-            'contact_url_en'  => '',
-            'contact_url_ar'  => '',
-            'default_tab'     => 'journey'
+            'contact_url' => '',
+            'contact_url_fi' => '',
+            'contact_url_en' => '',
+            'contact_url_ar' => '',
+            'default_tab' => 'journey'
         ], $atts, 'i4ware_pricing');
 
         // Detect language
@@ -4011,6 +4011,429 @@ function i4ware_register_sdk_screenshot_acf_fields()
         'instruction_placement' => 'label',
         'active' => true,
     ));
+}
+
+/**
+ * Shortcode to display a PayPal Donate button
+ * Usage: [paypal_donate email="your-paypal-email@domain.com" amount="10" currency="EUR" button_text="Lahjoita"]
+ */
+if (!function_exists('i4ware_paypal_donate_shortcode')) {
+    function i4ware_paypal_donate_shortcode($atts)
+    {
+        $atts = is_array($atts) ? $atts : [];
+        $atts = array_change_key_case($atts, CASE_LOWER);
+
+        $a = shortcode_atts([
+            'email' => get_option('admin_email'),
+            'currency' => 'EUR',
+            'amount' => '',
+            'item_name' => 'Lahjoitus',
+            'button_text' => 'Lahjoita PayPalilla'
+        ], $atts, 'paypal_donate');
+
+        $email = sanitize_email($a['email']);
+        $currency = sanitize_text_field($a['currency']);
+        $amount = sanitize_text_field($a['amount']);
+        $item_name = sanitize_text_field($a['item_name']);
+        $button_text = sanitize_text_field($a['button_text']);
+
+        // Build the HTML form
+        $output = '<div class="i4ware-paypal-donate-container" style="margin: 25px 0; text-align: center;">';
+        $output .= '<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="display: inline-block;">';
+        $output .= '<input type="hidden" name="cmd" value="_donations" />';
+        $output .= '<input type="hidden" name="business" value="' . esc_attr($email) . '" />';
+        $output .= '<input type="hidden" name="currency_code" value="' . esc_attr($currency) . '" />';
+        $output .= '<input type="hidden" name="item_name" value="' . esc_attr($item_name) . '" />';
+
+        if (!empty($amount)) {
+            $output .= '<input type="hidden" name="amount" value="' . esc_attr($amount) . '" />';
+        }
+
+        // Stylized modern button using PayPal blue brand color
+        $output .= '<button type="submit" name="submit" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
+
+        // Inline SVG PayPal Logo Icon for premium aesthetics
+        $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
+        $output .= esc_html($button_text);
+        $output .= '</button>';
+
+        $output .= '<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1" />';
+        $output .= '</form>';
+        $output .= '</div>';
+
+        return $output;
+    }
+    add_shortcode('paypal_donate', 'i4ware_paypal_donate_shortcode');
+}
+
+/**
+ * Shortcode to display a PayPal Payment Link or Buy Button
+ * Usage:
+ * - Direct link: [paypal_button url="https://www.paypal.com/ncp/payment/XXXXXXXX" button_text="Osta nyt"]
+ * - Hosted Button ID: [paypal_button id="ABCDE12345" button_text="Osta nyt"]
+ */
+if (!function_exists('i4ware_paypal_button_shortcode')) {
+    function i4ware_paypal_button_shortcode($atts)
+    {
+        $atts = is_array($atts) ? $atts : [];
+        $atts = array_change_key_case($atts, CASE_LOWER);
+
+        $a = shortcode_atts([
+            'url' => '',
+            'id' => '',
+            'button_text' => 'Osta nyt'
+        ], $atts, 'paypal_button');
+
+        $button_text = sanitize_text_field($a['button_text']);
+
+        // Check if direct URL is provided
+        if (!empty($a['url'])) {
+            $url = esc_url($a['url']);
+            $output = '<div class="i4ware-paypal-button-container" style="margin: 25px 0; text-align: center;">';
+            $output .= '<a href="' . $url . '" target="_blank" rel="noopener" style="background: #0070ba; color: #ffffff; text-decoration: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
+            $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
+            $output .= esc_html($button_text);
+            $output .= '</a>';
+            $output .= '</div>';
+            return $output;
+        }
+
+        // Check if Hosted Button ID is provided
+        if (!empty($a['id'])) {
+            $hosted_button_id = sanitize_text_field($a['id']);
+            $output = '<div class="i4ware-paypal-button-container" style="margin: 25px 0; text-align: center;">';
+            $output .= '<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="display: inline-block;">';
+            $output .= '<input type="hidden" name="cmd" value="_s-xclick" />';
+            $output .= '<input type="hidden" name="hosted_button_id" value="' . esc_attr($hosted_button_id) . '" />';
+            $output .= '<button type="submit" name="submit" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
+            $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
+            $output .= esc_html($button_text);
+            $output .= '</button>';
+            $output .= '<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1" />';
+            $output .= '</form>';
+            $output .= '</div>';
+            return $output;
+        }
+
+        return ''; // Return empty if neither is provided
+    }
+    add_shortcode('paypal_button', 'i4ware_paypal_button_shortcode');
+}
+
+/**
+ * Shortcode to display a PayPal Smart Subscribe button
+ * Usage:
+ * [paypal_subscribe client_id="YOUR_LIVE_CLIENT_ID" plan_id="P-XXXXXXXXXXXXXX" color="gold" shape="rect"]
+ */
+if (!function_exists('i4ware_paypal_subscribe_shortcode')) {
+    function i4ware_paypal_subscribe_shortcode($atts)
+    {
+        static $paypal_sdk_loaded = false;
+
+        $atts = is_array($atts) ? $atts : [];
+        $atts = array_change_key_case($atts, CASE_LOWER);
+
+        $a = shortcode_atts([
+            'client_id' => '', // Recommend setting default here or passing via shortcode
+            'plan_id' => '', // Required: e.g. P-123456789
+            'color' => 'gold', // gold, blue, silver, black
+            'shape' => 'rect', // rect, pill
+            'label' => 'subscribe', // subscribe, paypal, buynow, pay
+            'env' => 'production', // production, sandbox
+            'redirect_url' => ''
+        ], $atts, 'paypal_subscribe');
+
+        $client_id = sanitize_text_field($a['client_id']);
+        $plan_id = sanitize_text_field($a['plan_id']);
+
+        if (empty($plan_id) || empty($client_id)) {
+            return '<p style="color: red; font-weight: bold;">Virhe: [paypal_subscribe] shortcode vaatii sekä \'client_id\' että \'plan_id\' -attribuutit.</p>';
+        }
+
+        $color = sanitize_text_field($a['color']);
+        $shape = sanitize_text_field($a['shape']);
+        $label = sanitize_text_field($a['label']);
+        $env = sanitize_text_field($a['env']) === 'sandbox' ? 'sandbox' : 'production';
+        $redirect_url = esc_url_raw($a['redirect_url']);
+        $unique_id = 'paypal-button-container-' . uniqid();
+
+        $output = '';
+
+        // Load PayPal SDK only once per page
+        if (!$paypal_sdk_loaded) {
+            $sdk_url = 'https://www.paypal.com/sdk/js?client-id=' . esc_attr($client_id) . '&vault=true&intent=subscription';
+            $output .= '<script src="' . esc_url($sdk_url) . '" data-sdk-integration-source="button-factory"></script>';
+            $paypal_sdk_loaded = true;
+        }
+
+        // Render Button Container
+        $output .= '<div class="i4ware-paypal-subscribe-container" style="margin: 25px 0; text-align: center; max-width: 350px; margin-left: auto; margin-right: auto;">';
+        $output .= '<div id="' . esc_attr($unique_id) . '"></div>';
+        $output .= '</div>';
+
+        // Render Button Script
+        $output .= '<script type="text/javascript">
+            (function() {
+                var renderPaypal = function() {
+                    if (typeof paypal !== "undefined") {
+                        paypal.Buttons({
+                            style: {
+                                shape: "' . esc_js($shape) . '",
+                                color: "' . esc_js($color) . '",
+                                layout: "vertical",
+                                label: "' . esc_js($label) . '"
+                            },
+                            createSubscription: function(data, actions) {
+                                return actions.subscription.create({
+                                    "plan_id": "' . esc_js($plan_id) . '"
+                                });
+                            },
+                            onApprove: function(data, actions) {
+                                if ("' . esc_js($redirect_url) . '" !== "") {
+                                    window.location.href = "' . esc_js($redirect_url) . '";
+                                } else {
+                                    alert("Tilaus suoritettu onnistuneesti! Tilaustunnuksesi on: " + data.subscriptionID);
+                                }
+                            },
+                            onError: function(err) {
+                                console.error("PayPal Smart Subscribe virhe:", err);
+                            }
+                        }).render("#' . esc_js($unique_id) . '");
+                    } else {
+                        // If SDK is not loaded yet, retry in 100ms
+                        setTimeout(renderPaypal, 100);
+                    }
+                };
+                renderPaypal();
+            })();
+        </script>';
+
+        return $output;
+    }
+    add_shortcode('paypal_subscribe', 'i4ware_paypal_subscribe_shortcode');
+}
+
+/**
+ * Shortcode to display a support levels table with PayPal Smart Subscribe buttons
+ * Usage:
+ * [paypal_support_table client_id="YOUR_CLIENT_ID" community="P-1" opensource="P-2" development="P-3" professional="P-4" business="P-5" enterprise="P-6"]
+ */
+if (!function_exists('i4ware_paypal_support_table_shortcode')) {
+    function i4ware_paypal_support_table_shortcode($atts)
+    {
+        static $paypal_sdk_loaded = false;
+
+        $atts = is_array($atts) ? $atts : [];
+        $atts = array_change_key_case($atts, CASE_LOWER);
+
+        $a = shortcode_atts([
+            'client_id' => '',
+            'community' => '',
+            'opensource' => '',
+            'development' => '',
+            'professional' => '',
+            'business' => '',
+            'enterprise' => '',
+            'env' => 'production'
+        ], $atts, 'paypal_support_table');
+
+        $client_id = sanitize_text_field($a['client_id']);
+
+        // Detect current language using Polylang
+        $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+        if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
+            $lang = 'en'; // fallback
+        }
+
+        // Define translation dictionary
+        $translations = [
+            'fi' => [
+                'support_level' => 'Tukitaso',
+                'price'         => 'Hinta',
+                'subscribe'     => 'Tilaa',
+                'month'         => 'kk',
+                'alert_thanks'  => 'Kiitos tuestasi! Tilaustunnuksesi on: ',
+                'error_missing' => 'Virhe: [paypal_support_table] shortcode vaatii \'client_id\' -attribuutin.',
+                'error_no_plans'=> 'Huomio: Yhtään tilaussuunnitelman ID:tä ei ole määritetty [paypal_support_table] -lyhytkoodiin.',
+                'levels'        => [
+                    'community'    => 'Yhteisön tukija',
+                    'opensource'   => 'Avoimen lähdekoodin tukija',
+                    'development'  => 'Kehityksen tukija',
+                    'professional' => 'Ammattilaistason sponsori',
+                    'business'     => 'Yrityssponsori',
+                    'enterprise'   => 'Suuryrityssponsori'
+                ]
+            ],
+            'en' => [
+                'support_level' => 'Support Level',
+                'price'         => 'Price',
+                'subscribe'     => 'Subscribe',
+                'month'         => 'month',
+                'alert_thanks'  => 'Thank you for your support! Your subscription ID is: ',
+                'error_missing' => 'Error: The [paypal_support_table] shortcode requires the \'client_id\' attribute.',
+                'error_no_plans'=> 'Warning: No subscription plan IDs have been configured in the [paypal_support_table] shortcode.',
+                'levels'        => [
+                    'community'    => 'Community Supporter',
+                    'opensource'   => 'Open Source Supporter',
+                    'development'  => 'Development Supporter',
+                    'professional' => 'Professional Sponsor',
+                    'business'     => 'Business Sponsor',
+                    'enterprise'   => 'Enterprise Sponsor'
+                ]
+            ],
+            'ar' => [
+                'support_level' => 'مستوى الدعم',
+                'price'         => 'السعر',
+                'subscribe'     => 'اشترك',
+                'month'         => 'شهر',
+                'alert_thanks'  => 'شكراً لدعمك! معرف الاشتراك الخاص بك هو: ',
+                'error_missing' => 'خطأ: يتطلب الكود القصير [paypal_support_table] سمة \'client_id\'.',
+                'error_no_plans'=> 'تنبيه: لم يتم تكوين أي معرفات لخطط الاشتراك في الكود القصير [paypal_support_table].',
+                'levels'        => [
+                    'community'    => 'داعم المجتمع',
+                    'opensource'   => 'داعم المصدر المفتوح',
+                    'development'  => 'داعم التطوير',
+                    'professional' => 'راعي محترف',
+                    'business'     => 'راعي أعمال',
+                    'enterprise'   => 'راعي مؤسسي'
+                ]
+            ]
+        ];
+
+        $t = $translations[$lang];
+
+        if (empty($client_id)) {
+            return '<p style="color: red; font-weight: bold;">' . esc_html($t['error_missing']) . '</p>';
+        }
+
+        // Determine alignments for LTR vs RTL (Arabic)
+        $align_left  = ($lang === 'ar') ? 'right' : 'left';
+        $align_right = ($lang === 'ar') ? 'left' : 'right';
+
+        // Define support levels
+        $levels = [
+            [
+                'name' => $t['levels']['community'],
+                'price' => '€5 / ' . $t['month'],
+                'id' => sanitize_text_field($a['community']),
+            ],
+            [
+                'name' => $t['levels']['opensource'],
+                'price' => '€10 / ' . $t['month'],
+                'id' => sanitize_text_field($a['opensource']),
+            ],
+            [
+                'name' => $t['levels']['development'],
+                'price' => '€25 / ' . $t['month'],
+                'id' => sanitize_text_field($a['development']),
+            ],
+            [
+                'name' => $t['levels']['professional'],
+                'price' => '€50 / ' . $t['month'],
+                'id' => sanitize_text_field($a['professional']),
+            ],
+            [
+                'name' => $t['levels']['business'],
+                'price' => '€100 / ' . $t['month'],
+                'id' => sanitize_text_field($a['business']),
+            ],
+            [
+                'name' => $t['levels']['enterprise'],
+                'price' => '€250 / ' . $t['month'],
+                'id' => sanitize_text_field($a['enterprise']),
+            ]
+        ];
+
+        // Filter levels that have a plan_id configured
+        $active_levels = [];
+        foreach ($levels as $level) {
+            if (!empty($level['id'])) {
+                $level['btn_id'] = 'paypal-sub-btn-' . uniqid();
+                $active_levels[] = $level;
+            }
+        }
+
+        if (empty($active_levels)) {
+            return '<p style="color: orange; font-weight: bold;">' . esc_html($t['error_no_plans']) . '</p>';
+        }
+
+        $output = '';
+
+        // Load PayPal SDK only once per page
+        if (!$paypal_sdk_loaded) {
+            $sdk_url = 'https://www.paypal.com/sdk/js?client-id=' . esc_attr($client_id) . '&vault=true&intent=subscription';
+            $output .= '<script src="' . esc_url($sdk_url) . '" data-sdk-integration-source="button-factory"></script>';
+            $paypal_sdk_loaded = true;
+        }
+
+        // Render HTML Table with Dark SaaS theme (matching custom UI screenshot)
+        $output .= '<div class="i4ware-support-table-wrapper" style="overflow-x: auto; margin: 30px 0; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif; background: #131526; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" ' . ($lang === 'ar' ? 'dir="rtl"' : 'dir="ltr"') . '>';
+        $output .= '<table style="width: 100%; border-collapse: collapse; text-align: ' . $align_left . '; background: transparent; overflow: hidden;">';
+        $output .= '<thead style="background: #0b0d19; border-bottom: 2px solid rgba(255, 255, 255, 0.08);">';
+        $output .= '<tr>';
+        $output .= '<th style="padding: 18px 20px; font-weight: 700; color: #8f9cae; font-size: 13px; text-transform: uppercase; letter-spacing: 0.8px; text-align: ' . $align_left . ';">' . esc_html($t['support_level']) . '</th>';
+        $output .= '<th style="padding: 18px 20px; font-weight: 700; color: #8f9cae; font-size: 13px; text-align: ' . $align_right . '; text-transform: uppercase; letter-spacing: 0.8px;">' . esc_html($t['price']) . '</th>';
+        $output .= '<th style="padding: 18px 20px; font-weight: 700; color: #8f9cae; font-size: 13px; text-align: center; width: 220px; text-transform: uppercase; letter-spacing: 0.8px;">' . esc_html($t['subscribe']) . '</th>';
+        $output .= '</tr>';
+        $output .= '</thead>';
+        $output .= '<tbody>';
+
+        foreach ($active_levels as $level) {
+            $output .= '<tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); transition: background 0.2s;" onmouseover="this.style.background=\'rgba(255, 255, 255, 0.03)\'" onmouseout="this.style.background=\'transparent\'">';
+            $output .= '<td style="padding: 18px 20px; font-weight: 600; color: #ffffff; font-size: 15px; text-align: ' . $align_left . ';">' . esc_html($level['name']) . '</td>';
+            $output .= '<td style="padding: 18px 20px; text-align: ' . $align_right . '; font-weight: 700; color: #c084fc; background: linear-gradient(90deg, #c084fc, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 16px;">' . esc_html($level['price']) . '</td>';
+            $output .= '<td style="padding: 12px 20px; text-align: center; vertical-align: middle;">';
+            $output .= '<div id="' . esc_attr($level['btn_id']) . '" style="max-width: 200px; margin: 0 auto;"></div>';
+            $output .= '</td>';
+            $output .= '</tr>';
+        }
+
+        $output .= '</tbody>';
+        $output .= '</table>';
+        $output .= '</div>';
+
+        // Render JavaScript rendering loops
+        $output .= '<script type="text/javascript">
+            (function() {
+                var renderButtons = function() {
+                    if (typeof paypal !== "undefined") {';
+
+        foreach ($active_levels as $level) {
+            $output .= '
+                        paypal.Buttons({
+                            style: {
+                                shape: "rect",
+                                color: "blue",
+                                layout: "horizontal",
+                                label: "subscribe",
+                                tagline: false
+                            },
+                            createSubscription: function(data, actions) {
+                                return actions.subscription.create({
+                                    "plan_id": "' . esc_js($level['id']) . '"
+                                });
+                            },
+                            onApprove: function(data, actions) {
+                                alert("' . esc_js($t['alert_thanks']) . '" + data.subscriptionID);
+                            },
+                            onError: function(err) {
+                                console.error("Virhe: ", err);
+                            }
+                        }).render("#' . esc_js($level['btn_id']) . '");';
+        }
+
+        $output .= '
+                    } else {
+                        setTimeout(renderButtons, 100);
+                    }
+                };
+                renderButtons();
+            })();
+        </script>';
+
+        return $output;
+    }
+    add_shortcode('paypal_support_table', 'i4ware_paypal_support_table_shortcode');
 }
 
 ?>
