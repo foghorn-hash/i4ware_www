@@ -18,6 +18,11 @@
 /my-invoicing-app/.env.development.local
 /my-invoicing-app/.env.test.local
 /my-invoicing-app/.env.production.local
+/my-invoicing-app-legal/.DS_Store
+/my-invoicing-app-legal/.env.local
+/my-invoicing-app-legal/.env.development.local
+/my-invoicing-app-legal/.env.test.local
+/my-invoicing-app-legal/.env.production.local
 
 /my-invoicing-app/npm-debug.log*
 /my-invoicing-app/yarn-debug.log*
