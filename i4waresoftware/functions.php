@@ -1918,6 +1918,10 @@ add_action('init', function () {
 
     // reCAPTCHA
     pll_register_string('i4ware', 'Ole hyvä ja vahvista reCAPTCHA.');
+
+    // PayPal Donate
+    pll_register_string('i4ware', 'Lahjoita PayPalilla');
+    pll_register_string('i4ware', 'Lahjoitus');
 });
 
 /**
@@ -4023,12 +4027,52 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
         $atts = is_array($atts) ? $atts : [];
         $atts = array_change_key_case($atts, CASE_LOWER);
 
+        // Detect current language using Polylang
+        $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+        if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
+            $lang = 'en'; // fallback
+        }
+
+        // Default translations based on current language
+        $default_item_names = [
+            'fi' => 'Lahjoitus',
+            'en' => 'Donation',
+            'ar' => 'تبرع'
+        ];
+
+        $default_button_texts = [
+            'fi' => 'Lahjoita PayPalilla',
+            'en' => 'Donate with PayPal',
+            'ar' => 'تبرع بواسطة باي بال'
+        ];
+
+        $default_item_name = isset($default_item_names[$lang]) ? $default_item_names[$lang] : 'Donation';
+        $default_button_text = isset($default_button_texts[$lang]) ? $default_button_texts[$lang] : 'Donate with PayPal';
+
+        // Override using Polylang string translation registry if available
+        if (function_exists('pll__')) {
+            $pll_item_name = pll__('Lahjoitus');
+            $pll_button_text = pll__('Lahjoita PayPalilla');
+
+            if ($lang === 'fi') {
+                $default_item_name = $pll_item_name;
+                $default_button_text = $pll_button_text;
+            } else {
+                if ($pll_item_name !== 'Lahjoitus') {
+                    $default_item_name = $pll_item_name;
+                }
+                if ($pll_button_text !== 'Lahjoita PayPalilla') {
+                    $default_button_text = $pll_button_text;
+                }
+            }
+        }
+
         $a = shortcode_atts([
             'email' => get_option('admin_email'),
             'currency' => 'EUR',
             'amount' => '',
-            'item_name' => 'Lahjoitus',
-            'button_text' => 'Lahjoita PayPalilla'
+            'item_name' => $default_item_name,
+            'button_text' => $default_button_text
         ], $atts, 'paypal_donate');
 
         $email = sanitize_email($a['email']);
