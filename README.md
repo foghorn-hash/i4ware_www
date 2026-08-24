@@ -150,6 +150,15 @@ i4ware Softwaren virallinen mukautettu WordPress-teema.
 
 ---
 
+## 📊 Google Analytics (GA4) -tapahtumaseuranta
+
+Sivusto sisältää valmiin Google Analytics 4 (GA4) -integraation PayPal-lahjoitus- ja tilauspainikkeiden klikkausten seuraamiseksi. Kun käyttäjä klikkaa mitä tahansa sivuston PayPal-painiketta (`[paypal_donate]`, `[paypal_button]`, `[paypal_subscribe]` tai `[paypal_support_table]`), lähetetään Google Analyticsiin mukautettu tapahtuma `click_paypal_donation`.
+
+Yksityiskohtaiset ohjeet siitä, miten määrität nämä tapahtumat ja niiden parametrit (kuten `donation_type`, `plan_id`, `amount` jne.) Google Analytics -alustalla, löydät teeman omasta dokumentaatiosta:
+👉 [i4waresoftware/README.md#google-analytics-ga4-paypal-event-tracking](i4waresoftware/README.md#google-analytics-ga4-paypal-event-tracking)
+
+---
+
 ## 📜 Lisenssi
 
 Katso tarkemmat lisenssitiedot [LICENSE](LICENSE)-tiedostosta.

@@ -4094,7 +4094,13 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
         }
 
         // Stylized modern button using PayPal blue brand color
-        $output .= '<button type="submit" name="submit" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
+        $ga_onclick = sprintf(
+            "if(typeof gtag==='function'){gtag('event','click_paypal_donation',{'donation_type':'donate','item_name':'%s','amount':'%s','currency':'%s'});}",
+            esc_js($item_name),
+            esc_js($amount),
+            esc_js($currency)
+        );
+        $output .= '<button type="submit" name="submit" onclick="' . esc_attr($ga_onclick) . '" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
 
         // Inline SVG PayPal Logo Icon for premium aesthetics
         $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
@@ -4134,7 +4140,12 @@ if (!function_exists('i4ware_paypal_button_shortcode')) {
         if (!empty($a['url'])) {
             $url = esc_url($a['url']);
             $output = '<div class="i4ware-paypal-button-container" style="margin: 25px 0; text-align: center;">';
-            $output .= '<a href="' . $url . '" target="_blank" rel="noopener" style="background: #0070ba; color: #ffffff; text-decoration: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
+            $ga_onclick = sprintf(
+                "if(typeof gtag==='function'){gtag('event','click_paypal_donation',{'donation_type':'buy_link','button_text':'%s','url':'%s'});}",
+                esc_js($button_text),
+                esc_js($url)
+            );
+            $output .= '<a href="' . $url . '" target="_blank" rel="noopener" onclick="' . esc_attr($ga_onclick) . '" style="background: #0070ba; color: #ffffff; text-decoration: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
             $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
             $output .= esc_html($button_text);
             $output .= '</a>';
@@ -4149,7 +4160,12 @@ if (!function_exists('i4ware_paypal_button_shortcode')) {
             $output .= '<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="display: inline-block;">';
             $output .= '<input type="hidden" name="cmd" value="_s-xclick" />';
             $output .= '<input type="hidden" name="hosted_button_id" value="' . esc_attr($hosted_button_id) . '" />';
-            $output .= '<button type="submit" name="submit" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
+            $ga_onclick = sprintf(
+                "if(typeof gtag==='function'){gtag('event','click_paypal_donation',{'donation_type':'buy_hosted','button_text':'%s','hosted_button_id':'%s'});}",
+                esc_js($button_text),
+                esc_js($hosted_button_id)
+            );
+            $output .= '<button type="submit" name="submit" onclick="' . esc_attr($ga_onclick) . '" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
             $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
             $output .= esc_html($button_text);
             $output .= '</button>';
@@ -4226,6 +4242,14 @@ if (!function_exists('i4ware_paypal_subscribe_shortcode')) {
                                 color: "' . esc_js($color) . '",
                                 layout: "vertical",
                                 label: "' . esc_js($label) . '"
+                            },
+                            onClick: function() {
+                                if (typeof gtag === "function") {
+                                    gtag("event", "click_paypal_donation", {
+                                        "donation_type": "subscribe",
+                                        "plan_id": "' . esc_js($plan_id) . '"
+                                    });
+                                }
                             },
                             createSubscription: function(data, actions) {
                                 return actions.subscription.create({
@@ -4454,6 +4478,15 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
                                 layout: "horizontal",
                                 label: "subscribe",
                                 tagline: false
+                            },
+                            onClick: function() {
+                                if (typeof gtag === "function") {
+                                    gtag("event", "click_paypal_donation", {
+                                        "donation_type": "support_table",
+                                        "plan_id": "' . esc_js($level['id']) . '",
+                                        "level_name": "' . esc_js($level['name']) . '"
+                                    });
+                                }
                             },
                             createSubscription: function(data, actions) {
                                 return actions.subscription.create({

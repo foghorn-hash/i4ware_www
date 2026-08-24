@@ -245,6 +245,69 @@ The theme provides the following custom shortcodes:
 - Use the `template-parts` directory to adjust the header, footer, and content layout as needed.
 - Add images to the `assets/images` directory for use throughout the theme.
 
+## Google Analytics (GA4) PayPal Event Tracking
+
+The theme automatically tracks user clicks on all PayPal components (`[paypal_donate]`, `[paypal_button]`, `[paypal_subscribe]`, and `[paypal_support_table]`) and sends a custom event to Google Analytics 4 (GA4) when clicked.
+
+### Custom Event Details
+- **Event Name**: `click_paypal_donation`
+- **Event Parameters**:
+  - `donation_type`: The type of PayPal interaction (`donate`, `buy_link`, `buy_hosted`, `subscribe`, `support_table`).
+  - `item_name`: The name of the donation item (from `[paypal_donate]`).
+  - `amount`: The donation amount (from `[paypal_donate]`).
+  - `currency`: The currency code (from `[paypal_donate]`).
+  - `plan_id`: The PayPal subscription plan ID (from `[paypal_subscribe]` and `[paypal_support_table]`).
+  - `level_name`: The support level tier name (from `[paypal_support_table]`).
+  - `button_text`: The text displayed on the clicked button.
+  - `url`: The destination URL (from `[paypal_button]` link style).
+  - `hosted_button_id`: The hosted button ID (from `[paypal_button]` hosted style).
+
+---
+
+### How to Configure in Google Analytics (GA4) Platform
+
+To collect, visualize, and report on these clicks, follow these configuration steps in your Google Analytics dashboard:
+
+#### Step 1: Ensure Google Analytics (gtag.js) is Loaded
+The tracking script relies on the global `gtag()` function. Ensure you have installed GA4 on your WordPress site.
+*Tip: You can paste your GA4 tracking snippet directly into WordPress by navigating to **Appearance > Customize > Theme Settings** and putting it under the Header Scripts field, or by using a plugin like Site Kit by Google.*
+
+#### Step 2: Register Custom Dimensions in GA4
+By default, GA4 collects custom event parameters but will not show them in standard reports unless they are registered as Custom Dimensions.
+1. Open [Google Analytics](https://analytics.google.com/).
+2. Click **Admin** (the gear icon in the bottom-left corner).
+3. In the menu, under *Data display*, select **Custom definitions**.
+4. Click **Create custom dimensions** in the top-right corner.
+5. Create a dimension for each of the parameters you wish to report on. Use the following recommended setups:
+   - **Dimension name**: `Donation Type` | **Scope**: `Event` | **Event parameter**: `donation_type`
+   - **Dimension name**: `PayPal Item Name` | **Scope**: `Event` | **Event parameter**: `item_name`
+   - **Dimension name**: `PayPal Plan ID` | **Scope**: `Event` | **Event parameter**: `plan_id`
+   - **Dimension name**: `PayPal Support Level` | **Scope**: `Event` | **Event parameter**: `level_name`
+   - **Dimension name**: `PayPal Amount` | **Scope**: `Event` | **Event parameter**: `amount`
+6. Click **Save** after creating each dimension.
+
+#### Step 3: Verify Tracking using Realtime Report
+1. In GA4, go to **Reports > Realtime**.
+2. Visit your website in an incognito window and click one of the PayPal buttons.
+3. Look at the **Event count by Event name** card in the Realtime report.
+4. You should see the `click_paypal_donation` event listed. Click on it to expand and view the captured parameter values in real-time.
+
+#### Step 4: Create a Custom Report (Exploration)
+1. Go to **Explore** in the GA4 left-hand menu.
+2. Select **Blank** to create a new exploration.
+3. Next to *Dimensions*, click **+** and import the custom dimensions you created (e.g., `Donation Type`, `PayPal Support Level`).
+4. Next to *Metrics*, click **+** and import **Event count** and **Total users**.
+5. Drag the dimensions into the **Rows** section and metrics into the **Values** section.
+6. The table will display which PayPal buttons/support levels are clicked, along with the total click counts.
+
+#### Step 5: Mark as a Key Event / Conversion (Optional)
+If you want to track PayPal clicks as conversions (e.g., for Google Ads attribution):
+1. In the GA4 **Admin** menu, under *Data display*, click **Key events** (previously called *Conversions*).
+2. Click **New key event**.
+3. Enter `click_paypal_donation` as the event name and click **Save**.
+
+---
+
 ## Support
 For support, please contact the theme developer at [info@i4ware.fi](mailto:info@i4ware.fi). 
 
