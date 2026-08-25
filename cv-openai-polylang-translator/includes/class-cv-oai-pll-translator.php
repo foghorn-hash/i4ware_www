@@ -110,13 +110,15 @@ class CV_OAI_PLL_Translator {
                 }
             }
 
-            // Preprocess uncached items: Replace URLs and Emails with safe HTML placeholders
+            // Preprocess uncached items: Replace URLs, Emails, and HTML tags with safe placeholders
             $url_map = [];
             $email_map = [];
+            $html_tag_map = [];
             foreach ($uncached_payload as $key => &$item) {
                 if (isset($item['content']) && is_string($item['content'])) {
                     $item['content'] = self::replace_urls_with_placeholders($item['content'], $url_map);
                     $item['content'] = self::replace_emails_with_placeholders($item['content'], $email_map);
+                    $item['content'] = self::replace_html_tags_with_placeholders($item['content'], $html_tag_map);
                 }
             }
 
@@ -184,6 +186,8 @@ class CV_OAI_PLL_Translator {
                 // Restore placeholders in translated_results
                 foreach ($translated_results as $key => &$val) {
                     if (is_string($val)) {
+                        // Restore HTML tags first
+                        $val = self::restore_html_tags_from_placeholders($val, $html_tag_map);
                         // Restore URLs
                         foreach ($url_map as $placeholder => $url) {
                             $val = str_replace($placeholder, $url, $val);
@@ -381,6 +385,59 @@ class CV_OAI_PLL_Translator {
                 $email_map[$placeholder] = $email;
             }
             return $placeholder;
+        }, $text);
+    }
+
+    /**
+     * Replaces HTML tags that are not typography/basic formatting with placeholders.
+     */
+    public static function replace_html_tags_with_placeholders($text, &$tag_map) {
+        $ignored_tags = [
+            'p', 'br', 'hr', 'strong', 'em', 'span', 'b', 'i', 'ul', 'ol', 'li', 
+            'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'code', 'pre'
+        ];
+
+        // Match any HTML tag: opening, closing, or self-closing
+        $pattern = '/<\/?([a-zA-Z0-9]+)\b[^>]*>/';
+
+        return preg_replace_callback($pattern, function($matches) use (&$tag_map, $ignored_tags) {
+            $full_tag = $matches[0];
+            $tag_name = strtolower($matches[1]);
+
+            if (in_array($tag_name, $ignored_tags, true)) {
+                return $full_tag;
+            }
+
+            $index = count($tag_map);
+            $placeholder = 'HTMLTAGPLACEHOLDER_' . $index;
+            $tag_map[$placeholder] = $full_tag;
+
+            return $placeholder;
+        }, $text);
+    }
+
+    /**
+     * Restores original HTML tags from placeholders.
+     */
+    public static function restore_html_tags_from_placeholders($text, $tag_map) {
+        if (empty($tag_map)) {
+            return $text;
+        }
+
+        $pattern = '/HTMLTAGPLACEHOLDER\s*_\s*(\d+)/i';
+
+        return preg_replace_callback($pattern, function($matches) use ($tag_map) {
+            $index = $matches[1];
+            $key = 'HTMLTAGPLACEHOLDER_' . $index;
+            if (isset($tag_map[$key])) {
+                return $tag_map[$key];
+            }
+            foreach ($tag_map as $k => $v) {
+                if (strcasecmp($k, $key) === 0) {
+                    return $v;
+                }
+            }
+            return $matches[0];
         }, $text);
     }
 

@@ -255,7 +255,7 @@ The theme automatically tracks user clicks on all PayPal components (`[paypal_do
   - `donation_type`: The type of PayPal interaction (`donate`, `buy_link`, `buy_hosted`, `subscribe`, `support_table`).
   - `item_name`: The name of the donation item (from `[paypal_donate]`).
   - `amount`: The donation amount (from `[paypal_donate]`).
-  - `currency`: The currency code (from `[paypal_donate]`).
+  - `currency`: The currency code (from `[paypal_donate]` and `[paypal_support_table]`).
   - `plan_id`: The PayPal subscription plan ID (from `[paypal_subscribe]` and `[paypal_support_table]`).
   - `level_name`: The support level tier name (from `[paypal_support_table]`).
   - `button_text`: The text displayed on the clicked button.

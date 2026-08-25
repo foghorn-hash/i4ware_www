@@ -4303,10 +4303,12 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
             'professional' => '',
             'business' => '',
             'enterprise' => '',
-            'env' => 'production'
+            'env' => 'production',
+            'currency' => 'EUR'
         ], $atts, 'paypal_support_table');
 
         $client_id = sanitize_text_field($a['client_id']);
+        $currency = sanitize_text_field($a['currency']);
 
         // Detect current language using Polylang
         $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
@@ -4434,6 +4436,9 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
         // Load PayPal SDK only once per page
         if (!$paypal_sdk_loaded) {
             $sdk_url = 'https://www.paypal.com/sdk/js?client-id=' . esc_attr($client_id) . '&vault=true&intent=subscription';
+            if (!empty($currency)) {
+                $sdk_url .= '&currency=' . esc_attr($currency);
+            }
             $output .= '<script src="' . esc_url($sdk_url) . '" data-sdk-integration-source="button-factory"></script>';
             $paypal_sdk_loaded = true;
         }
@@ -4485,7 +4490,8 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
                                     gtag("event", "click_paypal_donation", {
                                         "donation_type": "support_table",
                                         "plan_id": "' . esc_js($level['id']) . '",
-                                        "level_name": "' . esc_js($level['name']) . '"
+                                        "level_name": "' . esc_js($level['name']) . '",
+                                        "currency": "' . esc_js($currency) . '"
                                     });
                                 }
                             },

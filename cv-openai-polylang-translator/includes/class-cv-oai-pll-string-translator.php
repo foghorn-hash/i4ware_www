@@ -114,6 +114,19 @@ class CV_OAI_PLL_String_Translator {
             $payload['str_' . $index] = $str;
         }
 
+        // Preprocess items: Replace URLs, Emails, and HTML tags with safe placeholders
+        $url_map = [];
+        $email_map = [];
+        $html_tag_map = [];
+        foreach ($payload as $key => &$str) {
+            if (is_string($str)) {
+                $str = CV_OAI_PLL_Translator::replace_urls_with_placeholders($str, $url_map);
+                $str = CV_OAI_PLL_Translator::replace_emails_with_placeholders($str, $email_map);
+                $str = CV_OAI_PLL_Translator::replace_html_tags_with_placeholders($str, $html_tag_map);
+            }
+        }
+        unset($str); // Break references
+
         $chat_payload = [
             'model'       => $model,
             'temperature' => 0.1,
@@ -143,12 +156,25 @@ class CV_OAI_PLL_String_Translator {
         foreach ($payload as $key => $source_text) {
             if (isset($translated[$key])) {
                 $translated_text = $translated[$key];
+
+                // Restore HTML tags, URLs, and Emails
+                $translated_text = CV_OAI_PLL_Translator::restore_html_tags_from_placeholders($translated_text, $html_tag_map);
+                foreach ($url_map as $placeholder => $url) {
+                    $translated_text = str_replace($placeholder, $url, $translated_text);
+                }
+                foreach ($email_map as $placeholder => $email) {
+                    $translated_text = str_replace($placeholder, $email, $translated_text);
+                }
+
+                // Get original source text
+                $orig_idx = str_replace('str_', '', $key);
+                $orig_source = isset($strings[$orig_idx]) ? $strings[$orig_idx] : $source_text;
                 
-                // Validate individual translation integrity
-                $validation = CV_OAI_PLL_Validator::validate([$key => $source_text], [$key => $translated_text], $target_lang);
+                // Validate individual translation integrity against original source
+                $validation = CV_OAI_PLL_Validator::validate([$key => $orig_source], [$key => $translated_text], $target_lang);
                 if (!is_wp_error($validation)) {
-                    self::save_single_translation($source_text, $translated_text, $target_lang);
-                    CV_OAI_PLL_DB::add_cached_translation($source_text, $target_lang, $translated_text);
+                    self::save_single_translation($orig_source, $translated_text, $target_lang);
+                    CV_OAI_PLL_DB::add_cached_translation($orig_source, $target_lang, $translated_text);
                 }
             }
         }
