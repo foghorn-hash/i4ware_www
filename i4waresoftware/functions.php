@@ -10,6 +10,7 @@ require_once(get_template_directory() . '/google-ai-shortcode.php');
 require_once(get_template_directory() . '/jira-timesheet-shortcode.php');
 require_once(get_template_directory() . '/wordpress-kehitys-shortcode.php');
 require_once(get_template_directory() . '/web-hotellipalvelu-shortcode.php');
+require_once(get_template_directory() . '/affiliate-programs-shortcode.php');
 
 // Theme setup
 function i4waresoftware_setup()

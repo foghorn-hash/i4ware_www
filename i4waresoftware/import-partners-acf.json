@@ -36,6 +36,30 @@
                 "required": 0
             },
             {
+                "key": "field_partner_category_fi",
+                "label": "Kategoria (FI)",
+                "name": "partner_category_fi",
+                "type": "text",
+                "instructions": "Kumppanin kategoria suomeksi.",
+                "required": 0
+            },
+            {
+                "key": "field_partner_category_en",
+                "label": "Category (EN)",
+                "name": "partner_category_en",
+                "type": "text",
+                "instructions": "Partner's category in English.",
+                "required": 0
+            },
+            {
+                "key": "field_partner_category_ar",
+                "label": "Category (AR)",
+                "name": "partner_category_ar",
+                "type": "text",
+                "instructions": "Partner's category in Arabic.",
+                "required": 0
+            },
+            {
                 "key": "field_logo_group",
                 "label": "Logo ryhmä",
                 "name": "logo_group",
@@ -45,7 +69,8 @@
                 "choices": {
                     "top": "Ylin",
                     "main": "Pääosa",
-                    "bottom": "Alin"
+                    "bottom": "Alin",
+                    "affiliate": "Affiliate"
                 },
                 "default_value": "main",
                 "allow_null": 0,
