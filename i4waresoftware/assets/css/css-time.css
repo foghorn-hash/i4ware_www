@@ -897,3 +897,43 @@ body {
         gap: 32px;
     }
 }
+
+/* RTL Support for Arabic */
+.tfj[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", "Cairo", Tahoma, sans-serif;
+}
+
+.tfj[dir="rtl"] .tfj-hero-inner,
+.tfj[dir="rtl"] .tfj-section-head,
+.tfj[dir="rtl"] .tfj-cta-box-inner,
+.tfj[dir="rtl"] .tfj-footer-bottom {
+    text-align: center;
+}
+
+.tfj[dir="rtl"] .tfj-shortcuts-info {
+    text-align: right;
+}
+
+.tfj[dir="rtl"] .tfj-shortcuts-accent {
+    justify-content: flex-start;
+}
+
+.tfj[dir="rtl"] .tfj-shortcuts-table th,
+.tfj[dir="rtl"] .tfj-shortcuts-table td {
+    text-align: right;
+}
+
+.tfj[dir="rtl"] .tfj-benefit-card {
+    text-align: right;
+}
+
+.tfj[dir="rtl"] .tfj-video-header {
+    text-align: right;
+}
+
+.tfj[dir="rtl"] .tfj-trust-item,
+.tfj[dir="rtl"] .tfj-shortcuts-accent {
+    flex-direction: row;
+}

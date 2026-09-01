@@ -46,16 +46,16 @@ $tfj_defaults = array(
         'shortcuts_lead' => 'We built Timesheet for Jira around high-performance workflows. Never lose your focus or reach for the mouse. Control your logs entirely with simple keyboard commands.',
         'shortcuts_accent' => 'Keyboard shortcuts supported out of the box',
         
-        'shortcut_1_key' => 'Tab',
-        'shortcut_1_action' => 'Move cursor down to the next row',
-        'shortcut_2_key' => 'Shift + Tab',
-        'shortcut_2_action' => 'Move cursor up to the previous row',
-        'shortcut_3_key' => 'Enter',
-        'shortcut_3_action' => 'Edit cell value or execute operation',
-        'shortcut_4_key' => 'Space',
-        'shortcut_4_action' => 'Toggle state or open dropdown menus',
-        'shortcut_5_key' => 'Escape',
-        'shortcut_5_action' => 'Close current editing state or modal dialog',
+        'shortcut_1_key' => 'Click',
+        'shortcut_1_action' => 'Click a cell to activate it',
+        'shortcut_2_key' => 'Number Keys',
+        'shortcut_2_action' => 'Enter values into the selected cell using number keys',
+        'shortcut_3_key' => 'Tab',
+        'shortcut_3_action' => 'Save value and move forward to the next cell',
+        'shortcut_4_key' => 'Shift + Tab',
+        'shortcut_4_action' => 'Save value and move backward to the previous cell',
+        'shortcut_5_key' => 'Enter',
+        'shortcut_5_action' => 'Open green + button, which opens modal dialog for entering details',
         
         'video_title' => 'See Timesheet in Action',
         'video_desc' => 'Watch how fast it is to log work and explore AI automation directly inside Jira.',
@@ -163,16 +163,16 @@ $tfj_defaults = array(
         'shortcuts_lead' => 'Kehitimme Timesheet for Jira -sovelluksen korkean suorituskyvyn työnkulkujen ympärille. Älä koskaan menetä keskittymistäsi tai kurota hiireen. Hallitse kirjauksiasi täysin yksinkertaisilla näppäimistökomennoilla.',
         'shortcuts_accent' => 'Näppäimistöoikotiet tuettu suoraan paketista',
         
-        'shortcut_1_key' => 'Tab',
-        'shortcut_1_action' => 'Siirrä kohdistin alas seuraavalle riville',
-        'shortcut_2_key' => 'Shift + Tab',
-        'shortcut_2_action' => 'Siirrä kohdistin ylös edelliselle riville',
-        'shortcut_3_key' => 'Enter',
-        'shortcut_3_action' => 'Muokkaa solun arvoa tai suorita toiminto',
-        'shortcut_4_key' => 'Space',
-        'shortcut_4_action' => 'Vaihda tilaa tai avaa pudotusvalikko',
-        'shortcut_5_key' => 'Escape',
-        'shortcut_5_action' => 'Sulje nykyinen muokkaustila tai modaali-ikkuna',
+        'shortcut_1_key' => 'Click',
+        'shortcut_1_action' => 'Napsauta solua aktivoidaksesi sen',
+        'shortcut_2_key' => 'Number Keys',
+        'shortcut_2_action' => 'Syötä arvoja valittuun soluun numeronäppäimillä',
+        'shortcut_3_key' => 'Tab',
+        'shortcut_3_action' => 'Tallenna arvo ja siirry eteenpäin seuraavaan soluun',
+        'shortcut_4_key' => 'Shift + Tab',
+        'shortcut_4_action' => 'Tallenna arvo ja siirry taaksepäin edelliseen soluun',
+        'shortcut_5_key' => 'Enter',
+        'shortcut_5_action' => 'Avaa vihreä + -painike, joka avaa modaali-ikkunan tietojen täyttämistä varten',
         
         'video_title' => 'Katso Timesheet toiminnassa',
         'video_desc' => 'Katso kuinka nopeaa työn kirjaaminen on ja tutustu tekoälyautomaatioon suoraan Jirassa.',
@@ -248,7 +248,7 @@ $tfj_defaults = array(
     'ar' => array(
         'hero_badge' => 'تطبيق متجر Atlassian',
         'hero_title' => 'تسجيل الوقت في Jira <span>أسرع بـ 10 مرات</span>',
-        'hero_lead' => 'استبدل النوافذ المتكررة والنقرات الكثيرة بشبكة مفاتيح شبيهة ببرنامج Excel. ابدأ التتبع، واعتمد سجلات العمل، وصدّر الساعات القابلة للطلب مباشرة داخل Jira.',
+        'hero_lead' => 'استبدل النوافذ والحوارات البطيئة بشبكة لوحة مفاتيح بنمط Excel. ابدأ التتبع، واعتمد سجلات العمل، وصدّر الساعات القابلة للفوترة مباشرة داخل Jira.',
         'btn_1_text' => 'ابدأ تجربة مجانية لمدة 30 يومًا',
         'btn_1_url' => 'https://marketplace.atlassian.com/apps/1223446/timesheet-for-jira',
         'btn_2_text' => 'عرض في متجر Atlassian',
@@ -256,7 +256,7 @@ $tfj_defaults = array(
         
         'trust_bar_1' => 'معتمد من متجر Atlassian',
         'trust_bar_2' => 'تكامل Jira الأصلي',
-        'trust_bar_3' => 'دعم إدارة خدمات Jira (JSM)',
+        'trust_bar_3' => 'دعم Jira Service Management',
         'trust_bar_4' => 'تقارير جاهزة للمؤسسات',
         
         'benefits_title' => 'اقضِ وقتًا أقل في التتبع ووقتًا أطول في البناء',
@@ -280,16 +280,16 @@ $tfj_defaults = array(
         'shortcuts_lead' => 'لقد قمنا ببناء Timesheet for Jira حول سير عمل عالي الأداء. لا تفقد تركيزك أبدًا ولا تبحث عن الماوس. تحكم في سجلاتك بالكامل باستخدام أوامر لوحة المفاتيح البسيطة.',
         'shortcuts_accent' => 'اختصارات لوحة المفاتيح مدعومة وجاهزة للاستخدام',
         
-        'shortcut_1_key' => 'Tab',
-        'shortcut_1_action' => 'نقل المؤشر للأسفل إلى الصف التالي',
-        'shortcut_2_key' => 'Shift + Tab',
-        'shortcut_2_action' => 'نقل المؤشر للأعلى إلى الصف السابق',
-        'shortcut_3_key' => 'Enter',
-        'shortcut_3_action' => 'تعديل قيمة الخلية أو تنفيذ العملية',
-        'shortcut_4_key' => 'Space',
-        'shortcut_4_action' => 'تغيير الحالة أو فتح القوائم المنسدلة',
-        'shortcut_5_key' => 'Escape',
-        'shortcut_5_action' => 'إغلاق وضع التعديل الحالي أو النافذة المنبثقة',
+        'shortcut_1_key' => 'Click',
+        'shortcut_1_action' => 'انقر فوق الخلية لتنشيطها',
+        'shortcut_2_key' => 'Number Keys',
+        'shortcut_2_action' => 'أدخل القيم في الخلية المحددة باستخدام مفاتيح الأرقام',
+        'shortcut_3_key' => 'Tab',
+        'shortcut_3_action' => 'احفظ القيمة وانتقل للأمام إلى الخلية التالية',
+        'shortcut_4_key' => 'Shift + Tab',
+        'shortcut_4_action' => 'احفظ القيمة وانتقل للخلف إلى الخلية السابقة',
+        'shortcut_5_key' => 'Enter',
+        'shortcut_5_action' => 'افتح زر + الأخضر، والذي يفتح نافذة منبثقة لتعبئة التفاصيل',
         
         'video_title' => 'شاهد Timesheet في العمل',
         'video_desc' => 'شاهد مدى سرعة تسجيل العمل واستكشاف أتمتة الذكاء الاصطناعي مباشرة في Jira.',
@@ -365,18 +365,47 @@ $tfj_defaults = array(
 );
 
 /**
- * Get current language from Polylang
+ * Get current language with full Polylang & URL fallback support
  */
 function get_tfj_landing_language() {
+    // 1. Check explicit URL query parameter
+    if ( isset( $_GET['lang'] ) && in_array( $_GET['lang'], array( 'en', 'fi', 'ar' ), true ) ) {
+        return sanitize_key( $_GET['lang'] );
+    }
+
+    // 2. Check Polylang current language
     if ( function_exists( 'pll_current_language' ) ) {
-        $lang = pll_current_language();
-        if ( in_array( $lang, array( 'fi', 'ar' ) ) ) {
+        $lang = pll_current_language( 'slug' );
+        if ( ! $lang ) {
+            $lang = pll_current_language();
+        }
+        if ( in_array( $lang, array( 'en', 'fi', 'ar' ), true ) ) {
             return $lang;
         }
-        return 'en';
     }
-    
-    $locale = get_locale();
+
+    // 3. Check current post language via Polylang
+    $post_id = get_the_ID();
+    if ( $post_id && function_exists( 'pll_get_post_language' ) ) {
+        $post_lang = pll_get_post_language( $post_id, 'slug' );
+        if ( ! $post_lang ) {
+            $post_lang = pll_get_post_language( $post_id );
+        }
+        if ( in_array( $post_lang, array( 'en', 'fi', 'ar' ), true ) ) {
+            return $post_lang;
+        }
+    }
+
+    // 4. Check URL path prefix (e.g. /en/... or /ar/...)
+    if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+        $uri = $_SERVER['REQUEST_URI'];
+        if ( preg_match( '#/(en|fi|ar)(/|$)#i', $uri, $m ) ) {
+            return strtolower( $m[1] );
+        }
+    }
+
+    // 5. Fallback to locale
+    $locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
     if ( strpos( $locale, 'fi' ) === 0 ) {
         return 'fi';
     } elseif ( strpos( $locale, 'ar' ) === 0 ) {
@@ -390,12 +419,50 @@ function get_tfj_landing_language() {
  */
 function get_tfj_landing_field( $field_name, $lang ) {
     global $tfj_defaults;
-    $val = get_field( $field_name );
+    $val = function_exists( 'get_field' ) ? get_field( $field_name ) : '';
+    $key = str_replace( 'tfj_', '', $field_name );
+
     if ( empty( $val ) ) {
-        $key = str_replace( 'tfj_', '', $field_name );
         return isset( $tfj_defaults[$lang][$key] ) ? $tfj_defaults[$lang][$key] : '';
     }
-    return $val;
+
+    if ( is_array( $val ) ) {
+        if ( isset( $val['text'] ) ) $val = (string) $val['text'];
+        elseif ( isset( $val['url'] ) ) $val = (string) $val['url'];
+        elseif ( isset( $val['title'] ) ) $val = (string) $val['title'];
+        else $val = '';
+    }
+
+    $val_trimmed = is_scalar( $val ) ? trim( (string) $val ) : '';
+    if ( empty( $val_trimmed ) ) {
+        return isset( $tfj_defaults[$lang][$key] ) ? $tfj_defaults[$lang][$key] : '';
+    }
+
+    // If current page is EN or AR, but DB has the default Finnish text, return the localized text
+    if ( $lang !== 'fi' && isset( $tfj_defaults['fi'][$key] ) ) {
+        $fi_default = trim( (string) $tfj_defaults['fi'][$key] );
+        if ( $val_trimmed === $fi_default ) {
+            return isset( $tfj_defaults[$lang][$key] ) ? $tfj_defaults[$lang][$key] : $val_trimmed;
+        }
+    }
+
+    // If current page is AR, but DB has the default English text, return the Arabic text
+    if ( $lang === 'ar' && isset( $tfj_defaults['en'][$key] ) ) {
+        $en_default = trim( (string) $tfj_defaults['en'][$key] );
+        if ( $val_trimmed === $en_default ) {
+            return isset( $tfj_defaults['ar'][$key] ) ? $tfj_defaults['ar'][$key] : $val_trimmed;
+        }
+    }
+
+    // If current page is FI, but DB has the default English text, return the Finnish text
+    if ( $lang === 'fi' && isset( $tfj_defaults['en'][$key] ) ) {
+        $en_default = trim( (string) $tfj_defaults['en'][$key] );
+        if ( $val_trimmed === $en_default ) {
+            return isset( $tfj_defaults['fi'][$key] ) ? $tfj_defaults['fi'][$key] : $val_trimmed;
+        }
+    }
+
+    return $val_trimmed;
 }
 
 /**
@@ -403,19 +470,19 @@ function get_tfj_landing_field( $field_name, $lang ) {
  */
 function get_tfj_landing_image( $field_name, $lang ) {
     global $tfj_defaults;
-    $val = get_field( $field_name );
+    $val = function_exists( 'get_field' ) ? get_field( $field_name ) : '';
     if ( empty( $val ) ) {
         $key = str_replace( 'tfj_', '', $field_name );
         return isset( $tfj_defaults[$lang][$key] ) ? $tfj_defaults[$lang][$key] : '';
     }
     if ( is_array( $val ) && isset( $val['url'] ) ) {
-        return $val['url'];
+        return (string) $val['url'];
     }
-    if ( is_numeric( $val ) ) {
+    if ( is_numeric( $val ) && function_exists( 'wp_get_attachment_image_url' ) ) {
         $url = wp_get_attachment_image_url( $val, 'full' );
-        if ( $url ) return $url;
+        if ( $url ) return (string) $url;
     }
-    return $val;
+    return is_scalar( $val ) ? (string) $val : '';
 }
 
 /**
@@ -853,7 +920,15 @@ function tfj_register_landing_styles() {
  */
 function jira_timesheet_landing_shortcode( $atts ) {
     wp_enqueue_style( 'tfj-landing-style' );
-    $lang = get_tfj_landing_language();
+    
+    $atts = shortcode_atts( array(
+        'lang' => '',
+    ), $atts, 'jira_timesheet_landing' );
+
+    $lang = ! empty( $atts['lang'] ) ? sanitize_key( $atts['lang'] ) : get_tfj_landing_language();
+    if ( ! in_array( $lang, array( 'en', 'fi', 'ar' ), true ) ) {
+        $lang = 'en';
+    }
     
     // Resolve values
     $hero_badge = get_tfj_landing_field( 'tfj_hero_badge', $lang );
@@ -930,7 +1005,7 @@ function jira_timesheet_landing_shortcode( $atts ) {
         'order'          => 'ASC',
     );
     if ( function_exists( 'pll_current_language' ) ) {
-        $screenshot_args['lang'] = pll_current_language();
+        $screenshot_args['lang'] = $lang;
     }
     $screenshot_query = new WP_Query( $screenshot_args );
     $screenshots = array();
@@ -940,13 +1015,23 @@ function jira_timesheet_landing_shortcode( $atts ) {
             $screenshot_query->the_post();
             $s_id = get_the_ID();
             
+            if ( function_exists( 'pll_get_post_language' ) ) {
+                $post_lang = pll_get_post_language( $s_id, 'slug' );
+                if ( ! $post_lang ) {
+                    $post_lang = pll_get_post_language( $s_id );
+                }
+                if ( $post_lang && $post_lang !== $lang ) {
+                    continue; // Skip screenshots belonging to another language
+                }
+            }
+
             // Get ACF Image (try to handle both URL/Array/ID types)
-            $img_val = get_field( 'tfj_screenshot_image', $s_id );
+            $img_val = function_exists( 'get_field' ) ? get_field( 'tfj_screenshot_image', $s_id ) : '';
             $img_url = '';
             if ( ! empty( $img_val ) ) {
                 if ( is_array( $img_val ) && isset( $img_val['url'] ) ) {
                     $img_url = $img_val['url'];
-                } elseif ( is_numeric( $img_val ) ) {
+                } elseif ( is_numeric( $img_val ) && function_exists( 'wp_get_attachment_image_url' ) ) {
                     $img_url = wp_get_attachment_image_url( $img_val, 'full' );
                 } else {
                     $img_url = $img_val;
@@ -954,7 +1039,7 @@ function jira_timesheet_landing_shortcode( $atts ) {
             }
             
             // Fallback to Featured Image
-            if ( empty( $img_url ) ) {
+            if ( empty( $img_url ) && function_exists( 'get_the_post_thumbnail_url' ) ) {
                 $img_url = get_the_post_thumbnail_url( $s_id, 'full' );
             }
             
@@ -962,7 +1047,7 @@ function jira_timesheet_landing_shortcode( $atts ) {
                 $screenshots[] = array(
                     'url'      => $img_url,
                     'caption'  => get_the_title( $s_id ),
-                    'category' => get_field( 'tfj_screenshot_category', $s_id ),
+                    'category' => function_exists( 'get_field' ) ? get_field( 'tfj_screenshot_category', $s_id ) : 'dev',
                 );
             }
         }
@@ -1006,12 +1091,19 @@ function jira_timesheet_landing_shortcode( $atts ) {
     
     // Resolve footer links
     global $tfj_defaults;
-    $footer_links = get_field( 'tfj_footer_links' );
-    if ( empty( $footer_links ) ) {
-        $footer_links = $tfj_defaults[$lang]['footer_links'];
+    $footer_links = function_exists( 'get_field' ) ? get_field( 'tfj_footer_links' ) : null;
+    if ( empty( $footer_links ) || ! is_array( $footer_links ) ) {
+        $footer_links = isset( $tfj_defaults[$lang]['footer_links'] ) ? $tfj_defaults[$lang]['footer_links'] : array();
+    } else {
+        // Check if footer links are the default Finnish array on an EN/AR page
+        if ( $lang !== 'fi' && isset( $footer_links[0]['text'] ) && ( $footer_links[0]['text'] === 'Dokumentaatio' || $footer_links[0]['text'] === 'Tukipalvelu' ) ) {
+            $footer_links = isset( $tfj_defaults[$lang]['footer_links'] ) ? $tfj_defaults[$lang]['footer_links'] : $footer_links;
+        } elseif ( $lang === 'ar' && isset( $footer_links[0]['text'] ) && ( $footer_links[0]['text'] === 'Documentation' || $footer_links[0]['text'] === 'Support Desk' ) ) {
+            $footer_links = isset( $tfj_defaults['ar']['footer_links'] ) ? $tfj_defaults['ar']['footer_links'] : $footer_links;
+        }
     }
 
-    // Build translations for hardcoded accessibility labels
+    // Build translations for accessibility & table headers
     $labels = array(
         'en' => array(
             'image_viewer' => 'Image viewer',
@@ -1019,6 +1111,8 @@ function jira_timesheet_landing_shortcode( $atts ) {
             'prev' => 'Previous',
             'next' => 'Next',
             'play_video' => 'Play video',
+            'key_command' => 'Key Command',
+            'action_operation' => 'Action / Operation',
         ),
         'fi' => array(
             'image_viewer' => 'Kuvan katseluohjelma',
@@ -1026,13 +1120,17 @@ function jira_timesheet_landing_shortcode( $atts ) {
             'prev' => 'Edellinen',
             'next' => 'Seuraava',
             'play_video' => 'Toista video',
+            'key_command' => 'Näppäinkomento',
+            'action_operation' => 'Toiminto / Operaatio',
         ),
         'ar' => array(
-            'image_viewer' => 'عرض الصور',
+            'image_viewer' => 'عارض الصور',
             'close' => 'إغلاق',
             'prev' => 'السابق',
             'next' => 'التالي',
             'play_video' => 'تشغيل الفيديو',
+            'key_command' => 'أمر المفتاح',
+            'action_operation' => 'الإجراء / العملية',
         ),
     );
     $l = isset( $labels[$lang] ) ? $labels[$lang] : $labels['en'];
@@ -1048,7 +1146,7 @@ function jira_timesheet_landing_shortcode( $atts ) {
       <div class="tfj-lb-counter" id="tfjLbCounter"></div>
     </div>
 
-    <div class="tfj">
+    <div class="tfj"<?php echo $lang === 'ar' ? ' dir="rtl"' : ''; ?>>
 
       <!-- HERO SECTION -->
       <section class="tfj-hero">
@@ -1174,8 +1272,8 @@ function jira_timesheet_landing_shortcode( $atts ) {
               <table class="tfj-shortcuts-table">
                 <thead>
                   <tr>
-                    <th>Key Command</th>
-                    <th>Action / Operation</th>
+                    <th><?php echo esc_html( $l['key_command'] ); ?></th>
+                    <th><?php echo esc_html( $l['action_operation'] ); ?></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1318,13 +1416,18 @@ function jira_timesheet_landing_shortcode( $atts ) {
       <footer class="tfj-footer">
         <div class="tfj-wrap">
           <div class="tfj-footer-links">
-            <?php foreach ( $footer_links as $link ): 
-                $class = isset( $link['class'] ) ? $link['class'] : '';
-            ?>
-            <a href="<?php echo esc_url( $link['url'] ); ?>" target="_blank" rel="noopener" class="<?php echo esc_attr( $class ); ?>">
-                <?php echo esc_html( $link['text'] ); ?>
-            </a>
-            <?php endforeach; ?>
+            <?php if ( ! empty( $footer_links ) && is_array( $footer_links ) ): ?>
+                <?php foreach ( $footer_links as $link ): 
+                    if ( ! is_array( $link ) ) continue;
+                    $link_url  = isset( $link['url'] ) ? $link['url'] : '#';
+                    $link_text = isset( $link['text'] ) ? $link['text'] : '';
+                    $class     = isset( $link['class'] ) ? $link['class'] : '';
+                ?>
+                <a href="<?php echo esc_url( $link_url ); ?>" target="_blank" rel="noopener" class="<?php echo esc_attr( $class ); ?>">
+                    <?php echo esc_html( $link_text ); ?>
+                </a>
+                <?php endforeach; ?>
+            <?php endif; ?>
           </div>
           <div class="tfj-footer-bottom">
             <p><?php echo esc_html( $footer_text ); ?></p>
@@ -1604,7 +1707,7 @@ function tfj_import_landing_content_utility() {
         }
 
         $page_id = (int) $_GET['page_id'];
-        $lang    = sanitize_key( $_GET['import_lang'] ); // 'en' or 'fi'
+        $lang    = sanitize_key( $_GET['import_lang'] ); // 'en', 'fi', or 'ar'
 
         if ( ! get_post( $page_id ) ) {
             wp_die( 'Target page ID does not exist.' );

@@ -374,7 +374,7 @@ function i4ware_partnerships_shortcode()
         $logos = get_posts($args);
         $output .= '<div class="' . esc_attr($info['container']) . '">';
         foreach ($logos as $logo) {
-            $url = get_field('logo_url', $logo->ID); // ACF
+            $url = function_exists('get_field') ? get_field('logo_url', $logo->ID) : ''; // ACF
             $img = get_the_post_thumbnail_url($logo->ID, 'large');
             // Polylang: get current language
             if (function_exists('pll_current_language')) {
@@ -383,12 +383,15 @@ function i4ware_partnerships_shortcode()
                 $lang = 'fi'; // oletus
             }
             // Hae alt-teksti oikealla kielellä
-            if ($lang === 'en') {
-                $alt = get_field('logo_alt_en', $logo->ID);
-            } elseif ($lang === 'ar') {
-                $alt = get_field('logo_alt_ar', $logo->ID);
-            } else {
-                $alt = get_field('logo_alt_fi', $logo->ID);
+            $alt = '';
+            if (function_exists('get_field')) {
+                if ($lang === 'en') {
+                    $alt = get_field('logo_alt_en', $logo->ID);
+                } elseif ($lang === 'ar') {
+                    $alt = get_field('logo_alt_ar', $logo->ID);
+                } else {
+                    $alt = get_field('logo_alt_fi', $logo->ID);
+                }
             }
             if (!$alt) {
                 $alt = get_the_title($logo->ID);
@@ -441,7 +444,7 @@ function i4ware_customers_shortcode()
     );
     $customers = get_posts($args);
     foreach ($customers as $customer) {
-        $url = get_field('customer_url', $customer->ID); // ACF
+        $url = function_exists('get_field') ? get_field('customer_url', $customer->ID) : ''; // ACF
         $img = get_the_post_thumbnail_url($customer->ID, 'large');
         // Polylang: get current language
         if (function_exists('pll_current_language')) {
@@ -450,12 +453,15 @@ function i4ware_customers_shortcode()
             $lang = 'fi';
         }
         // Hae kuvausteksti oikealla kielellä
-        if ($lang === 'en') {
-            $use_case = get_field('use_case_en', $customer->ID);
-        } elseif ($lang === 'ar') {
-            $use_case = get_field('use_case_ar', $customer->ID);
-        } else {
-            $use_case = get_field('use_case_fi', $customer->ID);
+        $use_case = '';
+        if (function_exists('get_field')) {
+            if ($lang === 'en') {
+                $use_case = get_field('use_case_en', $customer->ID);
+            } elseif ($lang === 'ar') {
+                $use_case = get_field('use_case_ar', $customer->ID);
+            } else {
+                $use_case = get_field('use_case_fi', $customer->ID);
+            }
         }
         if (!$use_case) {
             $use_case = '';
@@ -4073,7 +4079,7 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
             'currency' => 'EUR',
             'amount' => '',
             'item_name' => $default_item_name,
-            'button_text' => $default_button_text
+            'button_text' => ''
         ], $atts, 'paypal_donate');
 
         $email = sanitize_email($a['email']);
@@ -4081,6 +4087,27 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
         $amount = sanitize_text_field($a['amount']);
         $item_name = sanitize_text_field($a['item_name']);
         $button_text = sanitize_text_field($a['button_text']);
+
+        if (empty($button_text)) {
+            if (!empty($amount)) {
+                $currency_symbol = '€';
+                if ($currency === 'USD') {
+                    $currency_symbol = '$';
+                } elseif ($currency === 'GBP') {
+                    $currency_symbol = '£';
+                }
+
+                if ($lang === 'fi') {
+                    $button_text = 'Lahjoita ' . $amount . ' ' . $currency_symbol . ' PayPalilla';
+                } elseif ($lang === 'ar') {
+                    $button_text = 'تبرع بـ ' . $amount . ' ' . $currency_symbol . ' بواسطة باي بال';
+                } else {
+                    $button_text = 'Donate ' . $currency_symbol . $amount . ' with PayPal';
+                }
+            } else {
+                $button_text = $default_button_text;
+            }
+        }
 
         // Build the HTML form
         $output = '<div class="i4ware-paypal-donate-container" style="margin: 25px 0; text-align: center;">';
@@ -4384,36 +4411,44 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
         $align_left  = ($lang === 'ar') ? 'right' : 'left';
         $align_right = ($lang === 'ar') ? 'left' : 'right';
 
+        // Determine currency symbol
+        $currency_symbol = '€';
+        if ($currency === 'USD') {
+            $currency_symbol = '$';
+        } elseif ($currency === 'GBP') {
+            $currency_symbol = '£';
+        }
+
         // Define support levels
         $levels = [
             [
                 'name' => $t['levels']['community'],
-                'price' => '€5 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
+                'price' => $currency_symbol . '5 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['community']),
             ],
             [
                 'name' => $t['levels']['opensource'],
-                'price' => '€10 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
+                'price' => $currency_symbol . '10 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['opensource']),
             ],
             [
                 'name' => $t['levels']['development'],
-                'price' => '€25 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
+                'price' => $currency_symbol . '25 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['development']),
             ],
             [
                 'name' => $t['levels']['professional'],
-                'price' => '€50 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
+                'price' => $currency_symbol . '50 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['professional']),
             ],
             [
                 'name' => $t['levels']['business'],
-                'price' => '€100 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
+                'price' => $currency_symbol . '100 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['business']),
             ],
             [
                 'name' => $t['levels']['enterprise'],
-                'price' => '€250 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
+                'price' => $currency_symbol . '250 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
                 'id' => sanitize_text_field($a['enterprise']),
             ]
         ];

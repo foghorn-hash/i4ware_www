@@ -7,7 +7,7 @@
   var createElement = el.createElement;
   var useState = el.useState;
   var appConfig = window.i4wareRoiCalculator || {};
-  var currentLang = appConfig.lang === 'fi' ? 'fi' : 'en';
+  var currentLang = (appConfig.lang === 'fi' || appConfig.lang === 'ar') ? appConfig.lang : 'en';
 
   var translations = {
     fi: {
@@ -107,6 +107,55 @@
       flatLabel: 'Flat price',
       monthlyCost: 'Monthly cost',
       annualCost: 'Annual cost'
+    },
+    ar: {
+      title: 'حاسبة العائد على الاستثمار لـ Timesheet for Jira',
+      hourlyRate: 'راتب الموظف (السعر بالساعة باليورو)',
+      vatRate: 'نسبة ضريبة القيمة المضافة (%)',
+      projectHours: 'الساعات المستغرقة في التطوير / شهر',
+      employeeCount: 'عدد الموظفين (حجم الفريق)',
+      usdToEurRate: 'سعر تحويل USD -> EUR',
+      calculate: 'احسب',
+      notice: 'تحسب هذه الحاسبة التكاليف الإجمالية للعميل (القوى العاملة + منتج SaaS الخاص) وتطرح سعر Timesheet for Jira.',
+      resultsTitle: 'النتائج:',
+      employeesIncluded: 'الموظفون المشمولون: ',
+      // Section 1: Employee cost
+      employeeCostTitle: 'تكاليف القوى العاملة للعميل',
+      subtotalNoVat: 'تكلفة القوى العاملة (بدون الضريبة): ',
+      vatAmount: 'مبلغ الضريبة: ',
+      totalWithVat: 'تكلفة القوى العاملة (شامل الضريبة): ',
+      // Section 2: Customer SaaS product
+      saasPricingTitle: 'سعر منتج SaaS الخاص بالعميل',
+      pricingModel: 'نموذج التسعير',
+      perUserModel: 'سعر لكل مستخدم',
+      flatModel: 'سعر ثابت',
+      numberOfUsers: 'عدد المستخدمين',
+      pricePerUser: 'السعر لكل مستخدم (USD / شهر)',
+      flatPrice: 'السعر الثابت (USD / شهر)',
+      customerSaasCostText: 'سعر منتج SaaS للعميل',
+      customerSaasCostEur: 'سعر SaaS للعميل باليورو',
+      // Section 3: Timesheet for Jira cost
+      timesheetPricingTitle: 'تسعير Timesheet for Jira',
+      timesheetTeamSize: 'حجم الفريق',
+      timesheetMonthlyPrice: 'السعر الشهري',
+      timesheetCostText: 'سعر Timesheet for Jira',
+      timesheetCostEur: 'Timesheet for Jira باليورو',
+      tierUpTo10: 'حتى 10 (رسوم ثابتة)',
+      perMonthFlat: '/ شهر (ثابت)',
+      perUserPerMonth: '/ مستخدم / شهر',
+      // Billing
+      billingCycle: 'دورة الفوترة',
+      monthly: 'شهرياً',
+      annual: 'سنوياً (10 أضعاف السعر الشهري)',
+      // Results
+      totalCustomerCost: 'إجمالي تكاليف العميل (القوى العاملة + SaaS): ',
+      timesheetCostResult: 'سعر Timesheet for Jira: ',
+      finalSavings: 'صافي التوفير (التكاليف الإجمالية - Timesheet for Jira): ',
+      pricingModelUsed: 'نموذج التسعير المستخدم: ',
+      perUserLabel: 'لكل مستخدم',
+      flatLabel: 'سعر ثابت',
+      monthlyCost: 'التكلفة الشهرية',
+      annualCost: 'التكلفة السنوية'
     }
   };
 

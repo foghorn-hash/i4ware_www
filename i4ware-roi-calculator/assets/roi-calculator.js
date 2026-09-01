@@ -7,7 +7,7 @@
   var createElement = el.createElement;
   var useState = el.useState;
   var appConfig = window.i4wareRoiCalculator || {};
-  var currentLang = appConfig.lang === 'fi' ? 'fi' : 'en';
+  var currentLang = (appConfig.lang === 'fi' || appConfig.lang === 'ar') ? appConfig.lang : 'en';
 
   var translations = {
     fi: {
@@ -61,6 +61,32 @@
       tierUpTo10: 'Up to 10 (flat fee)',
       perMonthFlat: '/ month (flat)',
       perUserPerMonth: '/ user / month'
+    },
+    ar: {
+      title: 'حاسبة العائد على الاستثمار والتسعير بالساعة لـ Timesheet for Jira',
+      hourlyRate: 'السعر بالساعة (EUR)',
+      vatRate: 'نسبة الضريبة (%)',
+      projectHours: 'ساعات المشروع',
+      employeeCount: 'حجم الفريق',
+      usdToEurRate: 'سعر تحويل USD -> EUR',
+      pricingTitle: 'التسعير الشهري للمصدر المفتوح (فريق i4ware Software)',
+      teamSize: 'حجم الفريق',
+      monthlyPrice: 'السعر الشهري',
+      calculate: 'احسب',
+      notice: 'ملاحظة: يدفع عميل i4ware رسومًا شهرية مقابل الكود، ويتم احتساب التعديلات اللاحقة بالساعة وفقًا لاحتياجات العميل النهائي.',
+      resultsTitle: 'النتائج:',
+      employeesIncluded: 'الموظفون المشمولون: ',
+      subtotalNoVat: 'إجمالي سعر العمل (بدون الضريبة): ',
+      vatAmount: 'مبلغ الضريبة: ',
+      totalWithVat: 'السعر الإجمالي (شامل الضريبة): ',
+      openSourceMonthlyPrice: 'سعر i4ware الشهري للمصدر المفتوح',
+      deductionInEur: 'الخصم باليورو (USD->EUR ',
+      finalAfterDeduction: 'الإجمالي بعد الخصم: ',
+      flatFeePricing: 'التسعير: رسوم شهرية ثابتة.',
+      perUserPricing: 'التسعير: رسوم شهرية لكل مستخدم.',
+      tierUpTo10: 'حتى 10 (رسوم ثابتة)',
+      perMonthFlat: '/ شهر (ثابت)',
+      perUserPerMonth: '/ مستخدم / شهر'
     }
   };
 

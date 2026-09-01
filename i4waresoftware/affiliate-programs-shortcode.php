@@ -84,7 +84,7 @@ if (!function_exists('i4ware_affiliate_programs_shortcode')) {
         $output .= '<div class="i4ware-affiliates-grid">';
 
         foreach ($programs as $post) {
-            $url = get_field('logo_url', $post->ID);
+            $url = function_exists('get_field') ? get_field('logo_url', $post->ID) : '';
             if (empty($url)) {
                 continue; // Skip programs with no purchase/logo link
             }
@@ -92,21 +92,27 @@ if (!function_exists('i4ware_affiliate_programs_shortcode')) {
             $img = get_the_post_thumbnail_url($post->ID, 'medium');
 
             // Category translation
-            if ($lang === 'en') {
-                $category = get_field('partner_category_en', $post->ID);
-            } elseif ($lang === 'ar') {
-                $category = get_field('partner_category_ar', $post->ID);
-            } else {
-                $category = get_field('partner_category_fi', $post->ID);
+            $category = '';
+            if (function_exists('get_field')) {
+                if ($lang === 'en') {
+                    $category = get_field('partner_category_en', $post->ID);
+                } elseif ($lang === 'ar') {
+                    $category = get_field('partner_category_ar', $post->ID);
+                } else {
+                    $category = get_field('partner_category_fi', $post->ID);
+                }
             }
 
             // Alt translation
-            if ($lang === 'en') {
-                $alt = get_field('logo_alt_en', $post->ID);
-            } elseif ($lang === 'ar') {
-                $alt = get_field('logo_alt_ar', $post->ID);
-            } else {
-                $alt = get_field('logo_alt_fi', $post->ID);
+            $alt = '';
+            if (function_exists('get_field')) {
+                if ($lang === 'en') {
+                    $alt = get_field('logo_alt_en', $post->ID);
+                } elseif ($lang === 'ar') {
+                    $alt = get_field('logo_alt_ar', $post->ID);
+                } else {
+                    $alt = get_field('logo_alt_fi', $post->ID);
+                }
             }
             if (empty($alt)) {
                 $alt = get_the_title($post->ID);

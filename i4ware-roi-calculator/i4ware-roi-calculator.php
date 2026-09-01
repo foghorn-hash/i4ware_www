@@ -112,7 +112,11 @@ class I4ware_ROI_Calculator {
             $lang   = strtolower( substr( (string) $locale, 0, 2 ) );
         }
 
-        return 'fi' === $lang ? 'fi' : 'en';
+        if ( in_array( $lang, array( 'fi', 'ar' ), true ) ) {
+            return $lang;
+        }
+
+        return 'en';
     }
 }
 
