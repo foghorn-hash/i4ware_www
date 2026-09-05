@@ -1926,9 +1926,27 @@ add_action('init', function () {
     // reCAPTCHA
     pll_register_string('i4ware', 'Ole hyvä ja vahvista reCAPTCHA.');
 
-    // PayPal Donate
+    // PayPal Donate & Checkout Modal
     pll_register_string('i4ware', 'Lahjoita PayPalilla');
+    pll_register_string('i4ware', 'Lahjoita PayPalilla (sis. ALV)');
     pll_register_string('i4ware', 'Lahjoitus');
+    pll_register_string('i4ware', 'Turvallinen PayPal-maksu & Ehdot');
+    pll_register_string('i4ware', 'Tarkista maksun tiedot ja sopimusehdot ennen siirtymistä PayPaliin.');
+    pll_register_string('i4ware', 'Maksun tiedot');
+    pll_register_string('i4ware', 'Mitä maksu tukee & sisältää:');
+    pll_register_string('i4ware', 'Sopimusehdot & Peruutusoikeus');
+    pll_register_string('i4ware', 'Olen tutustunut ja hyväksyn');
+    pll_register_string('i4ware', 'toimitusehdot');
+    pll_register_string('i4ware', 'tietosuojaselosteen');
+    pll_register_string('i4ware', 'Siirry turvallisesti PayPaliin');
+    pll_register_string('i4ware', 'Peruuta');
+    pll_register_string('i4ware', 'Ohjataan turvallisesti PayPaliin...');
+    pll_register_string('i4ware', 'Sinun tulee hyväksyä ehdot jatkaaksesi.');
+    pll_register_string('i4ware', 'Maksutapahtuma suoritetaan turvallisesti PayPalin 256-bittisesti salatussa ympäristössä. Sivusto ei tallenna maksukorttitietoja.');
+    pll_register_string('i4ware', 'Tilaa tukitaso');
+    pll_register_string('i4ware', 'sis. ALV');
+    pll_register_string('i4ware', 'sis. ALV 25,5%');
+    pll_register_string('i4ware', 'kk');
 });
 
 /**
@@ -4025,8 +4043,835 @@ function i4ware_register_sdk_screenshot_acf_fields()
 }
 
 /**
- * Shortcode to display a PayPal Donate button
- * Usage: [paypal_donate email="your-paypal-email@domain.com" amount="10" currency="EUR" button_text="Lahjoita"]
+ * ----------------------------------------------------------------------
+ * i4ware PayPal Checkout & Terms Modal System
+ * ----------------------------------------------------------------------
+ */
+
+/**
+ * Translation dictionary for PayPal modal & shortcodes
+ */
+if (!function_exists('i4ware_get_paypal_translations')) {
+    function i4ware_get_paypal_translations($lang = null)
+    {
+        if (!$lang) {
+            $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+        }
+        if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
+            $lang = 'en';
+        }
+
+        $translations = [
+            'fi' => [
+                'modal_badge'          => 'Suojattu 256-bit SSL -yhteys',
+                'modal_title'          => 'Turvallinen PayPal-maksu & Ehdot',
+                'modal_subtitle'       => 'Tarkista maksun tiedot ja sopimusehdot ennen siirtymistä PayPaliin.',
+                'summary_title'        => 'Maksun tiedot',
+                'included_title'       => 'Mitä maksu tukee & sisältää:',
+                'included_bullet_1'    => 'Jatkuva avoimen lähdekoodin kehitys ja ilmaiset työkalut',
+                'included_bullet_2'    => 'Korkea tietoturva, suorituskyky ja nopeat päivitykset',
+                'included_bullet_3'    => 'Luotettava suomalainen ohjelmistoasiantuntijuus ja tuki',
+                'terms_title'          => 'Sopimusehdot & Peruutusoikeus',
+                'terms_one_time'       => 'Maksamalla hyväksyt toimitusehdot. Palvelu tai digitaalinen sisältö toimitetaan välittömästi maksun vahvistuttua.',
+                'terms_subscription'   => 'Toistaiseksi voimassa oleva kuukausitilaus. Voit peruuttaa tilauksen milloin tahansa helposti omalta PayPal-tililtäsi ilman lisäkuluja tai irtisanomisaikaa.',
+                'security_note'        => 'Maksutapahtuma suoritetaan turvallisesti PayPalin 256-bittisesti salatussa ympäristössä. Sivusto ei tallenna maksukorttitietoja.',
+                'accepted_methods'     => 'Hyväksytyt maksutavat: PayPal-tili, Visa, Mastercard, American Express & pankkikortit (ilman pakollista tiliä)',
+                'consent_prefix'       => 'Olen tutustunut ja hyväksyn',
+                'terms_link_text'      => 'toimitusehdot',
+                'and_text'             => 'sekä',
+                'privacy_link_text'    => 'tietosuojaselosteen',
+                'consent_suffix'       => '.',
+                'btn_proceed'          => 'Siirry turvallisesti PayPaliin',
+                'btn_cancel'           => 'Peruuta',
+                'btn_close'            => 'Sulje',
+                'redirecting'          => 'Ohjataan turvallisesti PayPaliin...',
+                'alert_must_agree'     => 'Sinun tulee hyväksyä ehdot jatkaaksesi.',
+                'company_footer'       => 'i4ware Software • info@i4ware.fi • Tampere, Suomi',
+                'donate_default_name'  => 'Lahjoitus avoimen lähdekoodin kehitykseen',
+                'donate_default_desc'  => 'Lahjoituksesi tukee i4ware Softwaren avoimen lähdekoodin kehitystä, laadukasta ohjelmistoarkkitehtuuria ja jatkuvaa ylläpitoa.',
+                'donate_btn_text'      => 'Lahjoita PayPalilla (sis. ALV)',
+                'buy_btn_text'         => 'Osta nyt',
+                'subscribe_btn_text'   => 'Tilaa tukitaso',
+                'month'                => 'kk',
+                'one_time'             => 'Kertamaksu',
+                'recurring_monthly'    => 'Kuukausimaksu',
+                'vat_incl'             => 'sis. ALV',
+                'incl_vat'             => 'sis. ALV',
+                'vat_excl'             => '+ ALV',
+                'support_level'        => 'Tukitaso',
+                'price'                => 'Hinta',
+                'subscribe'            => 'Tilaa',
+                'alert_thanks'         => 'Kiitos tuestasi! Tilaustunnuksesi on: ',
+                'error_missing'        => 'Virhe: [paypal_support_table] shortcode vaatii \'client_id\' -attribuutin.',
+                'error_no_plans'       => 'Huomio: Yhtään tilaussuunnitelman ID:tä ei ole määritetty [paypal_support_table] -lyhytkoodiin.',
+                'levels'               => [
+                    'community'    => 'Yhteisön tukija',
+                    'opensource'   => 'Avoimen lähdekoodin tukija',
+                    'development'  => 'Kehityksen tukija',
+                    'professional' => 'Ammattilaistason sponsori',
+                    'business'     => 'Yrityssponsori',
+                    'enterprise'   => 'Suuryrityssponsori'
+                ]
+            ],
+            'en' => [
+                'modal_badge'          => 'Secure 256-bit SSL Connection',
+                'modal_title'          => 'Secure PayPal Checkout & Terms',
+                'modal_subtitle'       => 'Review payment details and terms before proceeding to PayPal.',
+                'summary_title'        => 'Payment Summary',
+                'included_title'       => 'What this payment supports & includes:',
+                'included_bullet_1'    => 'Continuous open source development and free tools',
+                'included_bullet_2'    => 'High security, performance, and timely software updates',
+                'included_bullet_3'    => 'Reliable Finnish software engineering expertise and support',
+                'terms_title'          => 'Terms of Service & Cancellation Policy',
+                'terms_one_time'       => 'By proceeding, you agree to the terms of delivery. The service or digital content is delivered immediately upon payment confirmation.',
+                'terms_subscription'   => 'Monthly recurring subscription. You can cancel anytime easily from your PayPal account with no extra fees or notice period.',
+                'security_note'        => 'Your payment is processed securely in PayPal’s 256-bit SSL encrypted environment. This website never stores your payment card details.',
+                'accepted_methods'     => 'Accepted payment methods: PayPal account, Visa, Mastercard, American Express & Debit/Credit cards (Guest checkout supported)',
+                'consent_prefix'       => 'I have read and agree to the',
+                'terms_link_text'      => 'terms of service',
+                'and_text'             => 'and',
+                'privacy_link_text'    => 'privacy policy',
+                'consent_suffix'       => '.',
+                'btn_proceed'          => 'Proceed Securely to PayPal',
+                'btn_cancel'           => 'Cancel',
+                'btn_close'            => 'Close',
+                'redirecting'          => 'Redirecting securely to PayPal...',
+                'alert_must_agree'     => 'You must agree to the terms to proceed.',
+                'company_footer'       => 'i4ware Software • info@i4ware.fi • Tampere, Finland',
+                'donate_default_name'  => 'Donation to Open Source Development',
+                'donate_default_desc'  => 'Your donation supports i4ware Software open source development, robust architecture, and ongoing maintenance.',
+                'donate_btn_text'      => 'Donate with PayPal (incl. VAT)',
+                'buy_btn_text'         => 'Buy Now',
+                'subscribe_btn_text'   => 'Subscribe',
+                'month'                => 'month',
+                'one_time'             => 'One-time payment',
+                'recurring_monthly'    => 'Monthly billing',
+                'vat_incl'             => 'incl. VAT',
+                'incl_vat'             => 'incl. VAT',
+                'vat_excl'             => '+ VAT',
+                'support_level'        => 'Support Level',
+                'price'                => 'Price',
+                'subscribe'            => 'Subscribe',
+                'alert_thanks'         => 'Thank you for your support! Your subscription ID is: ',
+                'error_missing'        => 'Error: The [paypal_support_table] shortcode requires the \'client_id\' attribute.',
+                'error_no_plans'       => 'Warning: No subscription plan IDs have been configured in the [paypal_support_table] shortcode.',
+                'levels'               => [
+                    'community'    => 'Community Supporter',
+                    'opensource'   => 'Open Source Supporter',
+                    'development'  => 'Development Supporter',
+                    'professional' => 'Professional Sponsor',
+                    'business'     => 'Business Sponsor',
+                    'enterprise'   => 'Enterprise Sponsor'
+                ]
+            ],
+            'ar' => [
+                'modal_badge'          => 'اتصال آمن مشفر 256-bit SSL',
+                'modal_title'          => 'الدفع الآمن عبر باي بال والشروط',
+                'modal_subtitle'       => 'يرجى مراجعة تفاصيل الدفع والشروط قبل المتابعة إلى باي بال.',
+                'summary_title'        => 'ملخص الدفع',
+                'included_title'       => 'ما يدعمه ويتضمنه هذا الدفع:',
+                'included_bullet_1'    => 'تطوير مستمر للبرمجيات مفتوحة المصدر وأدوات مجانية',
+                'included_bullet_2'    => 'أمان عالٍ، أداء متميز، وتحديثات برمجية سريعة',
+                'included_bullet_3'    => 'خبرة هندسية برمجية فنلندية موثوقة ودعم فني',
+                'terms_title'          => 'شروط الخدمة وسياسة الإلغاء',
+                'terms_one_time'       => 'بالمتابعة، فإنك توافق على شروط التسليم. يتم تقديم الخدمة أو المحتوى الرقمي فور تأكيد الدفع.',
+                'terms_subscription'   => 'اشتراك شهري متكرر. يمكنك الإلغاء في أي وقت بسهولة من حساب باي بال الخاص بك دون أي رسوم إضافية أو فترة إشعار.',
+                'security_note'        => 'تتم معالجة دفعتك بأمان في بيئة باي بال المشفرة بتقنية 256-bit SSL. لا يقوم هذا الموقع بتخزين معلومات بطاقتك أبداً.',
+                'accepted_methods'     => 'طرق الدفع المقبولة: حساب باي بال، فيزا، ماستركارد، أمريكان إكسبريس وبطاقات الائتمان',
+                'consent_prefix'       => 'لقد قرأت ووافقت على',
+                'terms_link_text'      => 'شروط الخدمة',
+                'and_text'             => 'و',
+                'privacy_link_text'    => 'سياسة الخصوصية',
+                'consent_suffix'       => '.',
+                'btn_proceed'          => 'المتابعة بأمان إلى باي بال',
+                'btn_cancel'           => 'إلغاء',
+                'btn_close'            => 'إغلاق',
+                'redirecting'          => 'جارٍ إعادة التوجيه بأمان إلى باي بال...',
+                'alert_must_agree'     => 'يجب عليك الموافقة على الشروط للمتابعة.',
+                'company_footer'       => 'i4ware Software • info@i4ware.fi • تامبيري، فنلندا',
+                'donate_default_name'  => 'تبرع لتطوير البرمجيات مفتوحة المصدر',
+                'donate_default_desc'  => 'تبرعك يدعم تطوير البرمجيات مفتوحة المصدر في i4ware Software وبنية البرمجيات عالية الجودة والصيانة المستمرة.',
+                'donate_btn_text'      => 'تبرع بواسطة باي بال (شامل ضريبة القيمة المضافة)',
+                'buy_btn_text'         => 'اشتر الآن',
+                'subscribe_btn_text'   => 'اشترك في مستوى الدعم',
+                'month'                => 'شهر',
+                'one_time'             => 'دفع لمرة واحدة',
+                'recurring_monthly'    => 'فاتورة شهرية',
+                'vat_incl'             => 'شامل ضريبة القيمة المضافة',
+                'incl_vat'             => 'شامل ضريبة القيمة المضافة',
+                'vat_excl'             => '+ ضريبة القيمة المضافة',
+                'support_level'        => 'مستوى الدعم',
+                'price'                => 'السعر',
+                'subscribe'            => 'اشترك',
+                'alert_thanks'         => 'شكراً لدعمك! معرف الاشتراك الخاص بك هو: ',
+                'error_missing'        => 'خطأ: يتطلب الكود القصير [paypal_support_table] سمة \'client_id\'.',
+                'error_no_plans'       => 'تنبيه: لم يتم تكوين أي معرفات لخطط الاشتراك في الكود القصير [paypal_support_table].',
+                'levels'               => [
+                    'community'    => 'داعم المجتمع',
+                    'opensource'   => 'داعم المصدر المفتوح',
+                    'development'  => 'داعم التطوير',
+                    'professional' => 'راعي محترف',
+                    'business'     => 'راعي أعمال',
+                    'enterprise'   => 'راعي مؤسسي'
+                ]
+            ]
+        ];
+
+        $t = isset($translations[$lang]) ? $translations[$lang] : $translations['en'];
+
+        if (function_exists('pll__')) {
+            foreach ($t as $k => $val) {
+                if (is_string($val)) {
+                    $pll_val = pll__($val);
+                    if (!empty($pll_val) && is_string($pll_val)) {
+                        $t[$k] = html_entity_decode(wp_specialchars_decode($pll_val, ENT_QUOTES), ENT_QUOTES, 'UTF-8');
+                    }
+                }
+            }
+        }
+
+        foreach ($t as $k => $val) {
+            if (is_string($val)) {
+                $t[$k] = html_entity_decode(wp_specialchars_decode($val, ENT_QUOTES), ENT_QUOTES, 'UTF-8');
+            }
+        }
+
+        if (empty($t['vat_incl']) || !is_string($t['vat_incl'])) {
+            $t['vat_incl'] = ($lang === 'fi') ? 'sis. ALV' : (($lang === 'ar') ? 'شامل ضريبة القيمة المضافة' : 'incl. VAT');
+        }
+        $t['incl_vat'] = $t['vat_incl'];
+
+        if (empty($t['month']) || !is_string($t['month'])) {
+            $t['month'] = ($lang === 'fi') ? 'kk' : (($lang === 'ar') ? 'شهر' : 'month');
+        }
+
+        return $t;
+    }
+}
+
+/**
+ * Render the PayPal Pre-Checkout & Terms Modal markup and script in wp_footer
+ */
+if (!function_exists('i4ware_render_paypal_modal_system')) {
+    function i4ware_render_paypal_modal_system()
+    {
+        static $modal_rendered = false;
+        if ($modal_rendered) {
+            return;
+        }
+        $modal_rendered = true;
+
+        $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+        if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
+            $lang = 'en';
+        }
+        $t = i4ware_get_paypal_translations($lang);
+        $is_rtl = ($lang === 'ar');
+
+        $default_terms_link = get_theme_mod("wp_quote_terms_link_$lang", '#');
+        $default_privacy_link = get_theme_mod("wp_quote_privacy_link_$lang", '#');
+        ?>
+        <!-- i4ware PayPal Checkout & Terms Modal System -->
+        <div id="i4ware-paypal-modal" class="i4ware-paypal-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="i4ware-modal-title" <?php echo $is_rtl ? 'dir="rtl"' : 'dir="ltr"'; ?>>
+            <div class="i4ware-paypal-modal-backdrop" onclick="i4warePayPalModal.close()"></div>
+            <div class="i4ware-paypal-modal-dialog">
+                <!-- Modal Header -->
+                <div class="i4ware-paypal-modal-header">
+                    <div class="i4ware-paypal-badge">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 16l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/></svg>
+                        <span id="i4ware-modal-badge"><?php echo esc_html($t['modal_badge']); ?></span>
+                    </div>
+                    <button type="button" class="i4ware-paypal-modal-close" onclick="i4warePayPalModal.close()" aria-label="<?php echo esc_attr($t['btn_close']); ?>">&times;</button>
+                </div>
+
+                <div class="i4ware-paypal-modal-title-area">
+                    <h3 id="i4ware-modal-title" class="i4ware-paypal-modal-title"><?php echo esc_html($t['modal_title']); ?></h3>
+                    <p id="i4ware-modal-subtitle" class="i4ware-paypal-modal-subtitle"><?php echo esc_html($t['modal_subtitle']); ?></p>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="i4ware-paypal-modal-body">
+                    <!-- Summary Card -->
+                    <div class="i4ware-paypal-summary-card">
+                        <div class="i4ware-summary-top">
+                            <div class="i4ware-summary-item-info">
+                                <span class="i4ware-summary-label"><?php echo esc_html($t['summary_title']); ?></span>
+                                <h4 id="i4ware-modal-item-name" class="i4ware-item-name"></h4>
+                            </div>
+                            <div class="i4ware-summary-price-box">
+                                <span id="i4ware-modal-price" class="i4ware-price-amount"></span>
+                                <span id="i4ware-modal-frequency" class="i4ware-price-frequency"></span>
+                            </div>
+                        </div>
+                        <p id="i4ware-modal-description" class="i4ware-modal-desc"></p>
+                        
+                        <div id="i4ware-modal-features-wrap" class="i4ware-modal-features">
+                            <div class="i4ware-features-title"><?php echo esc_html($t['included_title']); ?></div>
+                            <ul id="i4ware-modal-features-list">
+                                <li><span class="i4ware-check-icon">✓</span> <?php echo esc_html($t['included_bullet_1']); ?></li>
+                                <li><span class="i4ware-check-icon">✓</span> <?php echo esc_html($t['included_bullet_2']); ?></li>
+                                <li><span class="i4ware-check-icon">✓</span> <?php echo esc_html($t['included_bullet_3']); ?></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Terms & Trust Box -->
+                    <div class="i4ware-paypal-terms-card">
+                        <div class="i4ware-terms-row">
+                            <div class="i4ware-terms-icon">📄</div>
+                            <div class="i4ware-terms-text">
+                                <strong><?php echo esc_html($t['terms_title']); ?></strong>
+                                <p id="i4ware-modal-terms-text"><?php echo esc_html($t['terms_one_time']); ?></p>
+                            </div>
+                        </div>
+
+                        <div class="i4ware-terms-row">
+                            <div class="i4ware-terms-icon">🔒</div>
+                            <div class="i4ware-terms-text">
+                                <strong><?php echo esc_html($t['modal_badge']); ?></strong>
+                                <p><?php echo esc_html($t['security_note']); ?></p>
+                            </div>
+                        </div>
+
+                        <div class="i4ware-payment-badges">
+                            <span class="i4ware-card-chip">PayPal</span>
+                            <span class="i4ware-card-chip">Visa</span>
+                            <span class="i4ware-card-chip">Mastercard</span>
+                            <span class="i4ware-card-chip">American Express</span>
+                            <span class="i4ware-card-chip">Debit / Credit</span>
+                        </div>
+                    </div>
+
+                    <!-- Smart Button Container (when using PayPal Smart SDK inside modal) -->
+                    <div id="i4ware-modal-smart-btn-container" style="display: none; margin: 15px 0;"></div>
+
+                    <!-- Consent Checkbox -->
+                    <div class="i4ware-modal-consent-box">
+                        <label class="i4ware-modal-consent-label" for="i4ware-modal-consent-checkbox">
+                            <input type="checkbox" id="i4ware-modal-consent-checkbox" checked />
+                            <span class="i4ware-consent-text">
+                                <?php echo esc_html($t['consent_prefix']); ?>
+                                <a id="i4ware-modal-terms-link" href="<?php echo esc_url($default_terms_link); ?>" target="_blank" rel="noopener"><?php echo esc_html($t['terms_link_text']); ?></a>
+                                <?php echo esc_html($t['and_text']); ?>
+                                <a id="i4ware-modal-privacy-link" href="<?php echo esc_url($default_privacy_link); ?>" target="_blank" rel="noopener"><?php echo esc_html($t['privacy_link_text']); ?></a><?php echo esc_html($t['consent_suffix']); ?>
+                            </span>
+                        </label>
+                        <div id="i4ware-modal-consent-error" class="i4ware-consent-error" style="display: none;">
+                            <?php echo esc_html($t['alert_must_agree']); ?>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="i4ware-paypal-modal-footer">
+                    <button type="button" id="i4ware-modal-confirm-btn" class="i4ware-btn-proceed" onclick="i4warePayPalModal.confirm()">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>
+                        <span id="i4ware-modal-proceed-text"><?php echo esc_html($t['btn_proceed']); ?></span>
+                        <span class="i4ware-arrow-icon">&rarr;</span>
+                    </button>
+                    <button type="button" class="i4ware-btn-cancel" onclick="i4warePayPalModal.close()"><?php echo esc_html($t['btn_cancel']); ?></button>
+                </div>
+
+                <div class="i4ware-paypal-modal-bottom-brand">
+                    <?php echo esc_html($t['company_footer']); ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- Styles for PayPal Pre-Checkout Modal -->
+        <style>
+            .i4ware-paypal-modal-overlay {
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                width: 100vw; height: 100vh;
+                z-index: 999999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 16px;
+                box-sizing: border-box;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.28s;
+            }
+            .i4ware-paypal-modal-overlay.is-active {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+            .i4ware-paypal-modal-backdrop {
+                position: absolute;
+                inset: 0;
+                background: rgba(4, 7, 18, 0.82);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+            .i4ware-paypal-modal-dialog {
+                position: relative;
+                z-index: 10;
+                background: linear-gradient(165deg, #13172e 0%, #0c0e1c 100%);
+                border: 1px solid rgba(77, 163, 255, 0.25);
+                border-radius: 20px;
+                width: 100%;
+                max-width: 540px;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(0, 112, 186, 0.2);
+                color: #e2e8f0;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                padding: 28px 24px 20px;
+                box-sizing: border-box;
+                transform: translateY(24px) scale(0.96);
+                transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+            .i4ware-paypal-modal-overlay.is-active .i4ware-paypal-modal-dialog {
+                transform: translateY(0) scale(1);
+            }
+            .i4ware-paypal-modal-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 14px;
+            }
+            .i4ware-paypal-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: rgba(16, 185, 129, 0.12);
+                border: 1px solid rgba(16, 185, 129, 0.3);
+                color: #34d399;
+                padding: 5px 12px;
+                border-radius: 999px;
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.3px;
+                text-transform: uppercase;
+            }
+            .i4ware-paypal-modal-close {
+                background: rgba(255, 255, 255, 0.08);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #94a3b8;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                line-height: 1;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            .i4ware-paypal-modal-close:hover {
+                background: rgba(239, 68, 68, 0.2);
+                border-color: rgba(239, 68, 68, 0.4);
+                color: #f87171;
+                transform: rotate(90deg);
+            }
+            .i4ware-paypal-modal-title-area {
+                margin-bottom: 20px;
+            }
+            .i4ware-paypal-modal-title {
+                margin: 0 0 6px;
+                font-size: 20px;
+                font-weight: 800;
+                color: #ffffff;
+                letter-spacing: -0.3px;
+            }
+            .i4ware-paypal-modal-subtitle {
+                margin: 0;
+                font-size: 13.5px;
+                color: #94a3b8;
+                line-height: 1.45;
+            }
+            .i4ware-paypal-summary-card {
+                background: rgba(255, 255, 255, 0.035);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 14px;
+                padding: 16px 18px;
+                margin-bottom: 16px;
+            }
+            .i4ware-summary-top {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 14px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                padding-bottom: 12px;
+                margin-bottom: 12px;
+            }
+            .i4ware-summary-label {
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.8px;
+                color: #64748b;
+                font-weight: 700;
+                display: block;
+                margin-bottom: 4px;
+            }
+            .i4ware-item-name {
+                margin: 0;
+                font-size: 17px;
+                font-weight: 700;
+                color: #ffffff;
+            }
+            .i4ware-summary-price-box {
+                text-align: right;
+                white-space: nowrap;
+            }
+            .i4ware-price-amount {
+                font-size: 20px;
+                font-weight: 800;
+                color: #38bdf8;
+                display: block;
+            }
+            .i4ware-price-frequency {
+                font-size: 11.5px;
+                color: #94a3b8;
+                font-weight: 500;
+            }
+            .i4ware-modal-desc {
+                margin: 0 0 12px;
+                font-size: 13.5px;
+                color: #cbd5e1;
+                line-height: 1.5;
+            }
+            .i4ware-modal-features {
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 10px;
+                padding: 10px 14px;
+            }
+            .i4ware-features-title {
+                font-size: 12px;
+                font-weight: 700;
+                color: #38bdf8;
+                margin-bottom: 6px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .i4ware-modal-features ul {
+                margin: 0;
+                padding: 0;
+                list-style: none;
+            }
+            .i4ware-modal-features li {
+                font-size: 12.5px;
+                color: #e2e8f0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 5px;
+            }
+            .i4ware-modal-features li:last-child {
+                margin-bottom: 0;
+            }
+            .i4ware-check-icon {
+                color: #10b981;
+                font-weight: bold;
+                font-size: 14px;
+            }
+            .i4ware-paypal-terms-card {
+                background: rgba(15, 23, 42, 0.6);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                border-radius: 14px;
+                padding: 14px 16px;
+                margin-bottom: 16px;
+            }
+            .i4ware-terms-row {
+                display: flex;
+                gap: 12px;
+                margin-bottom: 10px;
+            }
+            .i4ware-terms-row:last-of-type {
+                margin-bottom: 10px;
+            }
+            .i4ware-terms-icon {
+                font-size: 18px;
+                line-height: 1.2;
+            }
+            .i4ware-terms-text strong {
+                display: block;
+                font-size: 13px;
+                color: #f1f5f9;
+                margin-bottom: 2px;
+            }
+            .i4ware-terms-text p {
+                margin: 0;
+                font-size: 12.5px;
+                color: #94a3b8;
+                line-height: 1.45;
+            }
+            .i4ware-payment-badges {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-top: 8px;
+                padding-top: 8px;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            .i4ware-card-chip {
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #cbd5e1;
+                font-size: 11px;
+                font-weight: 600;
+                padding: 3px 8px;
+                border-radius: 6px;
+            }
+            .i4ware-modal-consent-box {
+                margin-bottom: 18px;
+                padding: 10px 12px;
+                background: rgba(255, 255, 255, 0.025);
+                border-radius: 10px;
+                border: 1px dashed rgba(255, 255, 255, 0.12);
+            }
+            .i4ware-modal-consent-label {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                cursor: pointer;
+                font-size: 13px;
+                color: #cbd5e1;
+                line-height: 1.45;
+            }
+            .i4ware-modal-consent-label input[type="checkbox"] {
+                margin-top: 2px;
+                width: 16px;
+                height: 16px;
+                accent-color: #0070ba;
+                cursor: pointer;
+            }
+            .i4ware-modal-consent-label a {
+                color: #38bdf8;
+                text-decoration: underline;
+                text-underline-offset: 2px;
+            }
+            .i4ware-modal-consent-label a:hover {
+                color: #7dd3fc;
+            }
+            .i4ware-consent-error {
+                color: #f87171;
+                font-size: 12px;
+                font-weight: 600;
+                margin-top: 6px;
+                padding-left: 26px;
+            }
+            .i4ware-paypal-modal-footer {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+            .i4ware-btn-proceed {
+                flex: 1;
+                background: linear-gradient(135deg, #0070ba 0%, #005ea6 100%);
+                color: #ffffff;
+                border: none;
+                padding: 13px 20px;
+                font-size: 15.5px;
+                font-weight: 700;
+                border-radius: 50px;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+                box-shadow: 0 4px 15px rgba(0, 112, 186, 0.4);
+                outline: none;
+                font-family: inherit;
+            }
+            .i4ware-btn-proceed:hover {
+                background: linear-gradient(135deg, #0086e0 0%, #0070ba 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(0, 112, 186, 0.5);
+            }
+            .i4ware-btn-proceed:active {
+                transform: translateY(0);
+            }
+            .i4ware-btn-cancel {
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: #94a3b8;
+                padding: 13px 20px;
+                font-size: 14px;
+                font-weight: 600;
+                border-radius: 50px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                font-family: inherit;
+            }
+            .i4ware-btn-cancel:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+            }
+            .i4ware-paypal-modal-bottom-brand {
+                text-align: center;
+                font-size: 11.5px;
+                color: #64748b;
+                margin-top: 4px;
+            }
+            @keyframes i4wareShake {
+                0%, 100% { transform: translateX(0); }
+                20%, 60% { transform: translateX(-6px); }
+                40%, 80% { transform: translateX(6px); }
+            }
+            .shake {
+                animation: i4wareShake 0.4s ease-in-out;
+            }
+        </style>
+
+        <!-- JavaScript for PayPal Pre-Checkout Modal -->
+        <script type="text/javascript">
+            window.i4warePayPalModal = {
+                activeCallback: null,
+                activeAnalytics: null,
+                lang: '<?php echo esc_js($lang); ?>',
+                redirectingText: '<?php echo esc_js(html_entity_decode($t['redirecting'], ENT_QUOTES, 'UTF-8')); ?>',
+                defaultProceedText: '<?php echo esc_js(html_entity_decode($t['btn_proceed'], ENT_QUOTES, 'UTF-8')); ?>',
+
+                decodeEntities: function(str) {
+                    if (!str || typeof str !== 'string') return str;
+                    var txt = document.createElement('textarea');
+                    txt.innerHTML = str;
+                    return txt.value;
+                },
+
+                open: function(config) {
+                    var modal = document.getElementById('i4ware-paypal-modal');
+                    if (!modal) return;
+
+                    this.activeCallback = config.onConfirm || null;
+                    this.activeAnalytics = config.analytics || null;
+
+                    var decode = this.decodeEntities;
+
+                    if (config.title) document.getElementById('i4ware-modal-title').innerText = decode(config.title);
+                    if (config.subtitle) document.getElementById('i4ware-modal-subtitle').innerText = decode(config.subtitle);
+                    if (config.itemName) document.getElementById('i4ware-modal-item-name').innerText = decode(config.itemName);
+                    if (config.price) document.getElementById('i4ware-modal-price').innerText = decode(config.price);
+                    if (config.frequency) document.getElementById('i4ware-modal-frequency').innerText = decode(config.frequency);
+                    
+                    var descEl = document.getElementById('i4ware-modal-description');
+                    if (config.description) {
+                        descEl.innerText = decode(config.description);
+                        descEl.style.display = 'block';
+                    } else {
+                        descEl.style.display = 'none';
+                    }
+
+                    var termsTextEl = document.getElementById('i4ware-modal-terms-text');
+                    if (config.termsText) {
+                        termsTextEl.innerText = decode(config.termsText);
+                    }
+
+                    if (config.termsUrl) {
+                        document.getElementById('i4ware-modal-terms-link').setAttribute('href', config.termsUrl);
+                    }
+                    if (config.privacyUrl) {
+                        document.getElementById('i4ware-modal-privacy-link').setAttribute('href', config.privacyUrl);
+                    }
+
+                    var checkbox = document.getElementById('i4ware-modal-consent-checkbox');
+                    if (checkbox) checkbox.checked = true;
+                    var errorEl = document.getElementById('i4ware-modal-consent-error');
+                    if (errorEl) errorEl.style.display = 'none';
+
+                    var proceedTextEl = document.getElementById('i4ware-modal-proceed-text');
+                    if (proceedTextEl) proceedTextEl.innerText = decode(config.buttonText || this.defaultProceedText);
+                    var confirmBtn = document.getElementById('i4ware-modal-confirm-btn');
+                    if (confirmBtn) {
+                        confirmBtn.disabled = false;
+                        confirmBtn.style.opacity = '1';
+                        confirmBtn.style.display = config.isSmartSubscribe ? 'none' : 'inline-flex';
+                    }
+
+                    var smartContainer = document.getElementById('i4ware-modal-smart-btn-container');
+                    if (smartContainer) {
+                        smartContainer.innerHTML = '';
+                        if (config.isSmartSubscribe && typeof config.renderSmartButton === 'function') {
+                            smartContainer.style.display = 'block';
+                            config.renderSmartButton(smartContainer);
+                        } else {
+                            smartContainer.style.display = 'none';
+                        }
+                    }
+
+                    modal.classList.add('is-active');
+                    modal.setAttribute('aria-hidden', 'false');
+                    document.body.style.overflow = 'hidden';
+
+                    if (typeof gtag === 'function' && config.analytics) {
+                        var eventData = Object.assign({}, config.analytics, { event_category: 'PayPal Funnel' });
+                        gtag('event', 'open_paypal_modal', eventData);
+                    }
+                },
+
+                close: function() {
+                    var modal = document.getElementById('i4ware-paypal-modal');
+                    if (!modal) return;
+                    modal.classList.remove('is-active');
+                    modal.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = '';
+                    this.activeCallback = null;
+                    this.activeAnalytics = null;
+                },
+
+                confirm: function() {
+                    var checkbox = document.getElementById('i4ware-modal-consent-checkbox');
+                    var errorEl = document.getElementById('i4ware-modal-consent-error');
+
+                    if (checkbox && !checkbox.checked) {
+                        if (errorEl) {
+                            errorEl.style.display = 'block';
+                            errorEl.classList.add('shake');
+                            setTimeout(function() { errorEl.classList.remove('shake'); }, 500);
+                        }
+                        return;
+                    }
+
+                    if (errorEl) errorEl.style.display = 'none';
+
+                    if (typeof gtag === 'function' && this.activeAnalytics) {
+                        gtag('event', 'click_paypal_donation', this.activeAnalytics);
+                    }
+
+                    var proceedTextEl = document.getElementById('i4ware-modal-proceed-text');
+                    if (proceedTextEl) proceedTextEl.innerText = this.redirectingText;
+                    var confirmBtn = document.getElementById('i4ware-modal-confirm-btn');
+                    if (confirmBtn) {
+                        confirmBtn.disabled = true;
+                        confirmBtn.style.opacity = '0.7';
+                    }
+
+                    var cb = this.activeCallback;
+                    var self = this;
+                    setTimeout(function() {
+                        if (typeof cb === 'function') {
+                            cb();
+                        }
+                        self.close();
+                    }, 350);
+                }
+            };
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' || e.key === 'Esc') {
+                    if (window.i4warePayPalModal) {
+                        window.i4warePayPalModal.close();
+                    }
+                }
+            });
+        </script>
+        <?php
+    }
+    add_action('wp_footer', 'i4ware_render_paypal_modal_system');
+}
+
+/**
+ * Shortcode to display a PayPal Donate button with Pre-Checkout Terms Modal
+ * Usage: [paypal_donate email="your-paypal-email@domain.com" amount="10" currency="EUR" button_text="Lahjoita" description="..."]
  */
 if (!function_exists('i4ware_paypal_donate_shortcode')) {
     function i4ware_paypal_donate_shortcode($atts)
@@ -4034,52 +4879,22 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
         $atts = is_array($atts) ? $atts : [];
         $atts = array_change_key_case($atts, CASE_LOWER);
 
-        // Detect current language using Polylang
         $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
         if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
-            $lang = 'en'; // fallback
+            $lang = 'en';
         }
 
-        // Default translations based on current language
-        $default_item_names = [
-            'fi' => 'Lahjoitus',
-            'en' => 'Donation',
-            'ar' => 'تبرع'
-        ];
-
-        $default_button_texts = [
-            'fi' => 'Lahjoita PayPalilla',
-            'en' => 'Donate with PayPal',
-            'ar' => 'تبرع بواسطة باي بال'
-        ];
-
-        $default_item_name = isset($default_item_names[$lang]) ? $default_item_names[$lang] : 'Donation';
-        $default_button_text = isset($default_button_texts[$lang]) ? $default_button_texts[$lang] : 'Donate with PayPal';
-
-        // Override using Polylang string translation registry if available
-        if (function_exists('pll__')) {
-            $pll_item_name = pll__('Lahjoitus');
-            $pll_button_text = pll__('Lahjoita PayPalilla');
-
-            if ($lang === 'fi') {
-                $default_item_name = $pll_item_name;
-                $default_button_text = $pll_button_text;
-            } else {
-                if ($pll_item_name !== 'Lahjoitus') {
-                    $default_item_name = $pll_item_name;
-                }
-                if ($pll_button_text !== 'Lahjoita PayPalilla') {
-                    $default_button_text = $pll_button_text;
-                }
-            }
-        }
+        $t = i4ware_get_paypal_translations($lang);
 
         $a = shortcode_atts([
-            'email' => get_option('admin_email'),
-            'currency' => 'EUR',
-            'amount' => '',
-            'item_name' => $default_item_name,
-            'button_text' => ''
+            'email'       => get_option('admin_email'),
+            'currency'    => 'EUR',
+            'amount'      => '',
+            'item_name'   => $t['donate_default_name'],
+            'button_text' => '',
+            'description' => $t['donate_default_desc'],
+            'terms_url'   => get_theme_mod("wp_quote_terms_link_$lang", '#'),
+            'privacy_url' => get_theme_mod("wp_quote_privacy_link_$lang", '#')
         ], $atts, 'paypal_donate');
 
         $email = sanitize_email($a['email']);
@@ -4087,31 +4902,32 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
         $amount = sanitize_text_field($a['amount']);
         $item_name = sanitize_text_field($a['item_name']);
         $button_text = sanitize_text_field($a['button_text']);
+        $description = sanitize_text_field($a['description']);
+        $terms_url = esc_url($a['terms_url']);
+        $privacy_url = esc_url($a['privacy_url']);
+
+        $currency_symbol = ($currency === 'USD') ? '$' : (($currency === 'GBP') ? '£' : '€');
+        $vat_label = !empty($t['vat_incl']) ? $t['vat_incl'] : (!empty($t['incl_vat']) ? $t['incl_vat'] : (($lang === 'fi') ? 'sis. ALV' : (($lang === 'ar') ? 'شامل ضريبة القيمة المضافة' : 'incl. VAT')));
+        $formatted_price = !empty($amount) ? ($currency === 'USD' || $currency === 'GBP' ? $currency_symbol . $amount : $amount . ' ' . $currency_symbol) : $t['one_time'];
 
         if (empty($button_text)) {
             if (!empty($amount)) {
-                $currency_symbol = '€';
-                if ($currency === 'USD') {
-                    $currency_symbol = '$';
-                } elseif ($currency === 'GBP') {
-                    $currency_symbol = '£';
-                }
-
                 if ($lang === 'fi') {
-                    $button_text = 'Lahjoita ' . $amount . ' ' . $currency_symbol . ' PayPalilla';
+                    $button_text = 'Lahjoita ' . $amount . ' ' . $currency_symbol . ' (' . $vat_label . ') PayPalilla';
                 } elseif ($lang === 'ar') {
-                    $button_text = 'تبرع بـ ' . $amount . ' ' . $currency_symbol . ' بواسطة باي بال';
+                    $button_text = 'تبرع بـ ' . $amount . ' ' . $currency_symbol . ' (' . $vat_label . ') بواسطة باي بال';
                 } else {
-                    $button_text = 'Donate ' . $currency_symbol . $amount . ' with PayPal';
+                    $button_text = 'Donate ' . $currency_symbol . $amount . ' (' . $vat_label . ') with PayPal';
                 }
             } else {
-                $button_text = $default_button_text;
+                $button_text = $t['donate_btn_text'];
             }
         }
 
-        // Build the HTML form
+        $unique_id = 'paypal-donate-form-' . uniqid();
+
         $output = '<div class="i4ware-paypal-donate-container" style="margin: 25px 0; text-align: center;">';
-        $output .= '<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="display: inline-block;">';
+        $output .= '<form id="' . esc_attr($unique_id) . '" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="display: inline-block;">';
         $output .= '<input type="hidden" name="cmd" value="_donations" />';
         $output .= '<input type="hidden" name="business" value="' . esc_attr($email) . '" />';
         $output .= '<input type="hidden" name="currency_code" value="' . esc_attr($currency) . '" />';
@@ -4121,23 +4937,41 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
             $output .= '<input type="hidden" name="amount" value="' . esc_attr($amount) . '" />';
         }
 
-        // Stylized modern button using PayPal blue brand color
-        $ga_onclick = sprintf(
-            "if(typeof gtag==='function'){gtag('event','click_paypal_donation',{'donation_type':'donate','item_name':'%s','amount':'%s','currency':'%s'});}",
-            esc_js($item_name),
-            esc_js($amount),
-            esc_js($currency)
-        );
-        $output .= '<button type="submit" name="submit" onclick="' . esc_attr($ga_onclick) . '" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
-
-        // Inline SVG PayPal Logo Icon for premium aesthetics
+        $output .= '<button type="button" class="i4ware-paypal-trigger-btn" onclick="i4wareOpenDonateModal(\'' . esc_js($unique_id) . '\', \'' . esc_js($item_name) . '\', \'' . esc_js($formatted_price) . '\', \'' . esc_js($description) . '\', \'' . esc_js($terms_url) . '\', \'' . esc_js($privacy_url) . '\', \'' . esc_js($currency) . '\', \'' . esc_js($amount) . '\')" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
         $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
         $output .= esc_html($button_text);
         $output .= '</button>';
-
         $output .= '<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1" />';
         $output .= '</form>';
         $output .= '</div>';
+
+        // Helper script
+        $output .= '<script type="text/javascript">
+            function i4wareOpenDonateModal(formId, itemName, priceFormatted, desc, termsUrl, privacyUrl, currency, amount) {
+                if (window.i4warePayPalModal) {
+                    window.i4warePayPalModal.open({
+                        title: "' . esc_js($t['modal_title']) . '",
+                        itemName: itemName,
+                        price: priceFormatted,
+                        frequency: "' . esc_js($t['one_time'] . ' (' . $vat_label . ')') . '",
+                        description: desc,
+                        termsText: "' . esc_js($t['terms_one_time']) . '",
+                        termsUrl: termsUrl,
+                        privacyUrl: privacyUrl,
+                        analytics: {
+                            donation_type: "donate",
+                            item_name: itemName,
+                            amount: amount,
+                            currency: currency
+                        },
+                        onConfirm: function() {
+                            var f = document.getElementById(formId);
+                            if (f) f.submit();
+                        }
+                    });
+                }
+            }
+        </script>';
 
         return $output;
     }
@@ -4145,10 +4979,10 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
 }
 
 /**
- * Shortcode to display a PayPal Payment Link or Buy Button
+ * Shortcode to display a PayPal Payment Link or Buy Button with Pre-Checkout Modal
  * Usage:
- * - Direct link: [paypal_button url="https://www.paypal.com/ncp/payment/XXXXXXXX" button_text="Osta nyt"]
- * - Hosted Button ID: [paypal_button id="ABCDE12345" button_text="Osta nyt"]
+ * - Direct link: [paypal_button url="https://www.paypal.com/ncp/payment/XXXXXXXX" button_text="Osta nyt" item_name="..." price="..."]
+ * - Hosted Button ID: [paypal_button id="ABCDE12345" button_text="Osta nyt" item_name="..." price="..."]
  */
 if (!function_exists('i4ware_paypal_button_shortcode')) {
     function i4ware_paypal_button_shortcode($atts)
@@ -4156,62 +4990,130 @@ if (!function_exists('i4ware_paypal_button_shortcode')) {
         $atts = is_array($atts) ? $atts : [];
         $atts = array_change_key_case($atts, CASE_LOWER);
 
+        $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+        if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
+            $lang = 'en';
+        }
+
+        $t = i4ware_get_paypal_translations($lang);
+
         $a = shortcode_atts([
-            'url' => '',
-            'id' => '',
-            'button_text' => 'Osta nyt'
+            'url'         => '',
+            'id'          => '',
+            'button_text' => $t['buy_btn_text'],
+            'item_name'   => '',
+            'price'       => '',
+            'amount'      => '',
+            'currency'    => 'EUR',
+            'description' => '',
+            'terms_url'   => get_theme_mod("wp_quote_terms_link_$lang", '#'),
+            'privacy_url' => get_theme_mod("wp_quote_privacy_link_$lang", '#')
         ], $atts, 'paypal_button');
 
         $button_text = sanitize_text_field($a['button_text']);
+        $item_name = !empty($a['item_name']) ? sanitize_text_field($a['item_name']) : $button_text;
+        $price = !empty($a['price']) ? sanitize_text_field($a['price']) : sanitize_text_field($a['amount']);
+        $currency = sanitize_text_field($a['currency']);
+        $currency_symbol = ($currency === 'USD') ? '$' : (($currency === 'GBP') ? '£' : '€');
+        $formatted_price = !empty($price) ? ($currency === 'USD' || $currency === 'GBP' ? $currency_symbol . $price : $price . ' ' . $currency_symbol) : '';
+        $description = sanitize_text_field($a['description']);
+        $terms_url = esc_url($a['terms_url']);
+        $privacy_url = esc_url($a['privacy_url']);
+        $vat_label = !empty($t['vat_incl']) ? $t['vat_incl'] : (!empty($t['incl_vat']) ? $t['incl_vat'] : (($lang === 'fi') ? 'sis. ALV' : (($lang === 'ar') ? 'شامل ضريبة القيمة المضافة' : 'incl. VAT')));
 
         // Check if direct URL is provided
         if (!empty($a['url'])) {
             $url = esc_url($a['url']);
+            $unique_id = 'paypal-btn-link-' . uniqid();
             $output = '<div class="i4ware-paypal-button-container" style="margin: 25px 0; text-align: center;">';
-            $ga_onclick = sprintf(
-                "if(typeof gtag==='function'){gtag('event','click_paypal_donation',{'donation_type':'buy_link','button_text':'%s','url':'%s'});}",
-                esc_js($button_text),
-                esc_js($url)
-            );
-            $output .= '<a href="' . $url . '" target="_blank" rel="noopener" onclick="' . esc_attr($ga_onclick) . '" style="background: #0070ba; color: #ffffff; text-decoration: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
+            $output .= '<button type="button" id="' . esc_attr($unique_id) . '" onclick="i4wareOpenBuyLinkModal(\'' . esc_js($url) . '\', \'' . esc_js($item_name) . '\', \'' . esc_js($formatted_price) . '\', \'' . esc_js($description) . '\', \'' . esc_js($terms_url) . '\', \'' . esc_js($privacy_url) . '\', \'' . esc_js($button_text) . '\')" style="background: #0070ba; color: #ffffff; text-decoration: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; border: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
             $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
             $output .= esc_html($button_text);
-            $output .= '</a>';
+            $output .= '</button>';
             $output .= '</div>';
+
+            $output .= '<script type="text/javascript">
+                function i4wareOpenBuyLinkModal(url, itemName, priceFormatted, desc, termsUrl, privacyUrl, btnText) {
+                    if (window.i4warePayPalModal) {
+                        window.i4warePayPalModal.open({
+                            title: "' . esc_js($t['modal_title']) . '",
+                            itemName: itemName,
+                            price: priceFormatted,
+                            frequency: "' . esc_js($t['one_time'] . ' (' . $vat_label . ')') . '",
+                            description: desc,
+                            termsText: "' . esc_js($t['terms_one_time']) . '",
+                            termsUrl: termsUrl,
+                            privacyUrl: privacyUrl,
+                            analytics: {
+                                donation_type: "buy_link",
+                                button_text: btnText,
+                                url: url
+                            },
+                            onConfirm: function() {
+                                window.open(url, "_blank");
+                            }
+                        });
+                    }
+                }
+            </script>';
+
             return $output;
         }
 
         // Check if Hosted Button ID is provided
         if (!empty($a['id'])) {
             $hosted_button_id = sanitize_text_field($a['id']);
+            $unique_id = 'paypal-hosted-form-' . uniqid();
             $output = '<div class="i4ware-paypal-button-container" style="margin: 25px 0; text-align: center;">';
-            $output .= '<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="display: inline-block;">';
+            $output .= '<form id="' . esc_attr($unique_id) . '" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" style="display: inline-block;">';
             $output .= '<input type="hidden" name="cmd" value="_s-xclick" />';
             $output .= '<input type="hidden" name="hosted_button_id" value="' . esc_attr($hosted_button_id) . '" />';
-            $ga_onclick = sprintf(
-                "if(typeof gtag==='function'){gtag('event','click_paypal_donation',{'donation_type':'buy_hosted','button_text':'%s','hosted_button_id':'%s'});}",
-                esc_js($button_text),
-                esc_js($hosted_button_id)
-            );
-            $output .= '<button type="submit" name="submit" onclick="' . esc_attr($ga_onclick) . '" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
+            $output .= '<button type="button" onclick="i4wareOpenHostedModal(\'' . esc_js($unique_id) . '\', \'' . esc_js($item_name) . '\', \'' . esc_js($formatted_price) . '\', \'' . esc_js($description) . '\', \'' . esc_js($terms_url) . '\', \'' . esc_js($privacy_url) . '\', \'' . esc_js($button_text) . '\', \'' . esc_js($hosted_button_id) . '\')" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
             $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
             $output .= esc_html($button_text);
             $output .= '</button>';
             $output .= '<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1" />';
             $output .= '</form>';
             $output .= '</div>';
+
+            $output .= '<script type="text/javascript">
+                function i4wareOpenHostedModal(formId, itemName, priceFormatted, desc, termsUrl, privacyUrl, btnText, hostedId) {
+                    if (window.i4warePayPalModal) {
+                        window.i4warePayPalModal.open({
+                            title: "' . esc_js($t['modal_title']) . '",
+                            itemName: itemName,
+                            price: priceFormatted,
+                            frequency: "' . esc_js($t['one_time'] . ' (' . $vat_label . ')') . '",
+                            description: desc,
+                            termsText: "' . esc_js($t['terms_one_time']) . '",
+                            termsUrl: termsUrl,
+                            privacyUrl: privacyUrl,
+                            analytics: {
+                                donation_type: "buy_hosted",
+                                button_text: btnText,
+                                hosted_button_id: hostedId
+                            },
+                            onConfirm: function() {
+                                var f = document.getElementById(formId);
+                                if (f) f.submit();
+                            }
+                        });
+                    }
+                }
+            </script>';
+
             return $output;
         }
 
-        return ''; // Return empty if neither is provided
+        return '';
     }
     add_shortcode('paypal_button', 'i4ware_paypal_button_shortcode');
 }
 
 /**
- * Shortcode to display a PayPal Smart Subscribe button
+ * Shortcode to display a PayPal Smart Subscribe button with Pre-Checkout Terms Modal
  * Usage:
- * [paypal_subscribe client_id="YOUR_LIVE_CLIENT_ID" plan_id="P-XXXXXXXXXXXXXX" color="gold" shape="rect"]
+ * [paypal_subscribe client_id="YOUR_LIVE_CLIENT_ID" plan_id="P-XXXXXXXXXXXXXX" item_name="..." price="10€" color="blue" shape="rect"]
  */
 if (!function_exists('i4ware_paypal_subscribe_shortcode')) {
     function i4ware_paypal_subscribe_shortcode($atts)
@@ -4221,13 +5123,27 @@ if (!function_exists('i4ware_paypal_subscribe_shortcode')) {
         $atts = is_array($atts) ? $atts : [];
         $atts = array_change_key_case($atts, CASE_LOWER);
 
+        $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+        if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
+            $lang = 'en';
+        }
+
+        $t = i4ware_get_paypal_translations($lang);
+
         $a = shortcode_atts([
-            'client_id' => '', // Recommend setting default here or passing via shortcode
-            'plan_id' => '', // Required: e.g. P-123456789
-            'color' => 'gold', // gold, blue, silver, black
-            'shape' => 'rect', // rect, pill
-            'label' => 'subscribe', // subscribe, paypal, buynow, pay
-            'env' => 'production', // production, sandbox
+            'client_id'    => '',
+            'plan_id'      => '',
+            'item_name'    => $t['subscribe_btn_text'],
+            'price'        => '',
+            'currency'     => 'EUR',
+            'button_text'  => $t['subscribe_btn_text'],
+            'description'  => '',
+            'terms_url'    => get_theme_mod("wp_quote_terms_link_$lang", '#'),
+            'privacy_url'  => get_theme_mod("wp_quote_privacy_link_$lang", '#'),
+            'color'        => 'blue',
+            'shape'        => 'rect',
+            'label'        => 'subscribe',
+            'env'          => 'production',
             'redirect_url' => ''
         ], $atts, 'paypal_subscribe');
 
@@ -4238,70 +5154,95 @@ if (!function_exists('i4ware_paypal_subscribe_shortcode')) {
             return '<p style="color: red; font-weight: bold;">Virhe: [paypal_subscribe] shortcode vaatii sekä \'client_id\' että \'plan_id\' -attribuutit.</p>';
         }
 
+        $item_name = sanitize_text_field($a['item_name']);
+        $price = sanitize_text_field($a['price']);
+        $button_text = sanitize_text_field($a['button_text']);
+        $description = sanitize_text_field($a['description']);
+        $terms_url = esc_url($a['terms_url']);
+        $privacy_url = esc_url($a['privacy_url']);
         $color = sanitize_text_field($a['color']);
         $shape = sanitize_text_field($a['shape']);
         $label = sanitize_text_field($a['label']);
-        $env = sanitize_text_field($a['env']) === 'sandbox' ? 'sandbox' : 'production';
         $redirect_url = esc_url_raw($a['redirect_url']);
-        $unique_id = 'paypal-button-container-' . uniqid();
+        $unique_btn_id = 'paypal-sub-trigger-' . uniqid();
+        $vat_label = !empty($t['vat_incl']) ? $t['vat_incl'] : (!empty($t['incl_vat']) ? $t['incl_vat'] : (($lang === 'fi') ? 'sis. ALV' : (($lang === 'ar') ? 'شامل ضريبة القيمة المضافة' : 'incl. VAT')));
 
         $output = '';
 
-        // Load PayPal SDK only once per page
         if (!$paypal_sdk_loaded) {
             $sdk_url = 'https://www.paypal.com/sdk/js?client-id=' . esc_attr($client_id) . '&vault=true&intent=subscription';
+            if (!empty($a['currency'])) {
+                $sdk_url .= '&currency=' . esc_attr($a['currency']);
+            }
             $output .= '<script src="' . esc_url($sdk_url) . '" data-sdk-integration-source="button-factory"></script>';
             $paypal_sdk_loaded = true;
         }
 
-        // Render Button Container
-        $output .= '<div class="i4ware-paypal-subscribe-container" style="margin: 25px 0; text-align: center; max-width: 350px; margin-left: auto; margin-right: auto;">';
-        $output .= '<div id="' . esc_attr($unique_id) . '"></div>';
+        $output .= '<div class="i4ware-paypal-subscribe-container" style="margin: 25px 0; text-align: center;">';
+        $output .= '<button type="button" id="' . esc_attr($unique_btn_id) . '" onclick="i4wareOpenSmartSubModal(\'' . esc_js($plan_id) . '\', \'' . esc_js($item_name) . '\', \'' . esc_js($price) . '\', \'' . esc_js($description) . '\', \'' . esc_js($terms_url) . '\', \'' . esc_js($privacy_url) . '\', \'' . esc_js($redirect_url) . '\', \'' . esc_js($shape) . '\', \'' . esc_js($color) . '\', \'' . esc_js($label) . '\')" style="background: #0070ba; color: #ffffff; border: none; padding: 12px 28px; font-size: 16px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 112, 186, 0.2); outline: none; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', sans-serif;" onmouseover="this.style.background=\'#005ea6\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 12px rgba(0, 112, 186, 0.3)\';" onmouseout="this.style.background=\'#0070ba\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 6px rgba(0, 112, 186, 0.2)\';">';
+        $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style="vertical-align: middle;"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
+        $output .= esc_html($button_text);
+        $output .= '</button>';
         $output .= '</div>';
 
-        // Render Button Script
         $output .= '<script type="text/javascript">
-            (function() {
-                var renderPaypal = function() {
-                    if (typeof paypal !== "undefined") {
-                        paypal.Buttons({
-                            style: {
-                                shape: "' . esc_js($shape) . '",
-                                color: "' . esc_js($color) . '",
-                                layout: "vertical",
-                                label: "' . esc_js($label) . '"
-                            },
-                            onClick: function() {
-                                if (typeof gtag === "function") {
-                                    gtag("event", "click_paypal_donation", {
-                                        "donation_type": "subscribe",
-                                        "plan_id": "' . esc_js($plan_id) . '"
-                                    });
-                                }
-                            },
-                            createSubscription: function(data, actions) {
-                                return actions.subscription.create({
-                                    "plan_id": "' . esc_js($plan_id) . '"
-                                });
-                            },
-                            onApprove: function(data, actions) {
-                                if ("' . esc_js($redirect_url) . '" !== "") {
-                                    window.location.href = "' . esc_js($redirect_url) . '";
-                                } else {
-                                    alert("Tilaus suoritettu onnistuneesti! Tilaustunnuksesi on: " + data.subscriptionID);
-                                }
-                            },
-                            onError: function(err) {
-                                console.error("PayPal Smart Subscribe virhe:", err);
+            function i4wareOpenSmartSubModal(planId, itemName, price, desc, termsUrl, privacyUrl, redirectUrl, shape, color, label) {
+                if (window.i4warePayPalModal) {
+                    window.i4warePayPalModal.open({
+                        title: "' . esc_js($t['modal_title']) . '",
+                        itemName: itemName,
+                        price: price,
+                        frequency: "' . esc_js($t['recurring_monthly'] . ' (' . $vat_label . ')') . '",
+                        description: desc,
+                        termsText: "' . esc_js($t['terms_subscription']) . '",
+                        termsUrl: termsUrl,
+                        privacyUrl: privacyUrl,
+                        isSmartSubscribe: true,
+                        analytics: {
+                            donation_type: "subscribe",
+                            plan_id: planId,
+                            item_name: itemName
+                        },
+                        renderSmartButton: function(container) {
+                            if (typeof paypal !== "undefined") {
+                                paypal.Buttons({
+                                    style: {
+                                        shape: shape || "rect",
+                                        color: color || "blue",
+                                        layout: "vertical",
+                                        label: label || "subscribe"
+                                    },
+                                    onClick: function() {
+                                        if (typeof gtag === "function") {
+                                            gtag("event", "click_paypal_donation", {
+                                                "donation_type": "subscribe",
+                                                "plan_id": planId,
+                                                "item_name": itemName
+                                            });
+                                        }
+                                    },
+                                    createSubscription: function(data, actions) {
+                                        return actions.subscription.create({
+                                            "plan_id": planId
+                                        });
+                                    },
+                                    onApprove: function(data, actions) {
+                                        if (redirectUrl !== "") {
+                                            window.location.href = redirectUrl;
+                                        } else {
+                                            alert("' . esc_js($t['alert_thanks']) . '" + data.subscriptionID);
+                                        }
+                                        window.i4warePayPalModal.close();
+                                    },
+                                    onError: function(err) {
+                                        console.error("PayPal Smart Subscribe error:", err);
+                                    }
+                                    }).render(container);
                             }
-                        }).render("#' . esc_js($unique_id) . '");
-                    } else {
-                        // If SDK is not loaded yet, retry in 100ms
-                        setTimeout(renderPaypal, 100);
-                    }
-                };
-                renderPaypal();
-            })();
+                        }
+                    });
+                }
+            }
         </script>';
 
         return $output;
@@ -4310,7 +5251,7 @@ if (!function_exists('i4ware_paypal_subscribe_shortcode')) {
 }
 
 /**
- * Shortcode to display a support levels table with PayPal Smart Subscribe buttons
+ * Shortcode to display a support levels table with Pre-Checkout Terms Modal and PayPal Smart Subscribe
  * Usage:
  * [paypal_support_table client_id="YOUR_CLIENT_ID" community="P-1" opensource="P-2" development="P-3" professional="P-4" business="P-5" enterprise="P-6"]
  */
@@ -4323,137 +5264,72 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
         $atts = array_change_key_case($atts, CASE_LOWER);
 
         $a = shortcode_atts([
-            'client_id' => '',
-            'community' => '',
-            'opensource' => '',
-            'development' => '',
+            'client_id'    => '',
+            'community'    => '',
+            'opensource'   => '',
+            'development'  => '',
             'professional' => '',
-            'business' => '',
-            'enterprise' => '',
-            'env' => 'production',
-            'currency' => 'EUR'
+            'business'     => '',
+            'enterprise'   => '',
+            'env'          => 'production',
+            'currency'     => 'EUR'
         ], $atts, 'paypal_support_table');
 
         $client_id = sanitize_text_field($a['client_id']);
         $currency = sanitize_text_field($a['currency']);
 
-        // Detect current language using Polylang
         $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
         if ($lang !== 'fi' && $lang !== 'en' && $lang !== 'ar') {
-            $lang = 'en'; // fallback
+            $lang = 'en';
         }
 
-        // Define translation dictionary
-        $translations = [
-            'fi' => [
-                'support_level' => 'Tukitaso',
-                'price'         => 'Hinta',
-                'subscribe'     => 'Tilaa',
-                'month'         => 'kk',
-                'incl_vat'      => 'sis. ALV',
-                'alert_thanks'  => 'Kiitos tuestasi! Tilaustunnuksesi on: ',
-                'error_missing' => 'Virhe: [paypal_support_table] shortcode vaatii \'client_id\' -attribuutin.',
-                'error_no_plans'=> 'Huomio: Yhtään tilaussuunnitelman ID:tä ei ole määritetty [paypal_support_table] -lyhytkoodiin.',
-                'levels'        => [
-                    'community'    => 'Yhteisön tukija',
-                    'opensource'   => 'Avoimen lähdekoodin tukija',
-                    'development'  => 'Kehityksen tukija',
-                    'professional' => 'Ammattilaistason sponsori',
-                    'business'     => 'Yrityssponsori',
-                    'enterprise'   => 'Suuryrityssponsori'
-                ]
-            ],
-            'en' => [
-                'support_level' => 'Support Level',
-                'price'         => 'Price',
-                'subscribe'     => 'Subscribe',
-                'month'         => 'month',
-                'incl_vat'      => 'incl. VAT',
-                'alert_thanks'  => 'Thank you for your support! Your subscription ID is: ',
-                'error_missing' => 'Error: The [paypal_support_table] shortcode requires the \'client_id\' attribute.',
-                'error_no_plans'=> 'Warning: No subscription plan IDs have been configured in the [paypal_support_table] shortcode.',
-                'levels'        => [
-                    'community'    => 'Community Supporter',
-                    'opensource'   => 'Open Source Supporter',
-                    'development'  => 'Development Supporter',
-                    'professional' => 'Professional Sponsor',
-                    'business'     => 'Business Sponsor',
-                    'enterprise'   => 'Enterprise Sponsor'
-                ]
-            ],
-            'ar' => [
-                'support_level' => 'مستوى الدعم',
-                'price'         => 'السعر',
-                'subscribe'     => 'اشترك',
-                'month'         => 'شهر',
-                'incl_vat'      => 'شامل ضريبة القيمة المضافة',
-                'alert_thanks'  => 'شكراً لدعمك! معرف الاشتراك الخاص بك هو: ',
-                'error_missing' => 'خطأ: يتطلب الكود القصير [paypal_support_table] سمة \'client_id\'.',
-                'error_no_plans'=> 'تنبيه: لم يتم تكوين أي معرفات لخطط الاشتراك في الكود القصير [paypal_support_table].',
-                'levels'        => [
-                    'community'    => 'داعم المجتمع',
-                    'opensource'   => 'داعم المصدر المفتوح',
-                    'development'  => 'داعم التطوير',
-                    'professional' => 'راعي محترف',
-                    'business'     => 'راعي أعمال',
-                    'enterprise'   => 'راعي مؤسسي'
-                ]
-            ]
-        ];
-
-        $t = $translations[$lang];
+        $t = i4ware_get_paypal_translations($lang);
 
         if (empty($client_id)) {
             return '<p style="color: red; font-weight: bold;">' . esc_html($t['error_missing']) . '</p>';
         }
 
-        // Determine alignments for LTR vs RTL (Arabic)
         $align_left  = ($lang === 'ar') ? 'right' : 'left';
         $align_right = ($lang === 'ar') ? 'left' : 'right';
 
-        // Determine currency symbol
-        $currency_symbol = '€';
-        if ($currency === 'USD') {
-            $currency_symbol = '$';
-        } elseif ($currency === 'GBP') {
-            $currency_symbol = '£';
-        }
+        $vat_label = !empty($t['vat_incl']) ? $t['vat_incl'] : (!empty($t['incl_vat']) ? $t['incl_vat'] : (($lang === 'fi') ? 'sis. ALV' : (($lang === 'ar') ? 'شامل ضريبة القيمة المضافة' : 'incl. VAT')));
+        $month_label = !empty($t['month']) ? $t['month'] : (($lang === 'fi') ? 'kk' : (($lang === 'ar') ? 'شهر' : 'month'));
 
-        // Define support levels
+        $currency_symbol = ($currency === 'USD') ? '$' : (($currency === 'GBP') ? '£' : '€');
+
         $levels = [
             [
-                'name' => $t['levels']['community'],
-                'price' => $currency_symbol . '5 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
-                'id' => sanitize_text_field($a['community']),
+                'name'  => $t['levels']['community'],
+                'price' => $currency_symbol . '5 / ' . $month_label . ' (' . $vat_label . ')',
+                'id'    => sanitize_text_field($a['community']),
             ],
             [
-                'name' => $t['levels']['opensource'],
-                'price' => $currency_symbol . '10 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
-                'id' => sanitize_text_field($a['opensource']),
+                'name'  => $t['levels']['opensource'],
+                'price' => $currency_symbol . '10 / ' . $month_label . ' (' . $vat_label . ')',
+                'id'    => sanitize_text_field($a['opensource']),
             ],
             [
-                'name' => $t['levels']['development'],
-                'price' => $currency_symbol . '25 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
-                'id' => sanitize_text_field($a['development']),
+                'name'  => $t['levels']['development'],
+                'price' => $currency_symbol . '25 / ' . $month_label . ' (' . $vat_label . ')',
+                'id'    => sanitize_text_field($a['development']),
             ],
             [
-                'name' => $t['levels']['professional'],
-                'price' => $currency_symbol . '50 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
-                'id' => sanitize_text_field($a['professional']),
+                'name'  => $t['levels']['professional'],
+                'price' => $currency_symbol . '50 / ' . $month_label . ' (' . $vat_label . ')',
+                'id'    => sanitize_text_field($a['professional']),
             ],
             [
-                'name' => $t['levels']['business'],
-                'price' => $currency_symbol . '100 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
-                'id' => sanitize_text_field($a['business']),
+                'name'  => $t['levels']['business'],
+                'price' => $currency_symbol . '100 / ' . $month_label . ' (' . $vat_label . ')',
+                'id'    => sanitize_text_field($a['business']),
             ],
             [
-                'name' => $t['levels']['enterprise'],
-                'price' => $currency_symbol . '250 / ' . $t['month'] . ' (' . $t['incl_vat'] . ')',
-                'id' => sanitize_text_field($a['enterprise']),
+                'name'  => $t['levels']['enterprise'],
+                'price' => $currency_symbol . '250 / ' . $month_label . ' (' . $vat_label . ')',
+                'id'    => sanitize_text_field($a['enterprise']),
             ]
         ];
 
-        // Filter levels that have a plan_id configured
         $active_levels = [];
         foreach ($levels as $level) {
             if (!empty($level['id'])) {
@@ -4468,7 +5344,6 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
 
         $output = '';
 
-        // Load PayPal SDK only once per page
         if (!$paypal_sdk_loaded) {
             $sdk_url = 'https://www.paypal.com/sdk/js?client-id=' . esc_attr($client_id) . '&vault=true&intent=subscription';
             if (!empty($currency)) {
@@ -4478,7 +5353,9 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
             $paypal_sdk_loaded = true;
         }
 
-        // Render HTML Table with Dark SaaS theme (matching custom UI screenshot)
+        $default_terms_link = get_theme_mod("wp_quote_terms_link_$lang", '#');
+        $default_privacy_link = get_theme_mod("wp_quote_privacy_link_$lang", '#');
+
         $output .= '<div class="i4ware-support-table-wrapper" style="overflow-x: auto; margin: 30px 0; font-family: -apple-system, BlinkMacSystemFont, \'Segoe UI\', Roboto, Oxygen, Ubuntu, Cantarell, \'Open Sans\', \'Helvetica Neue\', sans-serif; background: #131526; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08); padding: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);" ' . ($lang === 'ar' ? 'dir="rtl"' : 'dir="ltr"') . '>';
         $output .= '<table style="width: 100%; border-collapse: collapse; text-align: ' . $align_left . '; background: transparent; overflow: hidden;">';
         $output .= '<thead style="background: #0b0d19; border-bottom: 2px solid rgba(255, 255, 255, 0.08);">';
@@ -4495,7 +5372,10 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
             $output .= '<td style="padding: 18px 20px; font-weight: 600; color: #ffffff; font-size: 15px; text-align: ' . $align_left . ';">' . esc_html($level['name']) . '</td>';
             $output .= '<td style="padding: 18px 20px; text-align: ' . $align_right . '; font-weight: 700; color: #c084fc; background: linear-gradient(90deg, #c084fc, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 16px;">' . esc_html($level['price']) . '</td>';
             $output .= '<td style="padding: 12px 20px; text-align: center; vertical-align: middle;">';
-            $output .= '<div id="' . esc_attr($level['btn_id']) . '" style="max-width: 200px; margin: 0 auto;"></div>';
+            $output .= '<button type="button" class="i4ware-tier-sub-btn" onclick="i4wareOpenSupportTierModal(\'' . esc_js($level['id']) . '\', \'' . esc_js($level['name']) . '\', \'' . esc_js($level['price']) . '\', \'' . esc_js($currency) . '\', \'' . esc_js($default_terms_link) . '\', \'' . esc_js($default_privacy_link) . '\')" style="background: linear-gradient(135deg, #0070ba 0%, #005ea6 100%); color: #ffffff; border: none; padding: 10px 22px; font-size: 14px; font-weight: 700; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.25s ease; box-shadow: 0 4px 10px rgba(0, 112, 186, 0.3); outline: none;" onmouseover="this.style.background=\'linear-gradient(135deg, #0086e0 0%, #0070ba 100%)\'; this.style.transform=\'translateY(-2px)\'; this.style.boxShadow=\'0 6px 14px rgba(0, 112, 186, 0.4)\';" onmouseout="this.style.background=\'linear-gradient(135deg, #0070ba 0%, #005ea6 100%)\'; this.style.transform=\'translateY(0)\'; this.style.boxShadow=\'0 4px 10px rgba(0, 112, 186, 0.3)\';">';
+            $output .= '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20.007 6.467a3.003 3.003 0 0 0-3.003-2.92h-6.223L8.03 16.784a.5.5 0 0 0 .49.584h2.528l1.458-9.055a.5.5 0 0 1 .494-.42h4.524a1.002 1.002 0 0 1 .983 1.201l-1.458 9.055a.5.5 0 0 1-.494.42H11.53l.42 2.61a.5.5 0 0 0 .493.42H16.03a3.003 3.003 0 0 0 2.977-2.58l1.458-9.056a3.003 3.003 0 0 0-.458-2.072zM6.973 17.368H3.97a.5.5 0 0 1-.49-.584l2.75-17.072A1.5 1.5 0 0 1 7.712-.584h6.223a4.004 4.004 0 0 1 3.97 3.513l.458 2.842a1 1 0 0 1-.983 1.158H12.86a2 2 0 0 0-1.977 1.68l-1.458 9.056a2.002 2.002 0 0 0 .494 1.705l-2.946-.042z"/></svg>';
+            $output .= esc_html($t['subscribe']);
+            $output .= '</button>';
             $output .= '</td>';
             $output .= '</tr>';
         }
@@ -4504,53 +5384,62 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
         $output .= '</table>';
         $output .= '</div>';
 
-        // Render JavaScript rendering loops
         $output .= '<script type="text/javascript">
-            (function() {
-                var renderButtons = function() {
-                    if (typeof paypal !== "undefined") {';
-
-        foreach ($active_levels as $level) {
-            $output .= '
-                        paypal.Buttons({
-                            style: {
-                                shape: "rect",
-                                color: "blue",
-                                layout: "horizontal",
-                                label: "subscribe",
-                                tagline: false
-                            },
-                            onClick: function() {
-                                if (typeof gtag === "function") {
-                                    gtag("event", "click_paypal_donation", {
-                                        "donation_type": "support_table",
-                                        "plan_id": "' . esc_js($level['id']) . '",
-                                        "level_name": "' . esc_js($level['name']) . '",
-                                        "currency": "' . esc_js($currency) . '"
-                                    });
-                                }
-                            },
-                            createSubscription: function(data, actions) {
-                                return actions.subscription.create({
-                                    "plan_id": "' . esc_js($level['id']) . '"
-                                });
-                            },
-                            onApprove: function(data, actions) {
-                                alert("' . esc_js($t['alert_thanks']) . '" + data.subscriptionID);
-                            },
-                            onError: function(err) {
-                                console.error("Virhe: ", err);
+            function i4wareOpenSupportTierModal(planId, levelName, price, currency, termsUrl, privacyUrl) {
+                if (window.i4warePayPalModal) {
+                    window.i4warePayPalModal.open({
+                        title: "' . esc_js($t['modal_title']) . '",
+                        itemName: levelName,
+                        price: price,
+                        frequency: "' . esc_js($t['recurring_monthly'] . ' (' . $vat_label . ')') . '",
+                        description: "",
+                        termsText: "' . esc_js($t['terms_subscription']) . '",
+                        termsUrl: termsUrl,
+                        privacyUrl: privacyUrl,
+                        isSmartSubscribe: true,
+                        analytics: {
+                            donation_type: "support_table",
+                            plan_id: planId,
+                            level_name: levelName,
+                            currency: currency
+                        },
+                        renderSmartButton: function(container) {
+                            if (typeof paypal !== "undefined") {
+                                paypal.Buttons({
+                                    style: {
+                                        shape: "rect",
+                                        color: "blue",
+                                        layout: "vertical",
+                                        label: "subscribe"
+                                    },
+                                    onClick: function() {
+                                        if (typeof gtag === "function") {
+                                            gtag("event", "click_paypal_donation", {
+                                                "donation_type": "support_table",
+                                                "plan_id": planId,
+                                                "level_name": levelName,
+                                                "currency": currency
+                                            });
+                                        }
+                                    },
+                                    createSubscription: function(data, actions) {
+                                        return actions.subscription.create({
+                                            "plan_id": planId
+                                        });
+                                    },
+                                    onApprove: function(data, actions) {
+                                        alert("' . esc_js($t['alert_thanks']) . '" + data.subscriptionID);
+                                        window.i4warePayPalModal.close();
+                                    },
+                                    onError: function(err) {
+                                        console.error("Virhe: ", err);
+                                    }
+                                }).render(container);
                             }
-                        }).render("#' . esc_js($level['btn_id']) . '");';
-        }
-
-        $output .= '
-                    } else {
-                        setTimeout(renderButtons, 100);
-                    }
-                };
-                renderButtons();
-            })();
+                        }
+                    });
+                }
+            }
         </script>';
 
         return $output;

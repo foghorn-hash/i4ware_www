@@ -233,6 +233,77 @@ The theme provides the following custom shortcodes:
   [i4ware_sdk_page]
   ```
 
+### 13. `[paypal_donate]`
+- **Source**: `functions.php`
+- **Purpose**: Renders a stylized PayPal donation button that opens a pre-checkout **Terms & Trust Modal** explaining the purpose of the donation, security assurances (256-bit SSL), delivery terms, and privacy links before routing to PayPal checkout.
+- **Attributes**:
+  - `email` (string, default: admin email): PayPal recipient account email.
+  - `amount` (string, default: `""`): Pre-filled donation amount (e.g., `"10"`).
+  - `currency` (string, default: `"EUR"`): Currency code (`EUR`, `USD`, `GBP`).
+  - `item_name` (string): Title of donation item shown in modal and PayPal.
+  - `button_text` (string): Text on the button.
+  - `description` (string): Custom description text shown inside the pre-checkout modal.
+  - `terms_url` (string): Override URL for terms of service / delivery.
+  - `privacy_url` (string): Override URL for privacy policy.
+- **Usage**:
+  ```wordpress
+  [paypal_donate amount="10" currency="EUR" item_name="Lahjoitus avoimen lähdekoodin kehitykseen"]
+  ```
+
+### 14. `[paypal_button]`
+- **Source**: `functions.php`
+- **Purpose**: Renders a direct buy/payment button supporting either a direct PayPal checkout URL or a PayPal Hosted Button ID, opening the pre-checkout confirmation modal before proceeding.
+- **Attributes**:
+  - `url` (string): Direct PayPal payment link (e.g. `https://www.paypal.com/ncp/payment/...`).
+  - `id` (string): PayPal Hosted Button ID (e.g. `ABCDE12345`).
+  - `button_text` (string, default: `"Osta nyt"` / `"Buy Now"`).
+  - `item_name` (string): Name of product / service.
+  - `price` / `amount` (string): Displayed price (e.g. `"29.00"`).
+  - `currency` (string, default: `"EUR"`).
+  - `description` (string): Description displayed in the modal.
+  - `terms_url` (string): Custom terms link.
+  - `privacy_url` (string): Custom privacy policy link.
+- **Usage**:
+  ```wordpress
+  [paypal_button url="https://www.paypal.com/ncp/payment/XXXXXXXX" button_text="Osta lisenssi" price="49" item_name="i4ware Plugin Pro -lisenssi"]
+  ```
+
+### 15. `[paypal_subscribe]`
+- **Source**: `functions.php`
+- **Purpose**: Renders a PayPal subscription button that triggers the pre-checkout terms modal, clarifying recurring monthly schedule, cancel-at-any-time policy, and initializes the PayPal Smart Subscription SDK.
+- **Attributes**:
+  - `client_id` (string, required): Live/Sandbox PayPal REST Client ID.
+  - `plan_id` (string, required): PayPal Subscription Plan ID (`P-...`).
+  - `item_name` (string): Subscription tier name.
+  - `price` (string): Monthly price string (e.g. `"25 €"`).
+  - `currency` (string, default: `"EUR"`).
+  - `button_text` (string).
+  - `color` (string, default: `"blue"`).
+  - `shape` (string, default: `"rect"`).
+  - `label` (string, default: `"subscribe"`).
+  - `redirect_url` (string): Optional redirection URL after successful subscription approval.
+- **Usage**:
+  ```wordpress
+  [paypal_subscribe client_id="YOUR_CLIENT_ID" plan_id="P-123456789" item_name="Development Supporter" price="25 €"]
+  ```
+
+### 16. `[paypal_support_table]`
+- **Source**: `functions.php`
+- **Purpose**: Renders a complete, responsive dark-mode SaaS Support Levels Table with 6 tiers (`community`, `opensource`, `development`, `professional`, `business`, `enterprise`). Clicking any tier opens the Pre-Checkout & Terms Modal with that specific tier's details before launching subscription.
+- **Attributes**:
+  - `client_id` (string, required): Live PayPal REST Client ID.
+  - `community` (string): Plan ID for Community Supporter (€5/mo).
+  - `opensource` (string): Plan ID for Open Source Supporter (€10/mo).
+  - `development` (string): Plan ID for Development Supporter (€25/mo).
+  - `professional` (string): Plan ID for Professional Sponsor (€50/mo).
+  - `business` (string): Plan ID for Business Sponsor (€100/mo).
+  - `enterprise` (string): Plan ID for Enterprise Sponsor (€250/mo).
+  - `currency` (string, default: `"EUR"`).
+- **Usage**:
+  ```wordpress
+  [paypal_support_table client_id="YOUR_CLIENT_ID" community="P-1" opensource="P-2" development="P-3" professional="P-4" business="P-5" enterprise="P-6"]
+  ```
+
 ## Installation
 1. Download the i4ware Software theme files.
 2. Upload the `i4waresoftware` folder to the `/wp-content/themes/` directory of your WordPress installation.
@@ -245,22 +316,24 @@ The theme provides the following custom shortcodes:
 - Use the `template-parts` directory to adjust the header, footer, and content layout as needed.
 - Add images to the `assets/images` directory for use throughout the theme.
 
-## Google Analytics (GA4) PayPal Event Tracking
+## Google Analytics (GA4) PayPal Event Tracking & Funnel Analytics
 
-The theme automatically tracks user clicks on all PayPal components (`[paypal_donate]`, `[paypal_button]`, `[paypal_subscribe]`, and `[paypal_support_table]`) and sends a custom event to Google Analytics 4 (GA4) when clicked.
+The theme automatically tracks user interactions on all PayPal components (`[paypal_donate]`, `[paypal_button]`, `[paypal_subscribe]`, and `[paypal_support_table]`) and sends custom events to Google Analytics 4 (GA4).
 
-### Custom Event Details
-- **Event Name**: `click_paypal_donation`
-- **Event Parameters**:
-  - `donation_type`: The type of PayPal interaction (`donate`, `buy_link`, `buy_hosted`, `subscribe`, `support_table`).
-  - `item_name`: The name of the donation item (from `[paypal_donate]`).
-  - `amount`: The donation amount (from `[paypal_donate]`).
-  - `currency`: The currency code (from `[paypal_donate]` and `[paypal_support_table]`).
-  - `plan_id`: The PayPal subscription plan ID (from `[paypal_subscribe]` and `[paypal_support_table]`).
-  - `level_name`: The support level tier name (from `[paypal_support_table]`).
-  - `button_text`: The text displayed on the clicked button.
-  - `url`: The destination URL (from `[paypal_button]` link style).
-  - `hosted_button_id`: The hosted button ID (from `[paypal_button]` hosted style).
+### Custom Events
+1. **`open_paypal_modal`**: Fired when a user clicks a PayPal button and the Pre-Checkout Terms & Trust Modal opens.
+2. **`click_paypal_donation`**: Fired when the user confirms the terms and proceeds to PayPal payment/checkout.
+
+### Event Parameters:
+- `donation_type`: The type of PayPal interaction (`donate`, `buy_link`, `buy_hosted`, `subscribe`, `support_table`).
+- `item_name`: The name of the donation or product item.
+- `amount` / `price`: The price or donation amount.
+- `currency`: The currency code (`EUR`, `USD`, `GBP`).
+- `plan_id`: The PayPal subscription plan ID.
+- `level_name`: The support level tier name.
+- `button_text`: The text displayed on the button.
+- `url`: The destination URL.
+- `hosted_button_id`: The hosted button ID.
 
 ---
 
