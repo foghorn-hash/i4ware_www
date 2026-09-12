@@ -708,6 +708,11 @@ img.partner-logo {
   background: #222;
 }
 
+.main .container {
+  background: #222;
+  color: var(--light);
+}
+
 /* Footer styles */
 footer {
   background: #222;

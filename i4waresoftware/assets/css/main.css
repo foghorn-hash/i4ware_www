@@ -14,8 +14,8 @@ Tags: custom, responsive, software, development
 
 :root {
   --dark: #0d0d0d;
-  --accent: #ff005b;
-  --light: #fafafa;
+  --accent: #8c0091;
+  --light: #ffffff;
 }
 
 * {
@@ -27,7 +27,7 @@ Tags: custom, responsive, software, development
 }
 
 body {
-  background: var(--dark);
+  background: #000;
   color: var(--light);
   line-height: 1.6;
   display: flex;
@@ -58,7 +58,8 @@ header {
   left: 0;
   right: 0;
   width: 100vw;
-  background: rgba(0, 0, 0, 0.6);
+  background: #000;
+  color: var(--light);
   backdrop-filter: blur(6px);
   z-index: 1000;
 }
@@ -133,8 +134,6 @@ header {
   width: 90%;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 20px;
-  background-color: #141c2f;
 }
 
 nav {
@@ -707,6 +706,18 @@ img.partner-logo {
 /* Nain & footer */
 .main {
   padding: 0;
+  background: #222;
+}
+
+.main .container {
+  color: var(--light);
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  background-color: #161616;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Footer styles */
@@ -979,7 +990,7 @@ figure.wp-block-embed iframe {
 /* Blog Article Styles */
 .ai-content-note {
   display: inline-block;
-  margin: 1.5rem 0 1rem 1.5rem;
+  margin: 1.5rem 0 1rem 0rem;
   padding: 0.45rem 0.8rem;
   border-radius: 8px;
   background: rgba(138, 92, 246, 0.16);
