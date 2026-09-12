@@ -1071,6 +1071,7 @@ function jira_timesheet_landing_shortcode( $atts ) {
                 $screenshots[] = array(
                     'url'      => $img_url,
                     'caption'  => get_the_title( $s_id ),
+                    'desc'     => get_the_excerpt( $s_id ),
                     'category' => function_exists( 'get_field' ) ? get_field( 'tfj_screenshot_category', $s_id ) : 'dev',
                 );
             }
@@ -1084,21 +1085,25 @@ function jira_timesheet_landing_shortcode( $atts ) {
         for ( $i = 1; $i <= 8; $i++ ) {
             $fallback_url = isset( $tfj_defaults[$lang]["gallery_img_{$i}_url"] ) ? $tfj_defaults[$lang]["gallery_img_{$i}_url"] : '';
             $fallback_cap = isset( $tfj_defaults[$lang]["gallery_img_{$i}_caption"] ) ? $tfj_defaults[$lang]["gallery_img_{$i}_caption"] : '';
+            $fallback_desc = isset( $tfj_defaults[$lang]["gallery_img_{$i}_desc"] ) ? $tfj_defaults[$lang]["gallery_img_{$i}_desc"] : '';
             $fallback_cat = isset( $tfj_defaults[$lang]["gallery_img_{$i}_category"] ) ? $tfj_defaults[$lang]["gallery_img_{$i}_category"] : 'dev';
             
             // Check if there are ACF overrides on the page for these static images
             $acf_url = get_tfj_landing_image( "tfj_gallery_img_{$i}_url", $lang );
             $acf_cap = get_tfj_landing_field( "tfj_gallery_img_{$i}_caption", $lang );
+            $acf_desc = get_tfj_landing_field( "tfj_gallery_img_{$i}_desc", $lang );
             $acf_cat = get_tfj_landing_field( "tfj_gallery_img_{$i}_category", $lang );
             
-            $img_url  = ! empty( $acf_url ) ? $acf_url : $fallback_url;
-            $caption  = ! empty( $acf_cap ) ? $acf_cap : $fallback_cap;
-            $category = ! empty( $acf_cat ) ? $acf_cat : $fallback_cat;
+            $img_url     = ! empty( $acf_url ) ? $acf_url : $fallback_url;
+            $caption     = ! empty( $acf_cap ) ? $acf_cap : $fallback_cap;
+            $description = ! empty( $acf_desc ) ? $acf_desc : $fallback_desc;
+            $category    = ! empty( $acf_cat ) ? $acf_cat : $fallback_cat;
             
             if ( ! empty( $img_url ) ) {
                 $screenshots[] = array(
                     'url'      => $img_url,
                     'caption'  => $caption,
+                    'desc'     => $description,
                     'category' => $category,
                 );
             }
@@ -1396,13 +1401,29 @@ function jira_timesheet_landing_shortcode( $atts ) {
 
           <div class="tfj-gallery-grid" id="tfjGallery">
             <?php foreach ( $screenshots as $s ): 
-                $img_url = $s['url'];
-                $caption = $s['caption'];
+                $img_url  = $s['url'];
+                $caption  = $s['caption'];
+                $desc     = isset( $s['desc'] ) ? $s['desc'] : '';
                 $category = $s['category'];
             ?>
             <div class="tfj-gallery-item" data-category="<?php echo esc_attr( $category ); ?>" tabindex="0" role="button" aria-label="<?php echo esc_attr( $caption ); ?>">
-              <img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $caption ); ?>" loading="lazy" referrerpolicy="no-referrer">
-              <div class="tfj-gallery-caption"><?php echo esc_html( $caption ); ?></div>
+              <div class="tfj-gallery-thumb">
+                <img src="<?php echo esc_url( $img_url ); ?>" alt="<?php echo esc_attr( $caption ); ?>" loading="lazy" referrerpolicy="no-referrer">
+                <div class="tfj-gallery-overlay">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    <line x1="11" y1="8" x2="11" y2="14"></line>
+                    <line x1="8" y1="11" x2="14" y2="11"></line>
+                  </svg>
+                </div>
+              </div>
+              <div class="tfj-gallery-info">
+                <h3><?php echo esc_html( $caption ); ?></h3>
+                <?php if ( $desc ) : ?>
+                  <p><?php echo esc_html( $desc ); ?></p>
+                <?php endif; ?>
+              </div>
             </div>
             <?php endforeach; ?>
           </div>
