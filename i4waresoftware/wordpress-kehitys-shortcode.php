@@ -844,3 +844,59 @@ add_filter('pll_get_post_types', function($post_types) {
     return $post_types;
 });
 
+/**
+ * Register ACF field group for WordPress Screenshots CPT
+ */
+add_action('acf/init', 'i4ware_register_wordpress_screenshot_acf_fields');
+function i4ware_register_wordpress_screenshot_acf_fields() {
+    if (!function_exists('acf_add_local_field_group')) {
+        return;
+    }
+
+    acf_add_local_field_group(array(
+        'key' => 'group_wordpress_screenshot_fields',
+        'title' => 'WordPress Screenshot Fields (Free ACF Compatible)',
+        'fields' => array(
+            array(
+                'key' => 'field_screenshot_image',
+                'label' => 'Screenshot Image',
+                'name' => 'screenshot_image',
+                'type' => 'image',
+                'instructions' => 'Upload or select a screenshot image (or use WordPress Featured Image).',
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+            ),
+            array(
+                'key' => 'field_screenshot_external_url',
+                'label' => 'External Project URL',
+                'name' => 'screenshot_external_url',
+                'type' => 'url',
+                'instructions' => 'Optional URL link to live project or demo.',
+            ),
+            array(
+                'key' => 'field_screenshot_badge',
+                'label' => 'Badge / Tag Label',
+                'name' => 'screenshot_badge',
+                'type' => 'text',
+                'instructions' => 'e.g. Plugin, Theme, WooCommerce, OpenAI API',
+            ),
+        ),
+        'location' => array(
+            array(
+                array(
+                    'param' => 'post_type',
+                    'operator' => '==',
+                    'value' => 'wordpress_screenshot',
+                ),
+            ),
+        ),
+        'menu_order' => 0,
+        'position' => 'normal',
+        'style' => 'default',
+        'label_placement' => 'top',
+        'instruction_placement' => 'label',
+        'active' => true,
+    ));
+}
+
+

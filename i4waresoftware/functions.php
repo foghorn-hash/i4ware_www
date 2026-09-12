@@ -11,6 +11,7 @@ require_once(get_template_directory() . '/jira-timesheet-shortcode.php');
 require_once(get_template_directory() . '/wordpress-kehitys-shortcode.php');
 require_once(get_template_directory() . '/web-hotellipalvelu-shortcode.php');
 require_once(get_template_directory() . '/affiliate-programs-shortcode.php');
+require_once(get_template_directory() . '/bulk-screenshots.php');
 
 // Theme setup
 function i4waresoftware_setup()
