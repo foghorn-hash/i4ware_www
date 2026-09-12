@@ -15,8 +15,38 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
         </div>
         <?php if (function_exists('tk_render_mega_menu'))
           tk_render_mega_menu(); ?>
-        <?php if (function_exists('pll_the_languages')): ?>
-          <ul class="language-switcher">
+        <?php if (function_exists('pll_languages_list')): ?>
+          <div class="language-switcher-wrap">
+            <select class="language-switcher" aria-label="Language" onchange="if (this.value) { window.location.href = this.value; }">
+              <?php
+              $current_lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
+              $language_labels = array(
+                'fi' => 'Suomi',
+                'en' => 'English',
+                'ar' => 'العربية',
+              );
+
+              $languages = array();
+              if (function_exists('pll_languages_list')) {
+                $languages = pll_languages_list(array('fields' => 'slug'));
+              }
+
+              if (!is_array($languages) || empty($languages)) {
+                $languages = array('fi', 'en', 'ar');
+              }
+
+              foreach ($languages as $code) {
+                $code = sanitize_key($code);
+                $label = isset($language_labels[$code]) ? $language_labels[$code] : strtoupper($code);
+                $url = function_exists('pll_home_url') ? pll_home_url($code) : home_url('/');
+                $selected = ($code === $current_lang) ? ' selected="selected"' : '';
+                echo '<option value="' . esc_url($url) . '"' . $selected . '>' . esc_html($label) . '</option>';
+              }
+              ?>
+            </select>
+          </div>
+        <?php elseif (function_exists('pll_the_languages')): ?>
+          <div class="language-switcher-wrap">
             <?php
             pll_the_languages(array(
               'show_flags' => 1,
@@ -26,7 +56,7 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
               'dropdown' => 0,
             ));
             ?>
-          </ul>
+          </div>
         <?php endif; ?>
         <div class="burger" id="burger"><span></span><span></span><span></span></div>
       </nav>
