@@ -110,6 +110,7 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
   <?php endif; ?>
   <section class="main">
     <div class="container">
+      <div class="ai-content-note">Sisältö on tehty AI:lla</div>
       <?php if (!is_home() && !is_archive() && !is_single()): ?>
         <?php get_template_part('template-parts/content'); ?>
       <?php elseif (is_home() || is_archive()): ?>

@@ -5,10 +5,10 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
     <div class="main-content">
         <h1 class="section-title"><?php echo get_the_title(get_option('page_for_posts')); ?></h1>
         <?php if (have_posts()): ?>
-            <?php while (have_posts()):
-                the_post(); ?>
-                <article <?php post_class(); ?>>
-                    <div class="post-row">
+            <div class="blog-post-grid">
+                <?php while (have_posts()):
+                    the_post(); ?>
+                    <article <?php post_class('blog-post-card'); ?>>
                         <?php if (has_post_thumbnail()): ?>
                             <div class="post-thumbnail">
                                 <a href="<?php the_permalink(); ?>">
@@ -44,12 +44,12 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
                                 </div>
                             </div>
                             <div class="entry-summary">
-                                <?php the_excerpt(); ?>
+                                <?php echo wp_trim_words(wp_strip_all_tags(get_the_excerpt()), 22, '...'); ?>
                             </div>
                         </div>
-                    </div>
-                </article>
-            <?php endwhile; ?>
+                    </article>
+                <?php endwhile; ?>
+            </div>
             <div class="pagination">
                 <?php the_posts_pagination(); ?>
             </div>
