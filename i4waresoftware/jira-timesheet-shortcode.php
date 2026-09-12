@@ -78,34 +78,42 @@ $tfj_defaults = array(
         
         'gallery_img_1_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Dashboard-7-1024x576.png',
         'gallery_img_1_caption' => 'Admin Dashboard — Weekly Team Overview',
+        'gallery_img_1_desc' => 'Comprehensive team time allocation, real-time hours tracking, and project progress dashboard.',
         'gallery_img_1_category' => 'mgr',
         
         'gallery_img_2_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/My-Timesheets-9-1024x576.png',
         'gallery_img_2_caption' => 'My Timesheets — Excel-Style Grid View',
+        'gallery_img_2_desc' => 'High-speed keyboard navigation and spreadsheet-style grid for frictionless daily time logging.',
         'gallery_img_2_category' => 'dev',
         
         'gallery_img_3_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Approve-7-1024x576.png',
         'gallery_img_3_caption' => 'Worklog Approval Workflow',
+        'gallery_img_3_desc' => 'Multi-tier manager approval system with instant bulk approvals, status filtering, and audit trails.',
         'gallery_img_3_category' => 'mgr',
         
         'gallery_img_4_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Reject-10-1024x576.png',
         'gallery_img_4_caption' => 'Worklog Rejection with Notes',
+        'gallery_img_4_desc' => 'Granular rejection flow allowing managers to provide feedback and change requests directly in Jira.',
         'gallery_img_4_category' => 'mgr',
         
         'gallery_img_5_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Click-Start-8-1024x576.png',
         'gallery_img_5_caption' => 'Timer — Start Tracking',
+        'gallery_img_5_desc' => 'One-click active timers with auto-save directly tied to your assigned Jira issues and tasks.',
         'gallery_img_5_category' => 'dev',
         
         'gallery_img_6_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Billable-Work-hours-MS-Excel-Export-8-1024x576.png',
         'gallery_img_6_caption' => 'Billable Hours Export to Excel',
+        'gallery_img_6_desc' => 'Clean, structured Excel reports ready for billing, invoicing, client reporting, and internal accounting.',
         'gallery_img_6_category' => 'billing',
         
         'gallery_img_7_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Customer-Complaints-3-1024x576.png',
         'gallery_img_7_caption' => 'Customer Dispute and Billing Workflow',
+        'gallery_img_7_desc' => 'Full resolution workflows for disputed time logs, customer service tickets, and transparent invoicing.',
         'gallery_img_7_category' => 'billing',
         
         'gallery_img_8_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Disputed-Work-logs-in-JSM-7-1024x576.png',
         'gallery_img_8_caption' => 'Disputed Worklogs in JSM',
+        'gallery_img_8_desc' => 'Seamless Jira Service Management integration for customer-facing portals and dispute verification.',
         'gallery_img_8_category' => 'billing',
         
         'cta_title' => 'Start Tracking Time Faster in Jira',
@@ -195,34 +203,42 @@ $tfj_defaults = array(
         
         'gallery_img_1_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Dashboard-7-1024x576.png',
         'gallery_img_1_caption' => 'Ylläpidon työpöytä — Tiimin viikkonäkymä',
+        'gallery_img_1_desc' => 'Kattava tiimin ajankäytön seuranta, reaaliaikainen tuntiseuranta ja projektien edistymisnäkymä.',
         'gallery_img_1_category' => 'mgr',
         
         'gallery_img_2_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/My-Timesheets-9-1024x576.png',
         'gallery_img_2_caption' => 'Omat tuntilomakkeet — Excel-tyylinen ruudukko',
+        'gallery_img_2_desc' => 'Nopea näppäimistöohjaus ja taulukkolaskentatyylinen ruudukko vaivattomaan päivittäiseen tuntikirjaukseen.',
         'gallery_img_2_category' => 'dev',
         
         'gallery_img_3_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Approve-7-1024x576.png',
         'gallery_img_3_caption' => 'Työlokien hyväksyntätyönkulku',
+        'gallery_img_3_desc' => 'Monitasoinen esihenkilön hyväksyntäjärjestelmä pikahyväksynnöillä, tilasuodatuksella ja lokituksella.',
         'gallery_img_3_category' => 'mgr',
         
         'gallery_img_4_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Reject-10-1024x576.png',
         'gallery_img_4_caption' => 'Työlokien hylkääminen kommenteilla',
+        'gallery_img_4_desc' => 'Yksityiskohtainen hylkäystyönkulku, jossa esihenkilö voi jättää korjauspyynnöt suoraan Jiraan.',
         'gallery_img_4_category' => 'mgr',
         
         'gallery_img_5_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Click-Start-8-1024x576.png',
         'gallery_img_5_caption' => 'Ajastin — Aloita seuranta',
+        'gallery_img_5_desc' => 'Yhden klikkauksen aktiiviset ajastimet automaattitallennuksella suoraan Jira-tehtäviin kytkettynä.',
         'gallery_img_5_category' => 'dev',
         
         'gallery_img_6_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Billable-Work-hours-MS-Excel-Export-8-1024x576.png',
         'gallery_img_6_caption' => 'Laskutettavien tuntien vienti Exceliin',
+        'gallery_img_6_desc' => 'Selkeät Excel-raportit laskutukseen, asiakasraportointiin ja sisäiseen kirjanpitoon.',
         'gallery_img_6_category' => 'billing',
         
         'gallery_img_7_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Customer-Complaints-3-1024x576.png',
         'gallery_img_7_caption' => 'Asiakasreklamaatiot ja laskutuksen työnkulku',
+        'gallery_img_7_desc' => 'Työnkulut kiistanalaisten tuntien ratkaisuun, asiakaspalvelupyyntöihin ja läpinäkyvään laskutukseen.',
         'gallery_img_7_category' => 'billing',
         
         'gallery_img_8_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Disputed-Work-logs-in-JSM-7-1024x576.png',
         'gallery_img_8_caption' => 'Kiistanalaiset työlokit JSM:ssä',
+        'gallery_img_8_desc' => 'Saumaton Jira Service Management -integraatio asiakasportaaleihin ja tuntitietojen tarkistamiseen.',
         'gallery_img_8_category' => 'billing',
         
         'cta_title' => 'Aloita nopeampi työajanseuranta Jirassa',
@@ -312,34 +328,42 @@ $tfj_defaults = array(
         
         'gallery_img_1_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Dashboard-7-1024x576.png',
         'gallery_img_1_caption' => 'لوحة تحكم المسؤول — نظرة عامة أسبوعية على الفريق',
+        'gallery_img_1_desc' => 'تتبع شامل لتخصيص وقت الفريق، ومتابعة ساعات العمل وسير المشاريع في الوقت الفعلي.',
         'gallery_img_1_category' => 'mgr',
         
         'gallery_img_2_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/My-Timesheets-9-1024x576.png',
         'gallery_img_2_caption' => 'جداول البيانات الخاصة بي — عرض شبكة بنمط Excel',
+        'gallery_img_2_desc' => 'تنقل سريع عبر لوحة المفاتيح وشبكة بنمط جداول البيانات لتسجيل أوقات العمل بسهولة وسرعة.',
         'gallery_img_2_category' => 'dev',
         
         'gallery_img_3_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Approve-7-1024x576.png',
         'gallery_img_3_caption' => 'سير عمل الموافقة على سجل العمل',
+        'gallery_img_3_desc' => 'نظام موافقة متعدد المستويات للمدراء مع اعتمادات جماعية فورية وتصفية الحالات وسجلات التدقيق.',
         'gallery_img_3_category' => 'mgr',
         
         'gallery_img_4_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Reject-10-1024x576.png',
         'gallery_img_4_caption' => 'رفض سجل العمل مع إضافة ملاحظات',
+        'gallery_img_4_desc' => 'مسار رفض مفصل يتيح للمدراء تقديم الملاحظات وطلبات التعديل مباشرة داخل جيرا.',
         'gallery_img_4_category' => 'mgr',
         
         'gallery_img_5_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Click-Start-8-1024x576.png',
         'gallery_img_5_caption' => 'مؤقت — ابدأ التتبع',
+        'gallery_img_5_desc' => 'مؤقتات نشطة بنقرة واحدة مع حفظ تلقائي مرتبطة مباشرة بمهام جيرا المخصصة لك.',
         'gallery_img_5_category' => 'dev',
         
         'gallery_img_6_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Billable-Work-hours-MS-Excel-Export-8-1024x576.png',
         'gallery_img_6_caption' => 'تصدير الساعات القابلة للفوترة إلى Excel',
+        'gallery_img_6_desc' => 'تقارير إكسل منظمة وجاهزة للفوترة وتقديم التقارير للعملاء والمحاسبة الداخلية.',
         'gallery_img_6_category' => 'billing',
         
         'gallery_img_7_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Customer-Complaints-3-1024x576.png',
         'gallery_img_7_caption' => 'نزاع العملاء وسير عمل الفوترة',
+        'gallery_img_7_desc' => 'مسارات عمل كاملة لمعالجة الساعات المتنازع عليها وتذاكر خدمة العملاء والفوترة الشفافة.',
         'gallery_img_7_category' => 'billing',
         
         'gallery_img_8_url' => 'https://www.i4ware.fi/wp-content/uploads/2026/05/Disputed-Work-logs-in-JSM-7-1024x576.png',
         'gallery_img_8_caption' => 'سجلات العمل المتنازع عليها في JSM',
+        'gallery_img_8_desc' => 'تكامل سلس مع إدارة خدمات جيرا (JSM) للبوابات الموجهة للعملاء والتحقق من ساعات العمل.',
         'gallery_img_8_category' => 'billing',
         
         'cta_title' => 'ابدأ تتبع الوقت بشكل أسرع في Jira',
@@ -1368,15 +1392,6 @@ function jira_timesheet_landing_shortcode( $atts ) {
             <div class="tfj-divider"></div>
             <span class="tfj-section-title"><?php echo esc_html( $gallery_title ); ?></span>
             <p><?php echo esc_html( $gallery_desc ); ?></p>
-          </div>
-
-          <!-- Categories Filter Tabs -->
-          <div class="tfj-gallery-tabs">
-            <button class="tfj-tab-btn tfj-tab-active" data-category="all"><?php echo esc_html( $gallery_tab_all ); ?></button>
-            <button class="tfj-tab-btn" data-category="dev"><?php echo esc_html( $gallery_tab_dev ); ?></button>
-            <button class="tfj-tab-btn" data-category="mgr"><?php echo esc_html( $gallery_tab_mgr ); ?></button>
-            <button class="tfj-tab-btn" data-category="billing"><?php echo esc_html( $gallery_tab_billing ); ?></button>
-            <button class="tfj-tab-btn" data-category="customers"><?php echo esc_html( $gallery_tab_customers ); ?></button>
           </div>
 
           <div class="tfj-gallery-grid" id="tfjGallery">

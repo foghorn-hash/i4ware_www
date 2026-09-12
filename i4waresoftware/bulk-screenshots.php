@@ -1,6 +1,6 @@
 <?php
 /**
- * Bulk Add Screenshots Module
+ * Bulk Add Screenshots Module (Simplified - No Categories Required)
  * 
  * Supports bulk creating screenshot posts from Media Library files for:
  * 1. Timesheets Screenshots (tfj_screenshot)
@@ -9,10 +9,10 @@
  * 
  * Features:
  * - Native WordPress Media Library Bulk Actions (upload.php)
- * - Interactive Admin Tool (Tools / Media / CPT Submenus) with wp.media multi-picker
+ * - Simple & Fast Admin Tool (Tools / Media / CPT Submenus) with wp.media multi-picker
  * - Polylang multi-language support (FI, EN, AR & multi-language translation linking)
  * - Automatic Featured Image assignment + ACF fields synchronization
- * - Live preview and per-item editing before creation
+ * - Live preview with editable titles and optional captions before creation
  * 
  * @package i4waresoftware
  */
@@ -159,8 +159,6 @@ function i4ware_handle_media_bulk_actions($redirect_to, $doaction, $post_ids)
             'title'         => $title,
             'excerpt'       => $excerpt,
             'post_type'     => $cpt,
-            'category'      => 'dev',
-            'badge'         => ($cpt === 'sdk_screenshot' ? 'SDK UI' : ($cpt === 'wordpress_screenshot' ? 'WordPress' : 'dev')),
             'external_url'  => '',
             'lang'          => $lang,
         ));
@@ -225,8 +223,6 @@ function i4ware_create_single_screenshot($data)
     $post_type     = isset($data['post_type']) ? sanitize_key($data['post_type']) : 'sdk_screenshot';
     $title         = isset($data['title']) && trim($data['title']) !== '' ? sanitize_text_field($data['title']) : '';
     $excerpt       = isset($data['excerpt']) ? sanitize_textarea_field($data['excerpt']) : '';
-    $category      = isset($data['category']) ? sanitize_text_field($data['category']) : 'dev';
-    $badge         = isset($data['badge']) ? sanitize_text_field($data['badge']) : '';
     $external_url  = isset($data['external_url']) ? esc_url_raw($data['external_url']) : '';
     $lang          = isset($data['lang']) ? sanitize_key($data['lang']) : '';
     $menu_order    = isset($data['menu_order']) ? (int)$data['menu_order'] : 0;
@@ -264,32 +260,32 @@ function i4ware_create_single_screenshot($data)
     if ($post_type === 'tfj_screenshot') {
         // Timesheets Screenshot
         if (function_exists('update_field')) {
-            update_field('tfj_screenshot_category', $category, $post_id);
             update_field('tfj_screenshot_image', $attachment_id, $post_id);
+            update_field('tfj_screenshot_category', 'dev', $post_id);
         } else {
-            update_post_meta($post_id, 'tfj_screenshot_category', $category);
             update_post_meta($post_id, 'tfj_screenshot_image', $image_url);
+            update_post_meta($post_id, 'tfj_screenshot_category', 'dev');
         }
     } elseif ($post_type === 'sdk_screenshot') {
         // SDK Screenshot
         if (function_exists('update_field')) {
             update_field('sdk_screenshot_image', $attachment_id, $post_id);
-            update_field('sdk_screenshot_badge', $badge, $post_id);
+            update_field('sdk_screenshot_badge', '', $post_id);
             update_field('sdk_screenshot_external_url', $external_url, $post_id);
         } else {
             update_post_meta($post_id, 'sdk_screenshot_image', $attachment_id);
-            update_post_meta($post_id, 'sdk_screenshot_badge', $badge);
+            update_post_meta($post_id, 'sdk_screenshot_badge', '');
             update_post_meta($post_id, 'sdk_screenshot_external_url', $external_url);
         }
     } elseif ($post_type === 'wordpress_screenshot') {
         // WordPress Screenshot
         if (function_exists('update_field')) {
             update_field('screenshot_image', $attachment_id, $post_id);
-            update_field('screenshot_badge', $badge, $post_id);
+            update_field('screenshot_badge', '', $post_id);
             update_field('screenshot_external_url', $external_url, $post_id);
         } else {
             update_post_meta($post_id, 'screenshot_image', $attachment_id);
-            update_post_meta($post_id, 'screenshot_badge', $badge);
+            update_post_meta($post_id, 'screenshot_badge', '');
             update_post_meta($post_id, 'screenshot_external_url', $external_url);
         }
     }
@@ -342,8 +338,6 @@ function i4ware_ajax_bulk_create_screenshots()
 
         $title = isset($item['title']) ? sanitize_text_field($item['title']) : '';
         $excerpt = isset($item['excerpt']) ? sanitize_textarea_field($item['excerpt']) : '';
-        $category = isset($item['category']) ? sanitize_text_field($item['category']) : 'dev';
-        $badge = isset($item['badge']) ? sanitize_text_field($item['badge']) : '';
         $external_url = isset($item['external_url']) ? esc_url_raw($item['external_url']) : '';
         $menu_order = isset($item['menu_order']) ? (int)$item['menu_order'] : ($idx + 1);
 
@@ -358,8 +352,6 @@ function i4ware_ajax_bulk_create_screenshots()
                     'title'         => $title,
                     'excerpt'       => $excerpt,
                     'post_type'     => $post_type,
-                    'category'      => $category,
-                    'badge'         => $badge,
                     'external_url'  => $external_url,
                     'lang'          => $l,
                     'menu_order'    => $menu_order,
@@ -399,8 +391,6 @@ function i4ware_ajax_bulk_create_screenshots()
                 'title'         => $title,
                 'excerpt'       => $excerpt,
                 'post_type'     => $post_type,
-                'category'      => $category,
-                'badge'         => $badge,
                 'external_url'  => $external_url,
                 'lang'          => $target_lang,
                 'menu_order'    => $menu_order,
@@ -470,49 +460,17 @@ function i4ware_ajax_scan_media_screenshots()
             $clean_title = ucwords(str_replace(array('-', '_'), ' ', $clean_title));
         }
 
-        // Detect suggested badge / category from filename or title
-        $suggested_badge = '';
-        $suggested_category = 'dev';
-        $lower = strtolower($filename . ' ' . $clean_title);
-
-        if (strpos($lower, 'mobile') !== false) {
-            $suggested_category = 'mobile';
-            $suggested_badge = 'Mobile App';
-        } elseif (strpos($lower, 'admin') !== false || strpos($lower, 'settings') !== false) {
-            $suggested_category = 'admin';
-            $suggested_badge = 'Admin Control';
-        } elseif (strpos($lower, 'manager') !== false || strpos($lower, 'approval') !== false || strpos($lower, 'report') !== false) {
-            $suggested_category = 'manager';
-            $suggested_badge = 'Reports & Analytics';
-        } elseif (strpos($lower, 'low-code') !== false || strpos($lower, 'lowcode') !== false) {
-            $suggested_badge = 'Low-Code Panel';
-        } elseif (strpos($lower, 'openai') !== false || strpos($lower, 'ai') !== false) {
-            $suggested_badge = 'OpenAI API';
-        } elseif (strpos($lower, 'react') !== false) {
-            $suggested_badge = 'React UI';
-        } elseif (strpos($lower, 'laravel') !== false) {
-            $suggested_badge = 'Laravel Security';
-        } elseif (strpos($lower, 'woo') !== false || strpos($lower, 'shop') !== false) {
-            $suggested_badge = 'WooCommerce';
-        } elseif (strpos($lower, 'plugin') !== false) {
-            $suggested_badge = 'Custom Plugin';
-        } else {
-            $suggested_badge = 'UI Dashboard';
-        }
-
         $thumb_url = wp_get_attachment_image_url($att->ID, 'thumbnail');
         $full_url  = wp_get_attachment_url($att->ID);
 
         $media_items[] = array(
-            'id'                 => $att->ID,
-            'title'              => $clean_title,
-            'filename'           => $filename,
-            'excerpt'            => !empty($att->post_excerpt) ? $att->post_excerpt : $att->post_content,
-            'thumb_url'          => $thumb_url ? $thumb_url : $full_url,
-            'full_url'           => $full_url,
-            'date'               => get_the_date('Y-m-d', $att->ID),
-            'suggested_badge'    => $suggested_badge,
-            'suggested_category' => $suggested_category,
+            'id'        => $att->ID,
+            'title'     => $clean_title,
+            'filename'  => $filename,
+            'excerpt'   => !empty($att->post_excerpt) ? $att->post_excerpt : $att->post_content,
+            'thumb_url' => $thumb_url ? $thumb_url : $full_url,
+            'full_url'  => $full_url,
+            'date'      => get_the_date('Y-m-d', $att->ID),
         );
     }
 
@@ -748,7 +706,7 @@ function i4ware_render_bulk_screenshots_page()
         </div>
 
         <p style="font-size: 14px; color: #646970; margin-top: 0; margin-bottom: 20px;">
-            <?php _e('Select one or multiple images from your WordPress Media Library, customize their titles, categories/badges, and descriptions, and generate screenshot posts in one click.', 'i4waresoftware'); ?>
+            <?php _e('Select images from your Media Library and generate screenshot posts in one click.', 'i4waresoftware'); ?>
         </p>
 
         <!-- STEP 1: TARGET POST TYPE & LANGUAGE -->
@@ -811,29 +769,6 @@ function i4ware_render_bulk_screenshots_page()
                         <?php endforeach; ?>
                     </select>
                 </div>
-
-                <div id="i4ware_cpt_defaults_wrap" style="flex-grow: 1;">
-                    <!-- Category for Timesheets -->
-                    <div id="i4ware_tfj_default_cat_wrap" style="<?php echo $default_target === 'tfj_screenshot' ? '' : 'display:none;'; ?>">
-                        <label for="i4ware_default_category" style="font-weight: 600; display: block; margin-bottom: 4px;">
-                            <?php _e('Default Category:', 'i4waresoftware'); ?>
-                        </label>
-                        <select id="i4ware_default_category" style="min-width: 180px;">
-                            <option value="dev"><?php _e('Developer View (dev)', 'i4waresoftware'); ?></option>
-                            <option value="manager"><?php _e('Manager / Approver (manager)', 'i4waresoftware'); ?></option>
-                            <option value="admin"><?php _e('Administrator (admin)', 'i4waresoftware'); ?></option>
-                            <option value="mobile"><?php _e('Mobile View (mobile)', 'i4waresoftware'); ?></option>
-                        </select>
-                    </div>
-
-                    <!-- Badge for SDK / WordPress -->
-                    <div id="i4ware_badge_default_wrap" style="<?php echo $default_target !== 'tfj_screenshot' ? '' : 'display:none;'; ?>">
-                        <label for="i4ware_default_badge" style="font-weight: 600; display: block; margin-bottom: 4px;">
-                            <?php _e('Default Badge / Tag:', 'i4waresoftware'); ?>
-                        </label>
-                        <input type="text" id="i4ware_default_badge" value="<?php echo $default_target === 'sdk_screenshot' ? 'Low-Code' : 'WordPress'; ?>" style="width: 180px;" placeholder="e.g. React UI, Low-Code, WooCommerce">
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -889,13 +824,8 @@ function i4ware_render_bulk_screenshots_page()
             <div id="i4ware_selected_table_container" style="display: none; margin-top: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <h3 style="font-size: 14px; font-weight: 600; margin: 0;">
-                        <?php _e('Selected Screenshots Configuration Preview', 'i4waresoftware'); ?>
+                        <?php _e('Selected Screenshots Preview', 'i4waresoftware'); ?>
                     </h3>
-                    <div style="display: flex; gap: 8px;">
-                        <button type="button" id="i4ware_apply_badge_all_btn" class="button button-small">
-                            <?php _e('Apply Default Category/Badge to All Rows', 'i4waresoftware'); ?>
-                        </button>
-                    </div>
                 </div>
 
                 <div style="overflow-x: auto; border: 1px solid #dcdcde; border-radius: 6px;">
@@ -903,10 +833,9 @@ function i4ware_render_bulk_screenshots_page()
                         <thead>
                             <tr>
                                 <th style="width: 70px; text-align: center;"><?php _e('Image', 'i4waresoftware'); ?></th>
-                                <th style="min-width: 200px;"><?php _e('Post Title', 'i4waresoftware'); ?></th>
-                                <th style="width: 180px;" class="col-category-header"><?php _e('Badge / Category', 'i4waresoftware'); ?></th>
-                                <th style="min-width: 200px;"><?php _e('Excerpt / Description', 'i4waresoftware'); ?></th>
-                                <th style="min-width: 160px;" class="col-url-header"><?php _e('Demo / External URL', 'i4waresoftware'); ?></th>
+                                <th style="min-width: 240px;"><?php _e('Post Title', 'i4waresoftware'); ?></th>
+                                <th style="min-width: 240px;"><?php _e('Excerpt / Description (Optional)', 'i4waresoftware'); ?></th>
+                                <th style="min-width: 180px;" class="col-url-header"><?php _e('Demo / External URL (Optional)', 'i4waresoftware'); ?></th>
                                 <th style="width: 50px; text-align: center;"><?php _e('Action', 'i4waresoftware'); ?></th>
                             </tr>
                         </thead>
@@ -967,23 +896,15 @@ function i4ware_render_bulk_screenshots_page()
 
             // Update UI headers & inputs based on CPT
             if (currentTargetCpt === 'tfj_screenshot') {
-                $('#i4ware_tfj_default_cat_wrap').show();
-                $('#i4ware_badge_default_wrap').hide();
-                $('.col-category-header').text('<?php echo esc_js(__('Category', 'i4waresoftware')); ?>');
                 $('.col-url-header').hide();
                 $('.col-url-cell').hide();
                 $('#i4ware_cpt_view_all_link').attr('href', '<?php echo esc_url(admin_url('edit.php?post_type=tfj_screenshot')); ?>');
             } else {
-                $('#i4ware_tfj_default_cat_wrap').hide();
-                $('#i4ware_badge_default_wrap').show();
-                $('.col-category-header').text('<?php echo esc_js(__('Badge / Tag', 'i4waresoftware')); ?>');
                 $('.col-url-header').show();
                 $('.col-url-cell').show();
                 if (currentTargetCpt === 'wordpress_screenshot') {
-                    $('#i4ware_default_badge').val('WordPress');
                     $('#i4ware_cpt_view_all_link').attr('href', '<?php echo esc_url(admin_url('edit.php?post_type=wordpress_screenshot')); ?>');
                 } else {
-                    $('#i4ware_default_badge').val('Low-Code');
                     $('#i4ware_cpt_view_all_link').attr('href', '<?php echo esc_url(admin_url('edit.php?post_type=sdk_screenshot')); ?>');
                 }
             }
@@ -1031,9 +952,7 @@ function i4ware_render_bulk_screenshots_page()
                         filename: att.filename,
                         excerpt: att.caption || att.description || '',
                         thumb_url: (att.sizes && att.sizes.thumbnail) ? att.sizes.thumbnail.url : att.url,
-                        full_url: att.url,
-                        suggested_badge: getDefaultBadge(),
-                        suggested_category: $('#i4ware_default_category').val() || 'dev'
+                        full_url: att.url
                     });
                 });
                 renderPreviewTable();
@@ -1130,18 +1049,10 @@ function i4ware_render_bulk_screenshots_page()
                     attachment_id: item.id,
                     title: item.title || '',
                     excerpt: item.excerpt || '',
-                    badge: item.suggested_badge || getDefaultBadge(),
-                    category: item.suggested_category || $('#i4ware_default_category').val() || 'dev',
                     external_url: '',
                     thumb_url: item.thumb_url || item.full_url
                 };
             }
-        }
-
-        function getDefaultBadge() {
-            var b = $('#i4ware_default_badge').val();
-            if (b && b.trim() !== '') return b;
-            return currentTargetCpt === 'wordpress_screenshot' ? 'WordPress' : 'Low-Code';
         }
 
         // 5. Render Preview Table
@@ -1173,18 +1084,6 @@ function i4ware_render_bulk_screenshots_page()
                 // Title
                 tbody += '<td><input type="text" class="regular-text item-title-input" value="' + escapeHtml(it.title) + '" style="width: 100%;"></td>';
 
-                // Category or Badge
-                if (currentTargetCpt === 'tfj_screenshot') {
-                    tbody += '<td><select class="item-cat-select" style="width: 100%;">';
-                    tbody += '<option value="dev" ' + (it.category === 'dev' ? 'selected' : '') + '><?php echo esc_js(__('Developer (dev)', 'i4waresoftware')); ?></option>';
-                    tbody += '<option value="manager" ' + (it.category === 'manager' ? 'selected' : '') + '><?php echo esc_js(__('Manager (manager)', 'i4waresoftware')); ?></option>';
-                    tbody += '<option value="admin" ' + (it.category === 'admin' ? 'selected' : '') + '><?php echo esc_js(__('Administrator (admin)', 'i4waresoftware')); ?></option>';
-                    tbody += '<option value="mobile" ' + (it.category === 'mobile' ? 'selected' : '') + '><?php echo esc_js(__('Mobile (mobile)', 'i4waresoftware')); ?></option>';
-                    tbody += '</select></td>';
-                } else {
-                    tbody += '<td><input type="text" class="regular-text item-badge-input" value="' + escapeHtml(it.badge) + '" style="width: 100%;" placeholder="e.g. React UI"></td>';
-                }
-
                 // Excerpt / Description
                 tbody += '<td><textarea class="item-excerpt-input" rows="2" style="width: 100%; font-size: 12px;" placeholder="<?php echo esc_js(__('Optional caption / description...', 'i4waresoftware')); ?>">' + escapeHtml(it.excerpt) + '</textarea></td>';
 
@@ -1209,14 +1108,6 @@ function i4ware_render_bulk_screenshots_page()
             var id = $(this).closest('tr').data('id');
             if (selectedItems[id]) selectedItems[id].title = $(this).val();
         });
-        $(document).on('change keyup', '.item-badge-input', function () {
-            var id = $(this).closest('tr').data('id');
-            if (selectedItems[id]) selectedItems[id].badge = $(this).val();
-        });
-        $(document).on('change', '.item-cat-select', function () {
-            var id = $(this).closest('tr').data('id');
-            if (selectedItems[id]) selectedItems[id].category = $(this).val();
-        });
         $(document).on('change keyup', '.item-excerpt-input', function () {
             var id = $(this).closest('tr').data('id');
             if (selectedItems[id]) selectedItems[id].excerpt = $(this).val();
@@ -1238,17 +1129,6 @@ function i4ware_render_bulk_screenshots_page()
         $('#i4ware_clear_all_btn').on('click', function () {
             selectedItems = {};
             $('.i4ware-media-thumb-item').removeClass('selected').find('.thumb-check').text('+');
-            renderPreviewTable();
-        });
-
-        // Apply default badge / cat to all
-        $('#i4ware_apply_badge_all_btn').on('click', function () {
-            var defaultBadge = getDefaultBadge();
-            var defaultCat = $('#i4ware_default_category').val() || 'dev';
-            $.each(selectedItems, function (id, it) {
-                it.badge = defaultBadge;
-                it.category = defaultCat;
-            });
             renderPreviewTable();
         });
 
