@@ -29,9 +29,27 @@
 }
 
 .calculator-title {
-  font-size: 1.2rem;
-  margin-bottom: 20px;
-  color: white;
+    font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  background: linear-gradient(90deg, #a5b4fc 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px rgba(129, 140, 248, 0.15);
+}
+
+.card-body {
+  background: linear-gradient(135deg, #1b1b26 0%, #12121a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+  .card-body {
+  padding: 1.5rem;
+  flex: 1 1 auto;
 }
 
 .calculator-container p {
@@ -40,8 +58,12 @@
 }
 
 .form-label {
-  color: white;
-  font-size: 1rem;
+  color: #a5b4fc;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: left;
+  display: block;
 }
 
 .form-control {
@@ -113,4 +135,211 @@
   margin: 0;
   color: #fff;
   font-size: 0.9rem;
+}
+
+/* Palette moved from my-invoicing-app-legal/src/App.css */
+:root {
+  --legal-card-gradient-start: #1b1b26;
+  --legal-card-gradient-end: #12121a;
+  --legal-card-border-glass: rgba(255, 255, 255, 0.08);
+  --legal-card-shadow: rgba(0, 0, 0, 0.4);
+  --legal-title-gradient-start: #a5b4fc;
+  --legal-title-gradient-end: #818cf8;
+  --legal-title-glow: rgba(129, 140, 248, 0.15);
+  --legal-label-color: #a5b4fc;
+  --legal-form-text: #ffffff;
+  --legal-form-bg: rgba(255, 255, 255, 0.05);
+  --legal-form-focus: #818cf8;
+  --legal-focus-shadow: rgba(129, 140, 248, 0.25);
+  --legal-button-start: #6366f1;
+  --legal-button-end: #4f46e5;
+  --legal-button-hover-start: #4f46e5;
+  --legal-button-hover-end: #3730a3;
+  --legal-button-shadow: rgba(99, 102, 241, 0.3);
+  --legal-button-hover-shadow: rgba(99, 102, 241, 0.4);
+  --legal-container-bg: rgba(99, 102, 241, 0.06);
+  --legal-container-border: rgba(99, 102, 241, 0.15);
+  --legal-result-label: #94a3b8;
+  --legal-total-label: #a5b4fc;
+  --legal-total-value: #38bdf8;
+  --legal-input-border-glass: rgba(255, 255, 255, 0.15);
+  --legal-divider: rgba(255, 255, 255, 0.06);
+}
+
+.legal-calculator-wrap {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  width: 100%;
+  padding: 1.5rem !important;
+  box-sizing: border-box;
+}
+
+.legal-calculator-wrap *,
+.legal-calculator-wrap *::before,
+.legal-calculator-wrap *::after {
+  box-sizing: border-box;
+}
+
+.legal-calculator-wrap .legal-card {
+  background: linear-gradient(135deg, var(--legal-card-gradient-start) 0%, var(--legal-card-gradient-end) 100%);
+  border: 1px solid var(--legal-card-border-glass);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 var(--legal-card-shadow) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-calculator-wrap .legal-card .card-body {
+  padding: 1.5rem;
+  flex: 1 1 auto;
+}
+
+.legal-calculator-wrap .calculator-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  background: linear-gradient(90deg, var(--legal-title-gradient-start) 0%, var(--legal-title-gradient-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 10px var(--legal-title-glow);
+}
+
+.legal-calculator-wrap .form-label {
+  color: var(--legal-label-color);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  text-align: left;
+  display: block;
+}
+
+.legal-calculator-wrap .form-control {
+  background: var(--legal-form-bg) !important;
+  border: 1px solid var(--legal-input-border-glass) !important;
+  color: var(--legal-form-text) !important;
+  font-size: 1.1rem;
+  padding: 12px 16px;
+  border-radius: 10px;
+  width: 100%;
+  margin: 0 0 16px 0;
+  transition: all 0.25s ease;
+}
+
+.legal-calculator-wrap .form-control:focus {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--legal-form-focus) !important;
+  box-shadow: 0 0 0 3px var(--legal-focus-shadow) !important;
+  color: var(--legal-form-text) !important;
+  outline: none;
+}
+
+.legal-calculator-wrap .legal-calculate-btn {
+  background: linear-gradient(135deg, var(--legal-button-start) 0%, var(--legal-button-end) 100%) !important;
+  border: none !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 14px;
+  border-radius: 10px;
+  color: var(--legal-form-text) !important;
+  box-shadow: 0 4px 15px var(--legal-button-shadow) !important;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.legal-calculator-wrap .legal-calculate-btn:hover {
+  background: linear-gradient(135deg, var(--legal-button-hover-start) 0%, var(--legal-button-hover-end) 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--legal-button-hover-shadow) !important;
+}
+
+.legal-calculator-wrap .legal-calculate-btn:active {
+  transform: translateY(1px);
+}
+
+.legal-calculator-wrap .calculator-container {
+  background: var(--legal-container-bg);
+  border: 1px solid var(--legal-container-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 24px;
+}
+
+.legal-calculator-wrap .calculator-container .calculator-title {
+  font-size: 1.25rem;
+  margin-bottom: 16px;
+  background: none;
+  -webkit-background-clip: unset;
+  -webkit-text-fill-color: var(--legal-form-text);
+  color: var(--legal-form-text) !important;
+}
+
+.legal-calculator-wrap .result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--legal-divider);
+}
+
+.legal-calculator-wrap .result-row:last-child {
+  border-bottom: none;
+}
+
+.legal-calculator-wrap .result-label {
+  color: var(--legal-result-label);
+  font-size: 0.95rem;
+}
+
+.legal-calculator-wrap .result-value {
+  color: var(--legal-form-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.legal-calculator-wrap .total-row {
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--legal-title-glow);
+}
+
+.legal-calculator-wrap .total-row .result-label {
+  color: var(--legal-total-label);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.legal-calculator-wrap .total-row .result-value {
+  color: var(--legal-total-value);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+@media (max-width: 600px) {
+  .legal-calculator-wrap .calculator-title {
+    font-size: 1.2rem;
+  }
+
+  .legal-calculator-wrap .form-label {
+    font-size: 0.85rem;
+  }
+
+  .legal-calculator-wrap .form-control {
+    font-size: 1rem;
+  }
+
+  .legal-calculator-wrap .result-label {
+    font-size: 0.85rem;
+  }
+
+  .legal-calculator-wrap .result-value {
+    font-size: 1rem;
+  }
+
+  .legal-calculator-wrap .total-row .result-label {
+    font-size: 1rem;
+  }
+
+  .legal-calculator-wrap .total-row .result-value {
+    font-size: 1.2rem;
+  }
 }
