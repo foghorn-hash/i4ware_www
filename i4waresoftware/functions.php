@@ -1827,6 +1827,11 @@ add_shortcode('i4ware_video', 'i4ware_video_shortcode');
 
 add_action('init', function () {
 
+    // AI content notice
+    pll_register_string('i4ware', 'Sisältö on tehty AI:lla');
+    pll_register_string('i4ware', 'Content is generated with AI');
+    pll_register_string('i4ware', 'تم إنشاء المحتوى بواسطة الذكاء الاصطناعي');
+
     pll_register_string('i4ware', 'Project starting phase');
     pll_register_string('i4ware', 'Idea');
     pll_register_string('i4ware', 'Prototype');

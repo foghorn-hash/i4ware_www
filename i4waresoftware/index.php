@@ -110,7 +110,16 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
   <?php endif; ?>
   <section class="main">
     <div class="container">
-      <div class="ai-content-note">Sisältö on tehty AI:lla</div>
+      <?php
+        $ai_note_texts = array(
+            'fi' => 'Sisältö on tehty AI:lla',
+            'en' => 'Content is generated with AI',
+            'ar' => 'تم إنشاء المحتوى بواسطة الذكاء الاصطناعي',
+        );
+        $ai_note_text = isset($ai_note_texts[$lang]) ? $ai_note_texts[$lang] : $ai_note_texts['en'];
+        $ai_note_dir = ($lang === 'ar') ? ' dir="rtl"' : '';
+      ?>
+      <div class="ai-content-note"<?php echo $ai_note_dir; ?>><?php echo esc_html($ai_note_text); ?></div>
       <?php if (!is_home() && !is_archive() && !is_single()): ?>
         <?php get_template_part('template-parts/content'); ?>
       <?php elseif (is_home() || is_archive()): ?>
