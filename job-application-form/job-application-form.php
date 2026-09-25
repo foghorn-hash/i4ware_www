@@ -44,6 +44,7 @@ class JAF_Plugin
     add_action('admin_post_jaf_delete_all', [$this, 'delete_all_applications']);
     add_action('admin_post_jaf_delete_old', [$this, 'delete_old_applications']);
     add_action('admin_post_jaf_export', [$this, 'export_applicant_data']);
+    add_action('admin_post_jaf_delete_single', [$this, 'delete_single_application']);
   }
 
   /**
@@ -350,6 +351,8 @@ class JAF_Plugin
       } elseif ($notice === 'deleted_old') {
         $count = isset($_GET['count']) ? absint($_GET['count']) : 0;
         echo '<div class="notice notice-success"><p>Deleted ' . esc_html($count) . ' old applications.</p></div>';
+      } elseif ($notice === 'deleted_single') {
+        echo '<div class="notice notice-success"><p>Application deleted.</p></div>';
       } elseif ($notice === 'export_failed') {
         echo '<div class="notice notice-error"><p>Export failed.</p></div>';
       }
@@ -494,13 +497,21 @@ class JAF_Plugin
           admin_url('admin-post.php?action=jaf_export&applicant_id=' . (int) $row->id),
           'jaf_export_' . (int) $row->id
         );
+        $delete_url = wp_nonce_url(
+          admin_url('admin-post.php?action=jaf_delete_single&applicant_id=' . (int) $row->id),
+          'jaf_delete_single_' . (int) $row->id
+        );
         echo '<tr>';
         echo '<td>' . esc_html($row->created_at) . '</td>';
         echo '<td>' . esc_html($row->firstname . ' ' . $row->lastname) . '</td>';
         echo '<td>' . esc_html($row->email) . '</td>';
         echo '<td>' . esc_html($row->score) . '</td>';
         echo '<td>' . esc_html($row->status) . '</td>';
-        echo '<td><a class="button" href="' . esc_url($view_url) . '">View</a> <a class="button" href="' . esc_url($export_url) . '">Export</a></td>';
+        echo '<td>';
+        echo '<a class="button" href="' . esc_url($view_url) . '">View</a> ';
+        echo '<a class="button" href="' . esc_url($export_url) . '">Export</a> ';
+        echo '<a class="button button-link-delete" href="' . esc_url($delete_url) . '" onclick="return confirm(\'Delete this application? This cannot be undone.\');">Delete</a>';
+        echo '</td>';
         echo '</tr>';
       }
     }
@@ -612,6 +623,28 @@ class JAF_Plugin
     }
 
     wp_safe_redirect(admin_url('admin.php?page=jaf-applications&jaf_notice=deleted_old&count=' . (int) $count));
+    exit;
+  }
+
+  public function delete_single_application()
+  {
+    if (!current_user_can('manage_options')) {
+      wp_die('Forbidden', 403);
+    }
+
+    $applicant_id = isset($_GET['applicant_id']) ? absint($_GET['applicant_id']) : 0;
+    if (!$applicant_id) {
+      wp_die('Not found', 404);
+    }
+
+    $nonce_action = 'jaf_delete_single_' . $applicant_id;
+    if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], $nonce_action)) {
+      wp_die('Invalid nonce', 403);
+    }
+
+    $this->delete_applicant_and_files($applicant_id);
+
+    wp_safe_redirect(admin_url('admin.php?page=jaf-applications&jaf_notice=deleted_single'));
     exit;
   }
 
