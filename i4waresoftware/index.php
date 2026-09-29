@@ -26,21 +26,26 @@ $lang = function_exists('pll_current_language') ? pll_current_language() : 'fi';
                 'ar' => 'العربية',
               );
 
-              $languages = array();
-              if (function_exists('pll_languages_list')) {
-                $languages = pll_languages_list(array('fields' => 'slug'));
-              }
-
-              if (!is_array($languages) || empty($languages)) {
+              if (function_exists('pll_the_languages')) {
+                $raw_languages = pll_the_languages(array('raw' => 1));
+                if (is_array($raw_languages)) {
+                  foreach ($raw_languages as $lang_data) {
+                    $code = sanitize_key($lang_data['slug']);
+                    $label = isset($language_labels[$code]) ? $language_labels[$code] : $lang_data['name'];
+                    $url = $lang_data['url'];
+                    $selected = $lang_data['current_lang'] ? ' selected="selected"' : '';
+                    echo '<option value="' . esc_url($url) . '"' . $selected . '>' . esc_html($label) . '</option>';
+                  }
+                }
+              } else {
                 $languages = array('fi', 'en', 'ar');
-              }
-
-              foreach ($languages as $code) {
-                $code = sanitize_key($code);
-                $label = isset($language_labels[$code]) ? $language_labels[$code] : strtoupper($code);
-                $url = function_exists('pll_home_url') ? pll_home_url($code) : home_url('/');
-                $selected = ($code === $current_lang) ? ' selected="selected"' : '';
-                echo '<option value="' . esc_url($url) . '"' . $selected . '>' . esc_html($label) . '</option>';
+                foreach ($languages as $code) {
+                  $code = sanitize_key($code);
+                  $label = isset($language_labels[$code]) ? $language_labels[$code] : strtoupper($code);
+                  $url = home_url('/');
+                  $selected = ($code === $current_lang) ? ' selected="selected"' : '';
+                  echo '<option value="' . esc_url($url) . '"' . $selected . '>' . esc_html($label) . '</option>';
+                }
               }
               ?>
             </select>
