@@ -390,19 +390,11 @@ class AtlassianSalesController extends Controller
 
         // Fetch Atlassian sales data if needed
         if ($source === 'all' || $source === 'atlassian') {
-            $uri = "https://marketplace.atlassian.com/rest/2/vendors/{$vendorId}/reporting/sales/transactions/export";
-            $response = Http::withBasicAuth($username, $password)
-                ->timeout(60)
-                ->accept('application/json')
-                ->get($uri, [
-                    'accept' => 'json',
-                    'order' => 'asc',
-                ]);
-            if ($response->successful()) {
-                $transactions = $response->json();
-                foreach ($transactions as $transaction) {
-                    $vendorAmount = (float) ($transaction['purchaseDetails']['vendorAmount'] ?? 0);
-                    $saleDate = $transaction['purchaseDetails']['saleDate'] ?? null;
+            try {
+                $atlassianData = $this->fetchTransactions();
+                foreach ($atlassianData['root'] as $transaction) {
+                    $vendorAmount = (float) ($transaction['vendorAmount'] ?? 0);
+                    $saleDate = $transaction['saleDate'] ?? null;
                     if ($saleDate) {
                         $saleYear = date("Y", strtotime($saleDate));
                         if (!isset($json['root'][$saleYear])) {
@@ -414,6 +406,8 @@ class AtlassianSalesController extends Controller
                         $json['root'][$saleYear]['balanceVendor'] += $vendorAmount;
                     }
                 }
+            } catch (\Exception $e) {
+                Log::error('Atlassian API Error in getSalesReport: ' . $e->getMessage());
             }
         }
 
@@ -500,18 +494,33 @@ class AtlassianSalesController extends Controller
 
         $transactions = $response->json();
 
+        // Fetch Exchange Rates
+        $rates = $this->getUsdToEurRates();
+
         // Process data
         $balanceVendor = 0;
         $json = ['root' => []];
 
         foreach ($transactions as $i => $transaction) {
-            $vendorAmount = number_format((float) ($transaction['purchaseDetails']['vendorAmount'] ?? 0), 2, '.', '');
+            $usdAmount = (float) ($transaction['purchaseDetails']['vendorAmount'] ?? 0);
+            $saleDate = $transaction['purchaseDetails']['saleDate'] ?? null;
+            
+            $rate = 1.0;
+            if ($saleDate) {
+                $dateOnly = date('Y-m-d', strtotime($saleDate));
+                $rate = $this->getExchangeRateForDate($rates, $dateOnly);
+            }
+            
+            $eurAmount = $usdAmount * $rate;
+            $vendorAmount = number_format($eurAmount, 2, '.', '');
             $balanceVendor += $vendorAmount;
 
             $json['root'][$i] = [
                 'vendorAmount' => $vendorAmount,
-                'saleDate' => $transaction['purchaseDetails']['saleDate'] ?? null,
+                'saleDate' => $saleDate,
                 'revenueSource' => 'Atlassian Pty Ltd',
+                'originalUsdAmount' => $usdAmount,
+                'exchangeRate' => $rate,
             ];
         }
 
@@ -532,18 +541,11 @@ class AtlassianSalesController extends Controller
 
             // Process Atlassian sales if needed
             if ($source === 'all' || $source === 'atlassian') {
-                $apiUrl = "https://marketplace.atlassian.com/rest/2/vendors/{$vendorId}/reporting/sales/transactions/export?accept=json&order=asc";
-                $response = Http::withBasicAuth($username, $password)->get($apiUrl);
-
-                if (!$response->successful()) {
-                    return response()->json(['error' => 'Failed to fetch data from Atlassian'], 500);
-                }
-
-                $salesData = $response->json();
-
-                foreach ($salesData as $transaction) {
-                    $saleDate = $transaction['purchaseDetails']['saleDate'] ?? null;
-                    $vendorAmount = (float) ($transaction['purchaseDetails']['vendorAmount'] ?? 0);
+                $atlassianData = $this->fetchTransactions();
+                
+                foreach ($atlassianData['root'] as $transaction) {
+                    $saleDate = $transaction['saleDate'] ?? null;
+                    $vendorAmount = (float) ($transaction['vendorAmount'] ?? 0);
 
                     if ($saleDate) {
                         $formattedDate = date('Y-m', strtotime($saleDate)); // Group by Year-Month
@@ -870,5 +872,40 @@ class AtlassianSalesController extends Controller
         }
     }*/
 
+    private function getUsdToEurRates()
+    {
+        $today = date('Y-m-d');
+        $cacheKey = "usd_to_eur_rates_2010_to_{$today}";
+        
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addHours(24), function () {
+            // Fetch from a reasonable start date
+            $url = "https://api.frankfurter.app/2010-01-01..?from=USD&to=EUR";
+            $response = Http::timeout(30)->get($url);
+            
+            if ($response->successful()) {
+                return $response->json()['rates'] ?? [];
+            }
+            
+            return [];
+        });
+    }
+
+    private function getExchangeRateForDate($rates, $date)
+    {
+        // Try the exact date
+        if (isset($rates[$date]) && isset($rates[$date]['EUR'])) {
+            return $rates[$date]['EUR'];
+        }
+
+        // Fallback: search backwards up to 7 days
+        for ($i = 1; $i <= 7; $i++) {
+            $prevDate = date('Y-m-d', strtotime("-{$i} days", strtotime($date)));
+            if (isset($rates[$prevDate]) && isset($rates[$prevDate]['EUR'])) {
+                return $rates[$prevDate]['EUR'];
+            }
+        }
+
+        return 1.0; 
+    }
 }
 
