@@ -1933,13 +1933,12 @@ add_action('init', function () {
     pll_register_string('i4ware', 'Ole hyvä ja vahvista reCAPTCHA.');
 
     // PayPal Donate & Checkout Modal
-    pll_register_string('i4ware', 'Lahjoita PayPalilla');
-    pll_register_string('i4ware', 'Lahjoita PayPalilla (sis. ALV)');
-    pll_register_string('i4ware', 'Lahjoitus');
+    pll_register_string('i4ware', 'Tue projektia PayPalilla');
+    pll_register_string('i4ware', 'Tuki avoimen lähdekoodin kehitykseen');
     pll_register_string('i4ware', 'Turvallinen PayPal-maksu & Ehdot');
     pll_register_string('i4ware', 'Tarkista maksun tiedot ja sopimusehdot ennen siirtymistä PayPaliin.');
     pll_register_string('i4ware', 'Maksun tiedot');
-    pll_register_string('i4ware', 'Mitä maksu tukee & sisältää:');
+    pll_register_string('i4ware', 'Tietoa tuesta:');
     pll_register_string('i4ware', 'Sopimusehdot & Peruutusoikeus');
     pll_register_string('i4ware', 'Olen tutustunut ja hyväksyn');
     pll_register_string('i4ware', 'toimitusehdot');
@@ -1949,7 +1948,7 @@ add_action('init', function () {
     pll_register_string('i4ware', 'Ohjataan turvallisesti PayPaliin...');
     pll_register_string('i4ware', 'Sinun tulee hyväksyä ehdot jatkaaksesi.');
     pll_register_string('i4ware', 'Maksutapahtuma suoritetaan turvallisesti PayPalin 256-bittisesti salatussa ympäristössä. Sivusto ei tallenna maksukorttitietoja.');
-    pll_register_string('i4ware', 'Tilaa tukitaso');
+    pll_register_string('i4ware', 'Aloita kuukausituki');
     pll_register_string('i4ware', 'sis. ALV');
     pll_register_string('i4ware', 'sis. ALV 25,5%');
     pll_register_string('i4ware', 'kk');
@@ -4073,10 +4072,10 @@ if (!function_exists('i4ware_get_paypal_translations')) {
                 'modal_title'          => 'Turvallinen PayPal-maksu & Ehdot',
                 'modal_subtitle'       => 'Tarkista maksun tiedot ja sopimusehdot ennen siirtymistä PayPaliin.',
                 'summary_title'        => 'Maksun tiedot',
-                'included_title'       => 'Mitä maksu tukee & sisältää:',
-                'included_bullet_1'    => 'Jatkuva avoimen lähdekoodin kehitys ja ilmaiset työkalut',
-                'included_bullet_2'    => 'Korkea tietoturva, suorituskyky ja nopeat päivitykset',
-                'included_bullet_3'    => 'Luotettava suomalainen ohjelmistoasiantuntijuus ja tuki',
+                'included_title'       => 'Tietoa tuesta:',
+                'included_bullet_1'    => 'Tuki on vapaaehtoista ja vastikkeetonta.',
+                'included_bullet_2'    => 'Tuet GitHubissa julkisesti ja ilmaiseksi saatavilla olevan avoimen lähdekoodin kehittämistä.',
+                'included_bullet_3'    => 'Tuki ei anna erityisiä käyttöoikeuksia, palveluita tai muita etuja.',
                 'terms_title'          => 'Sopimusehdot & Peruutusoikeus',
                 'terms_one_time'       => 'Maksamalla hyväksyt toimitusehdot. Palvelu tai digitaalinen sisältö toimitetaan välittömästi maksun vahvistuttua.',
                 'terms_subscription'   => 'Toistaiseksi voimassa oleva kuukausitilaus. Voit peruuttaa tilauksen milloin tahansa helposti omalta PayPal-tililtäsi ilman lisäkuluja tai irtisanomisaikaa.',
@@ -4093,11 +4092,11 @@ if (!function_exists('i4ware_get_paypal_translations')) {
                 'redirecting'          => 'Ohjataan turvallisesti PayPaliin...',
                 'alert_must_agree'     => 'Sinun tulee hyväksyä ehdot jatkaaksesi.',
                 'company_footer'       => 'i4ware Software • info@i4ware.fi • Tampere, Suomi',
-                'donate_default_name'  => 'Lahjoitus avoimen lähdekoodin kehitykseen',
-                'donate_default_desc'  => 'Lahjoituksesi tukee i4ware Softwaren avoimen lähdekoodin kehitystä, laadukasta ohjelmistoarkkitehtuuria ja jatkuvaa ylläpitoa.',
-                'donate_btn_text'      => 'Lahjoita PayPalilla (sis. ALV)',
+                'donate_default_name'  => 'Tuki avoimen lähdekoodin kehitykseen',
+                'donate_default_desc'  => 'Tukesi on vapaaehtoista ja edistää avoimen lähdekoodin kehitystä ilman vastinetta.',
+                'donate_btn_text'      => 'Tue projektia PayPalilla',
                 'buy_btn_text'         => 'Osta nyt',
-                'subscribe_btn_text'   => 'Tilaa tukitaso',
+                'subscribe_btn_text'   => 'Aloita kuukausituki',
                 'month'                => 'kk',
                 'one_time'             => 'Kertamaksu',
                 'recurring_monthly'    => 'Kuukausimaksu',
@@ -4114,9 +4113,9 @@ if (!function_exists('i4ware_get_paypal_translations')) {
                     'community'    => 'Yhteisön tukija',
                     'opensource'   => 'Avoimen lähdekoodin tukija',
                     'development'  => 'Kehityksen tukija',
-                    'professional' => 'Ammattilaistason sponsori',
-                    'business'     => 'Yrityssponsori',
-                    'enterprise'   => 'Suuryrityssponsori'
+                    'professional' => 'Ammattilaistason tukija',
+                    'business'     => 'Yritystukija',
+                    'enterprise'   => 'Suuryritystukija'
                 ]
             ],
             'en' => [
@@ -4124,10 +4123,10 @@ if (!function_exists('i4ware_get_paypal_translations')) {
                 'modal_title'          => 'Secure PayPal Checkout & Terms',
                 'modal_subtitle'       => 'Review payment details and terms before proceeding to PayPal.',
                 'summary_title'        => 'Payment Summary',
-                'included_title'       => 'What this payment supports & includes:',
-                'included_bullet_1'    => 'Continuous open source development and free tools',
-                'included_bullet_2'    => 'High security, performance, and timely software updates',
-                'included_bullet_3'    => 'Reliable Finnish software engineering expertise and support',
+                'included_title'       => 'About the support:',
+                'included_bullet_1'    => 'Support is voluntary and without compensation.',
+                'included_bullet_2'    => 'You support the development of open-source software publicly and freely available on GitHub.',
+                'included_bullet_3'    => 'Support does not provide any special licenses, services, or other benefits.',
                 'terms_title'          => 'Terms of Service & Cancellation Policy',
                 'terms_one_time'       => 'By proceeding, you agree to the terms of delivery. The service or digital content is delivered immediately upon payment confirmation.',
                 'terms_subscription'   => 'Monthly recurring subscription. You can cancel anytime easily from your PayPal account with no extra fees or notice period.',
@@ -4144,11 +4143,11 @@ if (!function_exists('i4ware_get_paypal_translations')) {
                 'redirecting'          => 'Redirecting securely to PayPal...',
                 'alert_must_agree'     => 'You must agree to the terms to proceed.',
                 'company_footer'       => 'i4ware Software • info@i4ware.fi • Tampere, Finland',
-                'donate_default_name'  => 'Donation to Open Source Development',
-                'donate_default_desc'  => 'Your donation supports i4ware Software open source development, robust architecture, and ongoing maintenance.',
-                'donate_btn_text'      => 'Donate with PayPal (incl. VAT)',
+                'donate_default_name'  => 'Support for Open Source Development',
+                'donate_default_desc'  => 'Your support is voluntary and contributes to open-source development without compensation.',
+                'donate_btn_text'      => 'Support project via PayPal',
                 'buy_btn_text'         => 'Buy Now',
-                'subscribe_btn_text'   => 'Subscribe',
+                'subscribe_btn_text'   => 'Start monthly support',
                 'month'                => 'month',
                 'one_time'             => 'One-time payment',
                 'recurring_monthly'    => 'Monthly billing',
@@ -4165,9 +4164,9 @@ if (!function_exists('i4ware_get_paypal_translations')) {
                     'community'    => 'Community Supporter',
                     'opensource'   => 'Open Source Supporter',
                     'development'  => 'Development Supporter',
-                    'professional' => 'Professional Sponsor',
-                    'business'     => 'Business Sponsor',
-                    'enterprise'   => 'Enterprise Sponsor'
+                    'professional' => 'Professional Supporter',
+                    'business'     => 'Business Supporter',
+                    'enterprise'   => 'Enterprise Supporter'
                 ]
             ],
             'ar' => [
@@ -4175,10 +4174,10 @@ if (!function_exists('i4ware_get_paypal_translations')) {
                 'modal_title'          => 'الدفع الآمن عبر باي بال والشروط',
                 'modal_subtitle'       => 'يرجى مراجعة تفاصيل الدفع والشروط قبل المتابعة إلى باي بال.',
                 'summary_title'        => 'ملخص الدفع',
-                'included_title'       => 'ما يدعمه ويتضمنه هذا الدفع:',
-                'included_bullet_1'    => 'تطوير مستمر للبرمجيات مفتوحة المصدر وأدوات مجانية',
-                'included_bullet_2'    => 'أمان عالٍ، أداء متميز، وتحديثات برمجية سريعة',
-                'included_bullet_3'    => 'خبرة هندسية برمجية فنلندية موثوقة ودعم فني',
+                'included_title'       => 'حول الدعم:',
+                'included_bullet_1'    => 'الدعم تطوعي وبدون مقابل.',
+                'included_bullet_2'    => 'أنت تدعم تطوير البرمجيات مفتوحة المصدر المتاحة للجمهور ومجاناً على GitHub.',
+                'included_bullet_3'    => 'لا يوفر الدعم أي تراخيص أو خدمات أو مزايا خاصة أخرى.',
                 'terms_title'          => 'شروط الخدمة وسياسة الإلغاء',
                 'terms_one_time'       => 'بالمتابعة، فإنك توافق على شروط التسليم. يتم تقديم الخدمة أو المحتوى الرقمي فور تأكيد الدفع.',
                 'terms_subscription'   => 'اشتراك شهري متكرر. يمكنك الإلغاء في أي وقت بسهولة من حساب باي بال الخاص بك دون أي رسوم إضافية أو فترة إشعار.',
@@ -4195,11 +4194,11 @@ if (!function_exists('i4ware_get_paypal_translations')) {
                 'redirecting'          => 'جارٍ إعادة التوجيه بأمان إلى باي بال...',
                 'alert_must_agree'     => 'يجب عليك الموافقة على الشروط للمتابعة.',
                 'company_footer'       => 'i4ware Software • info@i4ware.fi • تامبيري، فنلندا',
-                'donate_default_name'  => 'تبرع لتطوير البرمجيات مفتوحة المصدر',
-                'donate_default_desc'  => 'تبرعك يدعم تطوير البرمجيات مفتوحة المصدر في i4ware Software وبنية البرمجيات عالية الجودة والصيانة المستمرة.',
-                'donate_btn_text'      => 'تبرع بواسطة باي بال (شامل ضريبة القيمة المضافة)',
+                'donate_default_name'  => 'دعم لتطوير البرمجيات مفتوحة المصدر',
+                'donate_default_desc'  => 'دعمك تطوعي ويساهم في تطوير البرمجيات مفتوحة المصدر دون مقابل.',
+                'donate_btn_text'      => 'ادعم المشروع بواسطة باي بال',
                 'buy_btn_text'         => 'اشتر الآن',
-                'subscribe_btn_text'   => 'اشترك في مستوى الدعم',
+                'subscribe_btn_text'   => 'ابدأ الدعم الشهري',
                 'month'                => 'شهر',
                 'one_time'             => 'دفع لمرة واحدة',
                 'recurring_monthly'    => 'فاتورة شهرية',
@@ -4216,9 +4215,9 @@ if (!function_exists('i4ware_get_paypal_translations')) {
                     'community'    => 'داعم المجتمع',
                     'opensource'   => 'داعم المصدر المفتوح',
                     'development'  => 'داعم التطوير',
-                    'professional' => 'راعي محترف',
-                    'business'     => 'راعي أعمال',
-                    'enterprise'   => 'راعي مؤسسي'
+                    'professional' => 'داعم محترف',
+                    'business'     => 'داعم أعمال',
+                    'enterprise'   => 'داعم مؤسسي'
                 ]
             ]
         ];
@@ -4919,11 +4918,11 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
         if (empty($button_text)) {
             if (!empty($amount)) {
                 if ($lang === 'fi') {
-                    $button_text = 'Lahjoita ' . $amount . ' ' . $currency_symbol . ' (' . $vat_label . ') PayPalilla';
+                    $button_text = 'Tue projektia ' . $amount . ' ' . $currency_symbol . ' PayPalilla';
                 } elseif ($lang === 'ar') {
-                    $button_text = 'تبرع بـ ' . $amount . ' ' . $currency_symbol . ' (' . $vat_label . ') بواسطة باي بال';
+                    $button_text = 'ادعم المشروع بـ ' . $amount . ' ' . $currency_symbol . ' بواسطة باي بال';
                 } else {
-                    $button_text = 'Donate ' . $currency_symbol . $amount . ' (' . $vat_label . ') with PayPal';
+                    $button_text = 'Support project for ' . $currency_symbol . $amount . ' via PayPal';
                 }
             } else {
                 $button_text = $t['donate_btn_text'];
@@ -4959,7 +4958,7 @@ if (!function_exists('i4ware_paypal_donate_shortcode')) {
                         title: "' . esc_js($t['modal_title']) . '",
                         itemName: itemName,
                         price: priceFormatted,
-                        frequency: "' . esc_js($t['one_time'] . ' (' . $vat_label . ')') . '",
+                        frequency: "' . esc_js($t['one_time']) . '",
                         description: desc,
                         termsText: "' . esc_js($t['terms_one_time']) . '",
                         termsUrl: termsUrl,
@@ -5198,7 +5197,7 @@ if (!function_exists('i4ware_paypal_subscribe_shortcode')) {
                         title: "' . esc_js($t['modal_title']) . '",
                         itemName: itemName,
                         price: price,
-                        frequency: "' . esc_js($t['recurring_monthly'] . ' (' . $vat_label . ')') . '",
+                        frequency: "' . esc_js($t['recurring_monthly']) . '",
                         description: desc,
                         termsText: "' . esc_js($t['terms_subscription']) . '",
                         termsUrl: termsUrl,
@@ -5306,32 +5305,32 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
         $levels = [
             [
                 'name'  => $t['levels']['community'],
-                'price' => $currency_symbol . '5 / ' . $month_label . ' (' . $vat_label . ')',
+                'price' => $currency_symbol . '5 / ' . $month_label,
                 'id'    => sanitize_text_field($a['community']),
             ],
             [
                 'name'  => $t['levels']['opensource'],
-                'price' => $currency_symbol . '10 / ' . $month_label . ' (' . $vat_label . ')',
+                'price' => $currency_symbol . '10 / ' . $month_label,
                 'id'    => sanitize_text_field($a['opensource']),
             ],
             [
                 'name'  => $t['levels']['development'],
-                'price' => $currency_symbol . '25 / ' . $month_label . ' (' . $vat_label . ')',
+                'price' => $currency_symbol . '25 / ' . $month_label,
                 'id'    => sanitize_text_field($a['development']),
             ],
             [
                 'name'  => $t['levels']['professional'],
-                'price' => $currency_symbol . '50 / ' . $month_label . ' (' . $vat_label . ')',
+                'price' => $currency_symbol . '50 / ' . $month_label,
                 'id'    => sanitize_text_field($a['professional']),
             ],
             [
                 'name'  => $t['levels']['business'],
-                'price' => $currency_symbol . '100 / ' . $month_label . ' (' . $vat_label . ')',
+                'price' => $currency_symbol . '100 / ' . $month_label,
                 'id'    => sanitize_text_field($a['business']),
             ],
             [
                 'name'  => $t['levels']['enterprise'],
-                'price' => $currency_symbol . '250 / ' . $month_label . ' (' . $vat_label . ')',
+                'price' => $currency_symbol . '250 / ' . $month_label,
                 'id'    => sanitize_text_field($a['enterprise']),
             ]
         ];
@@ -5397,7 +5396,7 @@ if (!function_exists('i4ware_paypal_support_table_shortcode')) {
                         title: "' . esc_js($t['modal_title']) . '",
                         itemName: levelName,
                         price: price,
-                        frequency: "' . esc_js($t['recurring_monthly'] . ' (' . $vat_label . ')') . '",
+                        frequency: "' . esc_js($t['recurring_monthly']) . '",
                         description: "",
                         termsText: "' . esc_js($t['terms_subscription']) . '",
                         termsUrl: termsUrl,
