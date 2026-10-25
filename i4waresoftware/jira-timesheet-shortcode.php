@@ -132,7 +132,7 @@ $tfj_defaults = array(
       array('text' => 'EULA', 'url' => 'https://i4ware.atlassian.net/wiki/spaces/TFJ/pages/50495490/EULA'),
       array('text' => 'SLA', 'url' => 'https://i4ware.atlassian.net/wiki/spaces/TFJ/pages/50102283/Service+Level+Agreement'),
       array('text' => 'Privacy Policy', 'url' => 'https://www.i4ware.fi/en/privacy-policy/'),
-      array('text' => 'Send Support & Donations', 'url' => 'https://www.i4ware.fi/kauppa/', 'class' => 'tfj-footer-highlight'),
+      array('text' => 'Order Advertising Space', 'url' => 'https://www.i4ware.fi/kauppa/', 'class' => 'tfj-footer-highlight'),
     ),
   ),
   'fi' => array(
@@ -257,7 +257,7 @@ $tfj_defaults = array(
       array('text' => 'EULA (Käyttöoikeussopimus)', 'url' => 'https://i4ware.atlassian.net/wiki/spaces/TFJ/pages/50495490/EULA'),
       array('text' => 'SLA (Palvelutasosopimus)', 'url' => 'https://i4ware.atlassian.net/wiki/spaces/TFJ/pages/50102283/Service+Level+Agreement'),
       array('text' => 'Tietosuojaseloste', 'url' => 'https://www.i4ware.fi/tietosuojakaytanto/'),
-      array('text' => 'Lähetä tukea & lahjoituksia', 'url' => 'https://www.i4ware.fi/kauppa/', 'class' => 'tfj-footer-highlight'),
+      array('text' => 'Tilaa mainospaikka', 'url' => 'https://www.i4ware.fi/kauppa/', 'class' => 'tfj-footer-highlight'),
     ),
   ),
   'ar' => array(
@@ -382,7 +382,7 @@ $tfj_defaults = array(
       array('text' => 'اتفاقية ترخيص المستخدم (EULA)', 'url' => 'https://i4ware.atlassian.net/wiki/spaces/TFJ/pages/50495490/EULA'),
       array('text' => 'اتفاقية مستوى الخدمة (SLA)', 'url' => 'https://i4ware.atlassian.net/wiki/spaces/TFJ/pages/50102283/Service+Level+Agreement'),
       array('text' => 'سياسة الخصوصية', 'url' => 'https://www.i4ware.fi/ar/%d8%b3%d9%8a%d8%a7%d8%b3%d8%a9-%d8%a7%d9%84%d8%ae%d8%b5%d9%88%d8%b5%d9%8a%d8%a9/'),
-      array('text' => 'إرسال الدعم والتبرعات', 'url' => 'https://www.i4ware.fi/kauppa/', 'class' => 'tfj-footer-highlight'),
+      array('text' => 'طلب مساحة إعلانية', 'url' => 'https://www.i4ware.fi/kauppa/', 'class' => 'tfj-footer-highlight'),
     ),
   )
 );
