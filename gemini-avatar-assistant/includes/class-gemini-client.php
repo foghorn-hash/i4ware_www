@@ -30,7 +30,7 @@ class Gemini_Avatar_Gemini_Client {
 			);
 		}
 
-		$text_model = sanitize_text_field( Gemini_Avatar_Settings::get( 'text_model', 'gemini-3.5-flash' ) );
+		$text_model = Gemini_Avatar_Settings::get_active_text_model();
 		$max_tokens = absint( Gemini_Avatar_Settings::get( 'max_answer_tokens', 350 ) );
 		$temperature = (float) Gemini_Avatar_Settings::get( 'temperature', 0.4 );
 
@@ -112,6 +112,24 @@ class Gemini_Avatar_Gemini_Client {
 
 		$status = wp_remote_retrieve_response_code( $response );
 		$body   = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		// Self-healing fallback: if model is not found, unsupported or deprecated, fall back to gemini-3.8-flash and retry once
+		if ( 404 === $status || ( ! empty( $body['error']['message'] ) && ( false !== stripos( $body['error']['message'], 'not found' ) || false !== stripos( $body['error']['message'], 'not supported' ) || false !== stripos( $body['error']['message'], 'ListModels' ) || false !== stripos( $body['error']['message'], 'deprecated' ) ) ) ) {
+			if ( 'gemini-3.8-flash' !== $text_model ) {
+				$text_model = 'gemini-3.8-flash';
+				Gemini_Avatar_Settings::update_all( array( 'text_model' => 'gemini-3.8-flash' ) );
+				$endpoint = self::API_BASE . '/models/' . rawurlencode( $text_model ) . ':generateContent?key=' . urlencode( $api_key );
+				$response = wp_remote_post( $endpoint, array(
+					'headers' => array( 'Content-Type' => 'application/json' ),
+					'body'    => wp_json_encode( $payload ),
+					'timeout' => 25,
+				) );
+				if ( ! is_wp_error( $response ) ) {
+					$status = wp_remote_retrieve_response_code( $response );
+					$body   = json_decode( wp_remote_retrieve_body( $response ), true );
+				}
+			}
+		}
 
 		if ( $status !== 200 ) {
 			$error_msg = ! empty( $body['error']['message'] ) ? $body['error']['message'] : 'Tuntematon virhe API-vastauksessa (HTTP ' . $status . ')';
@@ -251,7 +269,7 @@ class Gemini_Avatar_Gemini_Client {
 			);
 		}
 
-		$tts_model = sanitize_text_field( Gemini_Avatar_Settings::get( 'tts_model', 'gemini-2.5-flash' ) );
+		$tts_model = Gemini_Avatar_Settings::get_active_tts_model();
 		$tts_voice = sanitize_text_field( Gemini_Avatar_Settings::get( 'tts_voice', 'Puck' ) );
 
 		// Clean up text for speech synthesis:
@@ -304,6 +322,24 @@ class Gemini_Avatar_Gemini_Client {
 
 		$status = wp_remote_retrieve_response_code( $response );
 		$body   = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		// Self-healing fallback: if TTS model is not found, unsupported or deprecated, fall back to gemini-3.8-flash-tts and retry once
+		if ( 404 === $status || ( ! empty( $body['error']['message'] ) && ( false !== stripos( $body['error']['message'], 'not found' ) || false !== stripos( $body['error']['message'], 'not supported' ) || false !== stripos( $body['error']['message'], 'ListModels' ) || false !== stripos( $body['error']['message'], 'deprecated' ) ) ) ) {
+			if ( 'gemini-3.8-flash-tts' !== $tts_model ) {
+				$tts_model = 'gemini-3.8-flash-tts';
+				Gemini_Avatar_Settings::update_all( array( 'tts_model' => 'gemini-3.8-flash-tts' ) );
+				$endpoint = self::API_BASE . '/models/' . rawurlencode( $tts_model ) . ':generateContent?key=' . urlencode( $api_key );
+				$response = wp_remote_post( $endpoint, array(
+					'headers' => array( 'Content-Type' => 'application/json' ),
+					'body'    => wp_json_encode( $payload ),
+					'timeout' => 30,
+				) );
+				if ( ! is_wp_error( $response ) ) {
+					$status = wp_remote_retrieve_response_code( $response );
+					$body   = json_decode( wp_remote_retrieve_body( $response ), true );
+				}
+			}
+		}
 
 		if ( $status !== 200 ) {
 			$error_msg = ! empty( $body['error']['message'] ) ? $body['error']['message'] : 'TTS-virhe (HTTP ' . $status . ')';

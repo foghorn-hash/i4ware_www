@@ -54,13 +54,19 @@ class Gemini_Avatar_Admin {
 			$output['api_key'] = sanitize_text_field( trim( $input['api_key'] ) );
 		}
 		if ( isset( $input['text_model'] ) ) {
-			$output['text_model'] = sanitize_text_field( $input['text_model'] );
+			$text_model = sanitize_text_field( $input['text_model'] );
+			$valid_text_models = array_keys( Gemini_Avatar_Settings::get_text_models() );
+			$output['text_model'] = ( in_array( $text_model, $valid_text_models, true ) && false === strpos( $text_model, '1.5' ) && false === strpos( $text_model, '2.0' ) ) ? $text_model : 'gemini-3.8-flash';
 		}
 		if ( isset( $input['tts_model'] ) ) {
-			$output['tts_model'] = sanitize_text_field( $input['tts_model'] );
+			$tts_model = sanitize_text_field( $input['tts_model'] );
+			$valid_tts_models = array_keys( Gemini_Avatar_Settings::get_tts_models() );
+			$output['tts_model'] = ( in_array( $tts_model, $valid_tts_models, true ) && false === strpos( $tts_model, '1.5' ) && false === strpos( $tts_model, '2.0' ) ) ? $tts_model : 'gemini-3.8-flash-tts';
 		}
 		if ( isset( $input['tts_voice'] ) ) {
-			$output['tts_voice'] = sanitize_text_field( $input['tts_voice'] );
+			$tts_voice = sanitize_text_field( $input['tts_voice'] );
+			$valid_voices = array_keys( Gemini_Avatar_Settings::get_tts_voices() );
+			$output['tts_voice'] = in_array( $tts_voice, $valid_voices, true ) ? $tts_voice : 'Puck';
 		}
 		if ( isset( $input['assistant_name'] ) ) {
 			$output['assistant_name'] = sanitize_text_field( $input['assistant_name'] );

@@ -48,8 +48,8 @@ class Gemini_Avatar_Settings {
 		return array(
 			// API & Models
 			'api_key'                 => '',
-			'text_model'              => 'gemini-2.5-flash',
-			'tts_model'               => 'gemini-2.5-flash',
+			'text_model'              => 'gemini-3.8-flash',
+			'tts_model'               => 'gemini-3.8-flash-tts',
 			'tts_voice'               => 'Puck',
 
 			// Assistant Identity & Appearance
@@ -116,7 +116,7 @@ class Gemini_Avatar_Settings {
 	}
 
 	/**
-	 * Get all settings merged with defaults
+	 * Get all settings merged with defaults and self-heal obsolete models
 	 *
 	 * @return array
 	 */
@@ -125,7 +125,59 @@ class Gemini_Avatar_Settings {
 		if ( ! is_array( $saved ) ) {
 			$saved = array();
 		}
-		return wp_parse_args( $saved, self::get_defaults() );
+		$all = wp_parse_args( $saved, self::get_defaults() );
+
+		// Self-healing / automatic migration of obsolete, deprecated or sunset models (e.g. 1.5, 2.0)
+		$valid_text_models = array_keys( self::get_text_models() );
+		$valid_tts_models  = array_keys( self::get_tts_models() );
+		$needs_migration   = false;
+
+		if ( empty( $all['text_model'] ) || ! in_array( $all['text_model'], $valid_text_models, true ) || false !== strpos( $all['text_model'], '1.5' ) || false !== strpos( $all['text_model'], '2.0' ) ) {
+			$all['text_model'] = 'gemini-3.8-flash';
+			$needs_migration   = true;
+		}
+
+		if ( empty( $all['tts_model'] ) || ! in_array( $all['tts_model'], $valid_tts_models, true ) || false !== strpos( $all['tts_model'], '1.5' ) || false !== strpos( $all['tts_model'], '2.0' ) ) {
+			$all['tts_model'] = 'gemini-3.8-flash-tts';
+			$needs_migration  = true;
+		}
+
+		// Persist migrated models back to options if stored config had outdated values
+		if ( $needs_migration && ! empty( $saved ) && function_exists( 'update_option' ) ) {
+			$saved['text_model'] = $all['text_model'];
+			$saved['tts_model']  = $all['tts_model'];
+			update_option( self::OPTION_KEY, $saved );
+		}
+
+		return $all;
+	}
+
+	/**
+	 * Get active, validated text model name
+	 *
+	 * @return string
+	 */
+	public static function get_active_text_model() {
+		$model = self::get( 'text_model', 'gemini-3.8-flash' );
+		$valid = array_keys( self::get_text_models() );
+		if ( ! in_array( $model, $valid, true ) || false !== strpos( $model, '1.5' ) || false !== strpos( $model, '2.0' ) ) {
+			return 'gemini-3.8-flash';
+		}
+		return $model;
+	}
+
+	/**
+	 * Get active, validated TTS model name
+	 *
+	 * @return string
+	 */
+	public static function get_active_tts_model() {
+		$model = self::get( 'tts_model', 'gemini-3.8-flash-tts' );
+		$valid = array_keys( self::get_tts_models() );
+		if ( ! in_array( $model, $valid, true ) || false !== strpos( $model, '1.5' ) || false !== strpos( $model, '2.0' ) ) {
+			return 'gemini-3.8-flash-tts';
+		}
+		return $model;
 	}
 
 	/**
@@ -232,10 +284,13 @@ class Gemini_Avatar_Settings {
 	 */
 	public static function get_text_models() {
 		return array(
-			'gemini-2.5-flash' => 'Gemini 2.5 Flash (Suositus - nopea & luotettava)',
-			'gemini-2.0-flash' => 'Gemini 2.0 Flash (Matala viive)',
-			'gemini-1.5-flash' => 'Gemini 1.5 Flash (Vakaa tuotantoversio)',
-			'gemini-1.5-pro'   => 'Gemini 1.5 Pro (Monimutkainen päättely)',
+			'gemini-3.8-flash'       => 'Gemini 3.8 Flash (Uusin lippulaivamalli - nopea, suositus)',
+			'gemini-3.7-flash'       => 'Gemini 3.7 Flash (Monivaiheinen päättely & ajattelu)',
+			'gemini-3.5-flash'       => 'Gemini 3.5 Flash (Vakaa Flash-malli)',
+			'gemini-3-flash-preview' => 'Gemini 3 Flash Preview',
+			'gemini-flash-latest'    => 'Gemini Flash Latest (Automaattisesti uusin Flash)',
+			'gemini-2.5-flash'       => 'Gemini 2.5 Flash',
+			'gemini-2.5-pro'         => 'Gemini 2.5 Pro (Monimutkainen päättely)',
 		);
 	}
 
@@ -246,8 +301,10 @@ class Gemini_Avatar_Settings {
 	 */
 	public static function get_tts_models() {
 		return array(
-			'gemini-2.5-flash' => 'Gemini 2.5 Flash (Suositus puhesynteesille - 24kHz WAV)',
-			'gemini-2.0-flash' => 'Gemini 2.0 Flash (Matala viive puhesynteesi)',
+			'gemini-3.8-flash-tts'         => 'Gemini 3.8 Flash TTS (Suositus puhesynteesille - 24kHz WAV)',
+			'gemini-3.8-flash-lite-tts'    => 'Gemini 3.8 Flash Lite TTS (Matala viive)',
+			'gemini-2.5-flash-preview-tts' => 'Gemini 2.5 Flash Preview TTS',
+			'gemini-2.5-flash'             => 'Gemini 2.5 Flash (Audio)',
 		);
 	}
 
