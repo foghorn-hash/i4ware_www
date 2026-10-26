@@ -2,7 +2,7 @@
 /*
 Plugin Name: Legal React App
 Description: Embeds a React app from the plugin's static folder via shortcode [legal_react_app].
-Version: 1.0
+Version: 1.1
 Author: Matti Kiviharju
 */
 
@@ -15,15 +15,29 @@ function legal_react_app_register_assets()
     $plugin_dir = plugin_dir_path(__FILE__) . 'static/';
     $plugin_url = plugin_dir_url(__FILE__) . 'static/';
 
-    // Find the main CSS and JS files dynamically (handling build hashes)
+    // Find the latest main CSS and JS files dynamically (sorted by modification time)
     $css_files = glob($plugin_dir . 'css/main.*.css');
     $js_files = glob($plugin_dir . 'js/main.*.js');
 
-    $css_file = !empty($css_files) ? basename($css_files[0]) : 'main.330f75a7.css';
-    $js_file = !empty($js_files) ? basename($js_files[0]) : 'main.05ad0ef4.js';
+    if (!empty($css_files)) {
+        usort($css_files, function ($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
+    }
+    if (!empty($js_files)) {
+        usort($js_files, function ($a, $b) {
+            return filemtime($b) - filemtime($a);
+        });
+    }
 
-    wp_register_style('legal-react-app-css', $plugin_url . 'css/' . $css_file, array(), null);
-    wp_register_script('legal-react-app-js', $plugin_url . 'js/' . $js_file, array(), null, true);
+    $css_file = !empty($css_files) ? basename($css_files[0]) : 'main.712b51d9.css';
+    $js_file = !empty($js_files) ? basename($js_files[0]) : 'main.a61761de.js';
+
+    $css_ver = !empty($css_files) ? filemtime($css_files[0]) : '1.1';
+    $js_ver = !empty($js_files) ? filemtime($js_files[0]) : '1.1';
+
+    wp_register_style('legal-react-app-css', $plugin_url . 'css/' . $css_file, array(), $css_ver);
+    wp_register_script('legal-react-app-js', $plugin_url . 'js/' . $js_file, array(), $js_ver, true);
 }
 add_action('wp_enqueue_scripts', 'legal_react_app_register_assets');
 

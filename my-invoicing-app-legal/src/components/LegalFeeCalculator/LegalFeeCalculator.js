@@ -52,7 +52,7 @@ let strings = new LocalizedStrings({
 });
 
 const LegalFeeCalculator = () => {
-  const [hourlyRate, setHourlyRate] = useState(95);
+  const [hourlyRate, setHourlyRate] = useState(400);
   const [vatRate, setVatRate] = useState(25.5); // Default VAT in Finland is 25.5%
   const [projectHours, setProjectHours] = useState(10);
 

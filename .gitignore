@@ -1,9 +1,13 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
+node_modules/
 /my-invoicing-app/node_modules
+/my-invoicing-app-legal/node_modules
 /my-invoicing-app/.pnp
 /my-invoicing-app/.pnp.js
+/my-invoicing-app-legal/.pnp
+/my-invoicing-app-legal/.pnp.js
 
 # testing
 /my-invoicing-app/coverage
