@@ -33,20 +33,29 @@ let strings = new LocalizedStrings({
     }
   });  
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#ff0066"];
+const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#ff0066", "#a855f7", "#06b6d4"];
 
 const PieChartComponent = ({ revenueSource }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [lang, setLang] = useState(API_DEFAULT_LANGUAGE);
+  const [lang, setLang] = useState(document.documentElement.lang || API_DEFAULT_LANGUAGE);
 
-  const htmlLang = document.documentElement.lang || API_DEFAULT_LANGUAGE;
-  strings.setLanguage(htmlLang);
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setLang(document.documentElement.lang || API_DEFAULT_LANGUAGE);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    strings.setLanguage(lang);
+  }, [lang]);
 
   useEffect(() => {
     fetchPieData();
-  }, [revenueSource]); // Add revenueSource as dependency
+  }, [revenueSource]);
 
   const fetchPieData = async () => {
     try {

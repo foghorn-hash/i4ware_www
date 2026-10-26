@@ -1,30 +1,242 @@
-/* App.css — fixed layout and spacing for the Job Application form
-   - Ensures inputs are full-width, block-level and not overlapping
-   - Simplified resets to avoid conflicts with Tailwind utility classes
-   - Friendly sizes for inputs, textareas and file inputs
-   - Responsive two-column grid
-*/
+/* App.css — fixed layout, modern glassmorphism, responsive styling for Job Application Form */
 
 /* App wrapper */
 .app-container {
   max-width: 1300px;
   margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #e9f1ff;
+}
+
+/* 1. Job & Internship Description Card Before the Form */
+.ats-job-hero-card {
+  background: linear-gradient(135deg, rgba(14, 23, 38, 0.85) 0%, rgba(9, 15, 26, 0.92) 100%);
+  border: 1px solid rgba(65, 209, 255, 0.2);
+  border-radius: 16px;
+  padding: 32px 36px;
+  margin-bottom: 28px;
+  box-shadow: 0 16px 40px rgba(0, 4, 16, 0.6);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.ats-job-hero-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #6c63ff 0%, #41d1ff 50%, #00f2fe 100%);
+}
+
+.ats-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.ats-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.ats-badge-primary {
+  background: rgba(65, 209, 255, 0.15);
+  color: #41d1ff;
+  border: 1px solid rgba(65, 209, 255, 0.35);
+}
+
+.ats-badge-secondary {
+  background: rgba(108, 99, 255, 0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(108, 99, 255, 0.35);
+}
+
+.ats-badge-accent {
+  background: rgba(0, 242, 254, 0.1);
+  color: #7dd3fc;
+  border: 1px solid rgba(0, 242, 254, 0.25);
+}
+
+.ats-job-hero-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 16px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.ats-job-hero-desc {
+  font-size: 1.04rem;
+  line-height: 1.65;
+  color: #cbd5e1;
+  margin-bottom: 24px;
+}
+
+.ats-job-hero-desc p {
+  margin: 0 0 10px;
+}
+
+.ats-job-hero-desc p:last-child {
+  margin-bottom: 0;
+}
+
+.ats-openings-selector-box {
+  background: rgba(4, 10, 20, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 18px;
+}
+
+.ats-openings-label {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+
+.ats-position-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ats-position-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  color: #e2e8f0;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #64748b;
+  transition: all 0.2s ease;
+}
+
+.ats-position-tag:hover {
+  background: rgba(65, 209, 255, 0.12);
+  border-color: rgba(65, 209, 255, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.ats-position-tag.active {
+  background: linear-gradient(90deg, rgba(108, 99, 255, 0.3) 0%, rgba(65, 209, 255, 0.3) 100%);
+  border-color: #41d1ff;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(65, 209, 255, 0.2);
+}
+
+.ats-position-tag.active .tag-dot {
+  background: #41d1ff;
+  box-shadow: 0 0 8px #41d1ff;
 }
 
 /* Card */
 .app-card {
-  background: rgba(8, 14, 22, 0.6);
-  border-radius: 14px;
-  padding: 28px;
-  border: 1px solid rgba(255,255,255,0.04);
-  box-shadow: 0 10px 30px rgba(2,8,20,0.6);
+  background: rgba(8, 14, 22, 0.7);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 12px 36px rgba(2, 8, 20, 0.7);
+  backdrop-filter: blur(12px);
+  animation: floatIn 0.35s ease both;
+}
+
+/* Applied Position Selection Row in Form */
+.ats-position-form-row {
+  background: linear-gradient(90deg, rgba(65, 209, 255, 0.06) 0%, rgba(108, 99, 255, 0.06) 100%);
+  border: 1px solid rgba(65, 209, 255, 0.25);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+
+.ats-position-select-label {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem !important;
+  font-weight: 700 !important;
+  color: #41d1ff !important;
+  margin-bottom: 10px !important;
+}
+
+.ats-req-star {
+  color: #ff6b6b;
+  margin-left: 2px;
+}
+
+.ats-select-wrapper select {
+  display: block;
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(14, 23, 38, 0.85);
+  color: #ffffff;
+  border: 1px solid rgba(65, 209, 255, 0.3);
+  border-radius: 10px;
+  outline: none;
+  font-size: 1.02rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.ats-select-wrapper select:focus {
+  border-color: #41d1ff;
+  box-shadow: 0 0 0 3px rgba(65, 209, 255, 0.2);
+}
+
+.ats-select-wrapper select option {
+  background: #0d1624;
+  color: #e2e8f0;
+  padding: 10px;
+}
+
+.ats-custom-position-box {
+  margin-top: 12px;
+}
+
+.ats-custom-position-box input {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border: 1px solid rgba(65, 209, 255, 0.3);
+  border-radius: 10px;
+  font-size: 14px;
 }
 
 /* Two-column layout */
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 22px;
+  gap: 26px;
 }
 @media (max-width: 920px) {
   .two-col {
@@ -33,11 +245,19 @@
 }
 
 .ats-form-section {
-	box-sizing: border-box;
-	margin: 0 !important;
-	padding: 10px;
-	font-family: 'Montserrat', sans-serif;
-	scroll-behavior: smooth;
+  box-sizing: border-box;
+  margin: 0 !important;
+  padding: 8px;
+}
+
+.ats-form-section h2 {
+  font-size: 1.28rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 0;
+  margin-bottom: 18px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* Labels */
@@ -45,11 +265,16 @@
   display: block;
   font-size: 0.92rem;
   font-weight: 600;
-  color: #d7e3ff;
+  color: #cbd5e1;
   margin-bottom: 6px;
+  margin-top: 14px;
 }
 
-/* Inputs / textareas — make full width so they stack correctly */
+.ats-form-section label:first-of-type {
+  margin-top: 0;
+}
+
+/* Inputs / textareas */
 .ats-form-section input[type="text"],
 .ats-form-section input[type="email"],
 .ats-form-section input[type="tel"],
@@ -57,37 +282,44 @@
 .ats-form-section select,
 .ats-form-section textarea,
 .ats-form-section input[type="file"] {
-  display: block;            /* prevents inline layout */
-  width: 100%;               /* fill column */
+  display: block;
+  width: 100%;
   padding: 12px 14px;
-  background: rgba(255,255,255,0.025);
+  background: rgba(255, 255, 255, 0.035);
   color: #e9f1ff;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   outline: none;
   font-size: 14px;
-  line-height: 1.35;
+  line-height: 1.4;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
-/* Make sure file inputs are comfortable to use */
+/* File inputs */
 .ats-form-section input[type="file"] {
-  padding: 10px 12px;
+  padding: 8px 12px;
   min-height: 44px;
 }
 .ats-form-section input[type="file"]::file-selector-button {
-  margin-right: 10px;
-  padding: 8px 12px;
-  border-radius: 9px;
+  margin-right: 12px;
+  padding: 8px 14px;
+  border-radius: 8px;
   border: none;
   font-weight: 700;
   cursor: pointer;
   background: linear-gradient(90deg, #6c63ff 0%, #41d1ff 100%);
   color: #021024;
+  transition: opacity 0.2s;
+}
+
+.ats-form-section input[type="file"]::file-selector-button:hover {
+  opacity: 0.9;
 }
 
 /* Textarea sizing */
 .ats-form-section textarea {
-  min-height: 120px;
+  min-height: 110px;
   resize: vertical;
 }
 
@@ -96,110 +328,245 @@
 .ats-form-section textarea:focus,
 .ats-form-section select:focus,
 .ats-form-section input[type="file"]:focus {
-  box-shadow: 0 8px 20px rgba(67, 98, 255, 0.08), 0 0 0 3px rgba(108,99,255,0.06);
-  border-color: rgba(108,99,255,0.35);
-  background: rgba(255,255,255,0.032);
+  box-shadow: 0 0 0 3px rgba(65, 209, 255, 0.15);
+  border-color: rgba(65, 209, 255, 0.5);
+  background: rgba(255, 255, 255, 0.05);
 }
 
-/* Checkbox row */
-.checkbox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.checkbox input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+/* Disabled state */
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed !important;
 }
 
 /* Error text */
 .error-text {
-  color: #ff8b8b;
+  color: #f87171;
   font-size: 0.88rem;
   margin-top: 6px;
+  font-weight: 600;
+}
+
+/* Inline Error Banner */
+.ats-error-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 24px;
+  color: #fca5a5;
+}
+
+.error-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.error-content strong {
+  display: block;
+  color: #f87171;
+  margin-bottom: 4px;
+}
+
+.error-content p {
+  margin: 0;
+  font-size: 0.92rem;
 }
 
 /* Action buttons */
 .form-actions {
   display: flex;
-  gap: 12px;
-  margin-top: 22px;
+  gap: 14px;
+  margin-top: 26px;
+  align-items: center;
 }
 
 .btn {
-  padding: 10px 18px;
+  padding: 12px 24px;
   border-radius: 10px;
   cursor: pointer;
   border: none;
   font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .btn-primary {
   background: linear-gradient(90deg, #6c63ff 0%, #41d1ff 100%);
   color: #021024;
-  box-shadow: 0 10px 26px rgba(65, 99, 255, 0.12);
+  box-shadow: 0 10px 26px rgba(65, 99, 255, 0.15);
 }
 
-.btn-primary:hover { transform: translateY(-2px); }
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(65, 209, 255, 0.25);
+}
 
 .btn-secondary {
-  background: rgba(255,255,255,0.04);
+  background: rgba(255, 255, 255, 0.05);
   color: #e9f1ff;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Small helpers */
-label small { color: rgba(215,227,255,0.6); font-weight: 500; margin-left: 6px; }
-.hint { color: rgba(215,227,255,0.6); font-size: 0.85rem; }
-
-/* Debug/details panel (if used) */
-details pre { background: rgba(255,255,255,0.02); padding: 12px; border-radius: 8px; overflow:auto; }
-
-/* subtle entrance */
-@keyframes floatIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
-.app-card { animation: floatIn .35s ease both; }
-
-/* Ensure inputs do not shrink inside flex containers */
-.ats-form-section > * { min-width: 0; }
-
-/* Final responsiveness */
-@media (max-width: 520px) {
-  .app-card { padding: 18px; }
-  .form-actions { flex-direction: column; align-items: stretch; }
+.btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
 }
 
-/* Job Openings Section */
-.ats-openings-section {
+/* Spinner inside button */
+.ats-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(2, 16, 36, 0.3);
+  border-radius: 50%;
+  border-top-color: #021024;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 3. Success Card */
+.ats-success-card {
+  background: linear-gradient(135deg, rgba(14, 23, 38, 0.9) 0%, rgba(9, 15, 26, 0.95) 100%);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 16px;
+  padding: 44px 36px;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 4, 16, 0.7);
+  animation: floatIn 0.4s ease both;
+}
+
+.ats-success-icon-wrap {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+}
+
+.ats-checkmark {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: block;
+  stroke-width: 3;
+  stroke: #34d399;
+  stroke-miterlimit: 10;
+  box-shadow: inset 0px 0px 0px #34d399;
+}
+
+.ats-checkmark-circle {
+  stroke-dasharray: 166;
+  stroke-dashoffset: 166;
+  stroke-width: 3;
+  stroke-miterlimit: 10;
+  stroke: #34d399;
+  fill: rgba(52, 211, 153, 0.08);
+  animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.ats-checkmark-check {
+  transform-origin: 50% 50%;
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+}
+
+@keyframes stroke {
+  100% { stroke-dashoffset: 0; }
+}
+
+.ats-success-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #34d399;
+  margin: 0 0 12px;
+}
+
+.ats-success-desc {
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: #cbd5e1;
+  max-width: 680px;
+  margin: 0 auto 24px;
+}
+
+.ats-success-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 14px 24px;
   margin-bottom: 24px;
 }
 
-.mh-ats-job-openings {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.ats-meta-item {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  font-size: 0.98rem;
 }
 
-.mh-ats-job-openings li a {
-  display: block;
-  padding: 16px 22px;
-  background: rgba(8, 14, 22, 0.6);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 12px;
+.ats-meta-label {
+  color: #94a3b8;
+}
+
+.ats-meta-value {
   color: #41d1ff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1.05rem;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 15px rgba(2,8,20,0.4);
 }
 
-.mh-ats-job-openings li a:hover {
-  background: rgba(255,255,255,0.04);
-  transform: translateY(-2px);
-  border-color: rgba(65, 99, 255, 0.3);
-  color: #6c63ff;
-  box-shadow: 0 8px 24px rgba(65, 99, 255, 0.12);
+.ats-success-note {
+  font-size: 0.94rem;
+  color: #94a3b8;
+  margin-bottom: 28px;
+}
+
+.ats-btn-restart {
+  margin: 0 auto;
+}
+
+/* Animations */
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ats-form-section > * {
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .ats-job-hero-card {
+    padding: 22px 18px;
+  }
+  .app-card {
+    padding: 20px 16px;
+  }
+  .ats-job-hero-title {
+    font-size: 1.35rem;
+  }
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn {
+    width: 100%;
+  }
 }

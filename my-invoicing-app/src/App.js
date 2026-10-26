@@ -1,6 +1,6 @@
 import React, {useState, useContext} from "react";
-import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
 import InvoicingCalculator from './components/InvoicingCalculator/InvoicingCalculator';
 import LegalFeeCalculator from './components/LegalFeeCalculator/LegalFeeCalculator';
 import YELCalculator from './components/YelCalculator/YelCalculator';

@@ -41,6 +41,13 @@ class I4ware_PayPal_API
             'callback' => [__CLASS__, 'handle_webhook'],
             'permission_callback' => '__return_true'
         ]);
+
+        // 4. Sales Orders & Reporting (for saas-app and dashboards)
+        register_rest_route(self::NAMESPACE, '/orders', [
+            'methods' => 'GET',
+            'callback' => [__CLASS__, 'handle_get_orders'],
+            'permission_callback' => '__return_true'
+        ]);
     }
 
     /**
@@ -59,14 +66,87 @@ class I4ware_PayPal_API
             if (strpos($uri, self::NAMESPACE . '/validate-checkout') !== false ||
                 strpos($uri, self::NAMESPACE . '/confirm-subscription') !== false ||
                 strpos($uri, self::NAMESPACE . '/webhook') !== false ||
+                strpos($uri, self::NAMESPACE . '/orders') !== false ||
                 strpos($query_route, self::NAMESPACE . '/validate-checkout') !== false ||
                 strpos($query_route, self::NAMESPACE . '/confirm-subscription') !== false ||
-                strpos($query_route, self::NAMESPACE . '/webhook') !== false) {
+                strpos($query_route, self::NAMESPACE . '/webhook') !== false ||
+                strpos($query_route, self::NAMESPACE . '/orders') !== false) {
                 return null;
             }
         }
 
         return $errors;
+    }
+
+    /**
+     * Retrieve completed PayPal orders & receipts for sales statistics
+     */
+    public static function handle_get_orders(WP_REST_Request $request)
+    {
+        global $wpdb;
+        $orders_table = $wpdb->prefix . 'i4ware_paypal_orders';
+        $receipts_table = $wpdb->prefix . 'i4ware_receipts';
+
+        $root = [];
+
+        // Check receipts first if available
+        if ($wpdb->get_var("SHOW TABLES LIKE '$receipts_table'") === $receipts_table) {
+            $receipts = $wpdb->get_results(
+                "SELECT receipt_number, payment_date, gross_amount, customer_name, company_name, item_name, currency, paid_status 
+                 FROM $receipts_table 
+                 WHERE paid_status = 'paid' AND receipt_type = 'receipt' 
+                 ORDER BY payment_date ASC",
+                ARRAY_A
+            );
+
+            if (!empty($receipts)) {
+                foreach ($receipts as $r) {
+                    $root[] = [
+                        'transactionId' => $r['receipt_number'],
+                        'saleDate' => $r['payment_date'],
+                        'vendorAmount' => number_format((float) $r['gross_amount'], 2, '.', ''),
+                        'currency' => !empty($r['currency']) ? $r['currency'] : 'EUR',
+                        'revenueSource' => 'PayPal',
+                        'itemName' => !empty($r['item_name']) ? $r['item_name'] : 'PayPal Subscription',
+                        'customer' => !empty($r['company_name']) ? $r['company_name'] : (!empty($r['customer_name']) ? $r['customer_name'] : 'PayPal Asiakas'),
+                        'status' => 'completed',
+                    ];
+                }
+            }
+        }
+
+        // If no receipts found, check orders table
+        if (empty($root) && $wpdb->get_var("SHOW TABLES LIKE '$orders_table'") === $orders_table) {
+            $orders = $wpdb->get_results(
+                "SELECT session_id, paypal_subscription_id, created_at_utc, gross_amount, contact_name, company_name, item_name, currency, status 
+                 FROM $orders_table 
+                 WHERE status IN ('activated', 'completed', 'active', 'approved_manually') 
+                 ORDER BY created_at_utc ASC",
+                ARRAY_A
+            );
+
+            if (!empty($orders)) {
+                foreach ($orders as $o) {
+                    $root[] = [
+                        'transactionId' => !empty($o['paypal_subscription_id']) ? $o['paypal_subscription_id'] : $o['session_id'],
+                        'saleDate' => $o['created_at_utc'],
+                        'vendorAmount' => number_format((float) $o['gross_amount'], 2, '.', ''),
+                        'currency' => !empty($o['currency']) ? $o['currency'] : 'EUR',
+                        'revenueSource' => 'PayPal',
+                        'itemName' => !empty($o['item_name']) ? $o['item_name'] : 'PayPal Tilaus',
+                        'customer' => !empty($o['company_name']) ? $o['company_name'] : (!empty($o['contact_name']) ? $o['contact_name'] : 'PayPal Asiakas'),
+                        'status' => $o['status'],
+                    ];
+                }
+            }
+        }
+
+        return new WP_REST_Response([
+            'status' => 'success',
+            'source' => 'paypal',
+            'total' => count($root),
+            'root' => $root,
+        ], 200);
     }
 
     /**

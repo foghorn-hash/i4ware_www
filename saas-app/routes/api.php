@@ -26,3 +26,9 @@ Route::group(['prefix' => 'reports', 'middleware' => 'CORS'], function ($router)
 	Route::get('/merged-monthly-sums', [AtlassianSalesController::class, 'getIncomeByMonthAllYears']);
 	Route::get('/income-years', [AtlassianSalesController::class, 'getIncomeYears']);
 });
+
+// PayPal Live Webhook & Sync
+Route::post('/paypal/webhook', [AtlassianSalesController::class, 'handlePayPalWebhook']);
+Route::get('/paypal/sync', [AtlassianSalesController::class, 'syncPayPalTransactions']);
+Route::get('/paypal/debug', [AtlassianSalesController::class, 'debugPayPalApi']);
+

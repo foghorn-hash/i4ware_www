@@ -20,6 +20,7 @@ class JAF_Plugin
   const OPTION_GROUP = 'mh_ats_settings';
   const OPTION_API_KEY = 'mh_ats_openai_api_key';
   const OPTION_JOB_TITLE = 'mh_ats_job_title';
+  const OPTION_JOB_DESCRIPTION = 'mh_ats_job_description';
   const OPTION_REQUIRED_SKILLS = 'mh_ats_required_skills';
   const OPTION_MIN_EXPERIENCE = 'mh_ats_min_experience';
   const OPTION_PREFERRED_LOCATION = 'mh_ats_preferred_location';
@@ -27,7 +28,7 @@ class JAF_Plugin
   const OPTION_JOB_OPENINGS = 'mh_ats_job_openings';
   const REST_NS = 'mh-ats/v1';
   const NONCE_ACTION = 'wp_rest';
-  const SCHEMA_VERSION = 2;
+  const SCHEMA_VERSION = 3;
 
   public function __construct()
   {
@@ -52,9 +53,24 @@ class JAF_Plugin
    */
   public function register_assets()
   {
-    // Päivitä polut vastaamaan buildiasi
-    $css_rel = 'css/main.fbd31224.css';
-    $js_rel = 'js/main.b47b9911.js';
+    // Etsi tuorein käännetty CSS- ja JS-tiedosto staattisesta kansiosta aikaleiman mukaan
+    $css_files = glob(JAF_PLUGIN_PATH . 'static/css/main.*.css');
+    $js_files = glob(JAF_PLUGIN_PATH . 'static/js/main.*.js');
+
+    if (!empty($css_files)) {
+      usort($css_files, function ($a, $b) {
+        return filemtime($b) - filemtime($a);
+      });
+    }
+    if (!empty($js_files)) {
+      usort($js_files, function ($a, $b) {
+        return filemtime($b) - filemtime($a);
+      });
+    }
+
+    $css_rel = (!empty($css_files) && file_exists($css_files[0])) ? 'css/' . basename($css_files[0]) : 'css/main.2614c0c4.css';
+    $js_rel = (!empty($js_files) && file_exists($js_files[0])) ? 'js/' . basename($js_files[0]) : 'js/main.80d1f1e7.js';
+
     $plugin_url = plugin_dir_url(__FILE__) . 'static/';
     $css_path = JAF_PLUGIN_PATH . 'static/' . $css_rel;
     $js_path = JAF_PLUGIN_PATH . 'static/' . $js_rel;
@@ -96,11 +112,31 @@ class JAF_Plugin
     if (function_exists('pll_register_string')) {
       pll_register_string(
         'mh_ats_job_openings',
-        get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot"),
+        get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot\nOhjelmistokehittäjä (Harjoittelu) | #jafroot"),
+        'Job Application Form',
+        true
+      );
+      pll_register_string(
+        'mh_ats_job_title',
+        get_option(self::OPTION_JOB_TITLE, "Full Stack Developer"),
+        'Job Application Form',
+        false
+      );
+      pll_register_string(
+        'mh_ats_job_description',
+        get_option(self::OPTION_JOB_DESCRIPTION, $this->get_default_job_description()),
         'Job Application Form',
         true
       );
     }
+  }
+
+  /**
+   * Default job/internship description.
+   */
+  public function get_default_job_description()
+  {
+    return "Etsimme tiimiimme motivoituneita ohjelmistokehittäjiä sekä opintoihin liittyviä työharjoittelijoita (Full Stack Developer, React, TypeScript, PHP, WordPress, Laravel, Jira/Atlassian, REST API). Tarjoamme monipuolisia ja mielenkiintoisia asiakas- ja tuotekehitysprojekteja, joustavat etätyömahdollisuudet sekä kokeneen tiimin tuen ammatilliseen kehittymiseen. Voit hakea avointa työpaikkaa tai harjoittelupaikkaa täyttämällä alla olevan hakulomakkeen.";
   }
 
   /**
@@ -109,7 +145,7 @@ class JAF_Plugin
    */
   public function shortcode_job_openings()
   {
-    $openings_text = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot");
+    $openings_text = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot\nOhjelmistokehittäjä (Harjoittelu) | #jafroot");
 
     if (function_exists('pll__')) {
       $openings_text = pll__($openings_text);
@@ -128,7 +164,7 @@ class JAF_Plugin
       $title = trim($parts[0]);
       $link = isset($parts[1]) ? trim($parts[1]) : '#jafroot';
 
-      echo '<li><a href="' . esc_url($link) . '">' . esc_html($title) . '</a></li>';
+      echo '<li><a href="' . esc_url($link) . '" data-position="' . esc_attr($title) . '" onclick="if(window.atsSelectPosition){window.atsSelectPosition(\'' . esc_js($title) . '\');}">' . esc_html($title) . '</a></li>';
     }
     echo '</ul>';
 
@@ -137,10 +173,15 @@ class JAF_Plugin
 
   /**
    * Shortcode handler.
-   * Usage: [job_application_form]
+   * Usage: [job_application_form position="Full Stack Developer" description="..."]
    */
-  public function shortcode()
+  public function shortcode($atts = [])
   {
+    $atts = shortcode_atts([
+      'position' => '',
+      'description' => ''
+    ], $atts, 'job_application_form');
+
     // Enqueue assets
     wp_enqueue_style('jaf-app');
     wp_enqueue_script('jaf-app');
@@ -148,12 +189,88 @@ class JAF_Plugin
     $id = 'jafroot';
     $nonce = wp_create_nonce(self::NONCE_ACTION);
     $rest = esc_url_raw(rest_url(self::REST_NS . '/applications'));
+
     $openings_html = do_shortcode('[job_openings]');
+
+    // Hae avoimet paikat JSON-muodossa React-valitsimelle
+    $openings_text = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot\nOhjelmistokehittäjä (Harjoittelu) | #jafroot");
+    if (function_exists('pll__')) {
+      $openings_text = pll__($openings_text);
+    }
+
+    $positions = [];
+    foreach (explode("\n", $openings_text) as $line) {
+      $line = trim($line);
+      if (!$line)
+        continue;
+      $parts = explode('|', $line, 2);
+      $pos_title = trim($parts[0]);
+      if ($pos_title && !in_array($pos_title, $positions, true)) {
+        $positions[] = $pos_title;
+      }
+    }
+
+    $default_job = !empty($atts['position']) ? sanitize_text_field($atts['position']) : get_option(self::OPTION_JOB_TITLE, 'Full Stack Developer');
+    if (function_exists('pll__')) {
+      $default_job = pll__($default_job);
+    }
+
+    if (!in_array($default_job, $positions, true)) {
+      array_unshift($positions, $default_job);
+    }
+
+    $description = !empty($atts['description']) ? $atts['description'] : get_option(self::OPTION_JOB_DESCRIPTION, $this->get_default_job_description());
+    if (function_exists('pll__')) {
+      $description = pll__($description);
+    }
 
     ob_start();
     ?>
-    <div id="<?php echo esc_attr($id); ?>" class="job-app-form-root" data-endpoint="<?php echo esc_attr($rest); ?>"
-      data-nonce="<?php echo esc_attr($nonce); ?>" data-openings="<?php echo esc_attr($openings_html); ?>"></div>
+    <div class="ats-wrapper" style="max-width: 1300px; margin: 0 auto;">
+      <!-- 1. Työpaikan tai harjoittelupaikan kuvaus ENNEN hakulomaketta (HTML-kortti ei katoa koskaan) -->
+      <div class="ats-job-hero-card ats-server-description">
+        <div class="ats-badge-row">
+          <span class="ats-badge ats-badge-primary">✨ <?php esc_html_e('Työpaikka & Harjoittelu', 'job-application-form'); ?></span>
+          <span class="ats-badge ats-badge-secondary">🌐 <?php esc_html_e('Joustava etätyö', 'job-application-form'); ?></span>
+          <span class="ats-badge ats-badge-accent">⚡ React • PHP • WordPress • Laravel • Jira</span>
+        </div>
+
+        <h2 class="ats-job-hero-title"><?php echo esc_html($default_job); ?> – <?php esc_html_e('Tietoa tehtävästä ja harjoittelupaikasta', 'job-application-form'); ?></h2>
+
+        <div class="ats-job-hero-desc">
+          <?php foreach (explode("\n", (string) $description) as $para): ?>
+            <?php if (trim($para)): ?>
+              <p><?php echo esc_html(trim($para)); ?></p>
+            <?php endif; ?>
+          <?php endforeach; ?>
+        </div>
+
+        <?php if (!empty($positions)): ?>
+          <div class="ats-openings-selector-box">
+            <span class="ats-openings-label"><?php esc_html_e('Avoinna olevat työ- ja harjoittelupaikat (valitse klikkaamalla):', 'job-application-form'); ?></span>
+            <div class="ats-position-tags">
+              <?php foreach ($positions as $pos): ?>
+                <a href="#jafroot" class="ats-position-tag" data-position="<?php echo esc_attr($pos); ?>" onclick="if(window.atsSelectPosition){window.atsSelectPosition('<?php echo esc_js($pos); ?>');}">
+                  <span class="tag-dot"></span>
+                  <?php echo esc_html($pos); ?>
+                </a>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- 2. Hakulomake (React mountaa tähän pysyvän kuvauksen alapuolelle) -->
+      <div id="<?php echo esc_attr($id); ?>" 
+        class="job-app-form-root" 
+        data-endpoint="<?php echo esc_attr($rest); ?>"
+        data-nonce="<?php echo esc_attr($nonce); ?>" 
+        data-openings="<?php echo esc_attr($openings_html); ?>"
+        data-openings-json="<?php echo esc_attr(wp_json_encode($positions)); ?>"
+        data-description="<?php echo esc_attr($description); ?>"
+        data-default-job="<?php echo esc_attr($default_job); ?>">
+      </div>
+    </div>
     <?php
     return ob_get_clean();
   }
@@ -168,13 +285,31 @@ class JAF_Plugin
   {
     $current = (int) get_option('jaf_schema_version', 0);
     if ($current >= self::SCHEMA_VERSION) {
+      $this->ensure_applicant_columns();
+      $this->ensure_documents_columns();
       return;
     }
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta($this->get_schema_sql());
+    $this->ensure_applicant_columns();
     $this->ensure_documents_columns();
     update_option('jaf_schema_version', self::SCHEMA_VERSION);
+  }
+
+  private function ensure_applicant_columns()
+  {
+    global $wpdb;
+    $applicants = $wpdb->prefix . 'mh_ats_applicants';
+    $columns = $wpdb->get_col("SHOW COLUMNS FROM $applicants", 0);
+
+    if (empty($columns)) {
+      return;
+    }
+
+    if (!in_array('job_title', $columns, true)) {
+      $wpdb->query("ALTER TABLE $applicants ADD COLUMN job_title VARCHAR(190) NULL AFTER email");
+    }
   }
 
   private function get_schema_sql()
@@ -192,6 +327,7 @@ class JAF_Plugin
       firstname VARCHAR(100) NOT NULL,
       lastname VARCHAR(100) NOT NULL,
       email VARCHAR(190) NOT NULL,
+      job_title VARCHAR(190) NULL,
       country VARCHAR(120) NOT NULL,
       address1 VARCHAR(190) NOT NULL,
       address2 VARCHAR(190) NULL,
@@ -253,6 +389,7 @@ class JAF_Plugin
   {
     register_setting(self::OPTION_GROUP, self::OPTION_API_KEY);
     register_setting(self::OPTION_GROUP, self::OPTION_JOB_TITLE);
+    register_setting(self::OPTION_GROUP, self::OPTION_JOB_DESCRIPTION);
     register_setting(self::OPTION_GROUP, self::OPTION_REQUIRED_SKILLS);
     register_setting(self::OPTION_GROUP, self::OPTION_MIN_EXPERIENCE);
     register_setting(self::OPTION_GROUP, self::OPTION_PREFERRED_LOCATION);
@@ -260,15 +397,20 @@ class JAF_Plugin
     register_setting(self::OPTION_GROUP, self::OPTION_JOB_OPENINGS);
     add_settings_section('mh_ats_sec', 'ATS asetukset', function () {
       echo '<p>Syötä OpenAI API -avain (tallennetaan WordPressin asetuksiin). Suosittelemme ympäristömuuttujaa tai Secret Manageria tuotannossa.</p>';
-      echo '<p>Määritä myös ATS-parametrit työn vaatimusten mukaan.</p>';
+      echo '<p>Määritä myös ATS-parametrit työn vaatimusten mukaan sekä työ- ja harjoittelupaikkojen kuvaukset.</p>';
     }, self::OPTION_GROUP);
     add_settings_field(self::OPTION_API_KEY, 'OpenAI API Key', function () {
       $key = esc_attr(get_option(self::OPTION_API_KEY));
       echo '<input type="password" style="width:420px" name="' . self::OPTION_API_KEY . '" value="' . $key . '" placeholder="sk-..." />';
     }, self::OPTION_GROUP, 'mh_ats_sec');
-    add_settings_field(self::OPTION_JOB_TITLE, 'Job Title', function () {
+    add_settings_field(self::OPTION_JOB_TITLE, 'Job Title (Default)', function () {
       $value = esc_attr(get_option(self::OPTION_JOB_TITLE, 'Full Stack Developer'));
       echo '<input type="text" style="width:420px" name="' . self::OPTION_JOB_TITLE . '" value="' . $value . '" placeholder="e.g. Full Stack Developer" />';
+    }, self::OPTION_GROUP, 'mh_ats_sec');
+    add_settings_field(self::OPTION_JOB_DESCRIPTION, 'Työpaikan tai harjoittelupaikan kuvaus', function () {
+      $value = get_option(self::OPTION_JOB_DESCRIPTION, $this->get_default_job_description());
+      echo '<textarea style="width:100%; max-width:650px; height:130px" name="' . self::OPTION_JOB_DESCRIPTION . '" placeholder="Työpaikan ja harjoittelupaikan kuvaus">' . esc_textarea($value) . '</textarea>';
+      echo '<p class="description">Tämä kuvaus esitetään hakijoille suoraan hakulomakkeen yläpuolella.</p>';
     }, self::OPTION_GROUP, 'mh_ats_sec');
     add_settings_field(self::OPTION_REQUIRED_SKILLS, 'Required Skills (comma-separated)', function () {
       $value = esc_attr(get_option(self::OPTION_REQUIRED_SKILLS, 'React, PHP, Laravel, SQL'));
@@ -287,7 +429,7 @@ class JAF_Plugin
       echo '<textarea style="width:420px; height:100px" name="' . self::OPTION_ADDITIONAL_CRITERIA . '" placeholder="Additional requirements or notes">' . esc_textarea($value) . '</textarea>';
     }, self::OPTION_GROUP, 'mh_ats_sec');
     add_settings_field(self::OPTION_JOB_OPENINGS, 'Open Positions (Title | Link)', function () {
-      $value = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot\nUX Designer | #jafroot");
+      $value = get_option(self::OPTION_JOB_OPENINGS, "Full Stack Developer | #jafroot\nOhjelmistokehittäjä (Harjoittelu) | #jafroot");
       echo '<textarea style="width:420px; height:100px" name="' . self::OPTION_JOB_OPENINGS . '" placeholder="Job Title | #jafroot">' . esc_textarea($value) . '</textarea>';
       echo '<p class="description">Use the shortcode <code>[job_openings]</code> to display this list.</p>';
     }, self::OPTION_GROUP, 'mh_ats_sec');
@@ -393,6 +535,7 @@ class JAF_Plugin
       echo '<table class="widefat striped" style="max-width: 980px">';
       echo '<tbody>';
       echo '<tr><th>Name</th><td>' . esc_html($row->firstname . ' ' . $row->lastname) . '</td></tr>';
+      echo '<tr><th>Haettu työpaikka / Position</th><td><strong style="color: #2271b1; font-size: 1.15em;">' . esc_html(!empty($row->job_title) ? $row->job_title : '–') . '</strong></td></tr>';
       echo '<tr><th>Email</th><td>' . esc_html($row->email) . '</td></tr>';
       echo '<tr><th>Country</th><td>' . esc_html($row->country) . '</td></tr>';
       echo '<tr><th>Address</th><td>' . esc_html($row->address1 . ' ' . $row->address2) . '</td></tr>';
@@ -458,7 +601,7 @@ class JAF_Plugin
     }
 
     $rows = $wpdb->get_results(
-      "SELECT a.id, a.created_at, a.firstname, a.lastname, a.email, s.score, s.status
+      "SELECT a.id, a.created_at, a.firstname, a.lastname, a.email, a.job_title, s.score, s.status
        FROM $applicants a
        LEFT JOIN $scores s ON a.id = s.applicant_id
        ORDER BY a.created_at DESC
@@ -485,11 +628,11 @@ class JAF_Plugin
 
     echo '<table class="widefat striped">';
     echo '<thead><tr>';
-    echo '<th>Date</th><th>Name</th><th>Email</th><th>Score</th><th>Status</th><th>Actions</th>';
+    echo '<th>Date</th><th>Name</th><th>Email</th><th>Haettu työpaikka / Position</th><th>Score</th><th>Status</th><th>Actions</th>';
     echo '</tr></thead><tbody>';
 
     if (!$rows) {
-      echo '<tr><td colspan="6">No applications found.</td></tr>';
+      echo '<tr><td colspan="7">No applications found.</td></tr>';
     } else {
       foreach ($rows as $row) {
         $view_url = admin_url('admin.php?page=jaf-applications&applicant_id=' . (int) $row->id);
@@ -505,6 +648,7 @@ class JAF_Plugin
         echo '<td>' . esc_html($row->created_at) . '</td>';
         echo '<td>' . esc_html($row->firstname . ' ' . $row->lastname) . '</td>';
         echo '<td>' . esc_html($row->email) . '</td>';
+        echo '<td><strong style="color: #1d2327;">' . esc_html(!empty($row->job_title) ? $row->job_title : '–') . '</strong></td>';
         echo '<td>' . esc_html($row->score) . '</td>';
         echo '<td>' . esc_html($row->status) . '</td>';
         echo '<td>';
@@ -922,27 +1066,71 @@ class JAF_Plugin
   public function handle_submit(WP_REST_Request $req)
   {
     try {
+      $this->ensure_applicant_columns();
       $this->ensure_documents_columns();
-      // CSRF (optional for public form)
-      $nonce = $req->get_header('x-wp-nonce');
-      if ($nonce && !wp_verify_nonce($nonce, self::NONCE_ACTION)) {
-        return new WP_REST_Response(['message' => 'Invalid nonce'], 403);
+
+      // Honeypot check for bots
+      if (!empty($req['_gotcha']) || !empty($_POST['_gotcha'])) {
+        return new WP_REST_Response(['success' => true, 'message' => 'Application stored'], 200);
       }
 
-      // Validate size & type quickly
+      // CSRF check (for logged-in users; allow guest applicants if page cache caused nonce expiry)
+      $nonce = $req->get_header('x-wp-nonce');
+      if (is_user_logged_in() && $nonce && !wp_verify_nonce($nonce, self::NONCE_ACTION)) {
+        return new WP_REST_Response(['message' => 'Istunto vanhentunut (Invalid nonce). Ole hyvä ja päivitä sivu.'], 403);
+      }
+
+      // Deduplication check: estä tuplalähetykset 60 sekunnin sisällä
+      $email_check = sanitize_email($req['email'] ?? '');
+      $first_check = sanitize_text_field($req['firstname'] ?? '');
+      $last_check = sanitize_text_field($req['lastname'] ?? '');
+      global $wpdb;
+      $applicants = $wpdb->prefix . 'mh_ats_applicants';
+
+      if ($email_check && $first_check && $last_check) {
+        $recent = $wpdb->get_row($wpdb->prepare(
+          "SELECT id FROM $applicants WHERE email = %s AND firstname = %s AND lastname = %s AND created_at > %s ORDER BY id DESC LIMIT 1",
+          $email_check,
+          $first_check,
+          $last_check,
+          gmdate('Y-m-d H:i:s', time() - 60)
+        ));
+        if ($recent) {
+          return new WP_REST_Response([
+            'success' => true,
+            'message' => 'Hakemuksesi on jo vastaanotettu onnistuneesti.',
+            'applicant_id' => (int) $recent->id,
+            'status' => 'received',
+            'is_duplicate' => true
+          ], 200);
+        }
+      }
+
+      // Validate size & type quickly (hyväksy kaikki validit PDF-tiedostot)
       foreach (['cv', 'motivation', 'application'] as $key) {
         if (!empty($_FILES[$key]['name'])) {
-          if ($_FILES[$key]['type'] !== 'application/pdf')
-            return new WP_REST_Response(['message' => 'Only PDF allowed for ' . $key], 400);
-          if ($_FILES[$key]['size'] > 8192 * 1024)
-            return new WP_REST_Response(['message' => 'File too large for ' . $key], 400);
+          $filename = sanitize_file_name($_FILES[$key]['name']);
+          $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+          if ($ext !== 'pdf') {
+            return new WP_REST_Response(['message' => 'Vain PDF-tiedostot ovat sallittuja liitteissä (' . $key . ') / Only PDF allowed'], 400);
+          }
+          if ($_FILES[$key]['size'] > 8192 * 1024) {
+            return new WP_REST_Response(['message' => 'Tiedosto on liian suuri (max 8 Mt) (' . $key . ') / File too large'], 400);
+          }
         }
+      }
+
+      // Extract job_title / position
+      $job_title = sanitize_text_field($req['job_title'] ?? $req['position'] ?? '');
+      if (empty($job_title)) {
+        $job_title = get_option(self::OPTION_JOB_TITLE, 'Full Stack Developer');
       }
 
       $payload = [
         'firstname' => sanitize_text_field($req['firstname'] ?? ''),
         'lastname' => sanitize_text_field($req['lastname'] ?? ''),
-        'email' => sanitize_email($req['email'] ?? ''),
+        'email' => $email_check,
+        'job_title' => $job_title,
         'country' => sanitize_text_field($req['country'] ?? ''),
         'address1' => sanitize_text_field($req['address1'] ?? ''),
         'address2' => sanitize_text_field($req['address2'] ?? ''),
@@ -958,25 +1146,49 @@ class JAF_Plugin
         'workexp' => wp_kses_post($req['workexp'] ?? '')
       ];
 
-      // Required fields check
+      // Required fields check with localized Finnish & English error messages
+      $field_names_fi = [
+        'firstname' => 'Etunimi',
+        'lastname' => 'Sukunimi',
+        'email' => 'Sähköposti',
+        'country' => 'Maa',
+        'address1' => 'Katuosoite',
+        'zip' => 'Postinumero',
+        'city' => 'Kaupunki',
+        'mobile' => 'Matkapuhelin',
+        'additional' => 'Lisätiedot',
+        'education' => 'Koulutus',
+        'qualifications' => 'Pätevyydet',
+        'skills' => 'Taidot ja osaaminen',
+        'workexp' => 'Työkokemus'
+      ];
       foreach (['firstname', 'lastname', 'email', 'country', 'address1', 'zip', 'city', 'mobile', 'additional', 'education', 'qualifications', 'skills', 'workexp'] as $reqf) {
-        if (empty($payload[$reqf]))
-          return new WP_REST_Response(['message' => 'Missing field: ' . $reqf], 400);
+        if (empty($payload[$reqf])) {
+          $label = $field_names_fi[$reqf] ?? $reqf;
+          return new WP_REST_Response(['message' => "Pakollinen kenttä puuttuu: $label (Missing field: $reqf)"], 400);
+        }
+      }
+
+      // Check required CV file
+      if (empty($_FILES['cv']['name'])) {
+        return new WP_REST_Response(['message' => 'Pakollinen liite puuttuu: Ansioluettelo / CV (PDF)'], 400);
       }
 
       // Store applicant
-      global $wpdb;
-      $applicants = $wpdb->prefix . 'mh_ats_applicants';
       $wpdb->insert($applicants, $payload);
       $applicant_id = (int) $wpdb->insert_id;
+      if (!$applicant_id) {
+        return new WP_REST_Response(['message' => 'Tietokantavirhe hakemusta tallennettaessa: ' . $wpdb->last_error], 500);
+      }
 
       // Upload files
       $docs_table = $wpdb->prefix . 'mh_ats_documents';
       foreach (['cv', 'motivation', 'application'] as $type) {
         if (!empty($_FILES[$type]['name'])) {
           $upload = $this->handle_upload($_FILES[$type]);
-          if (is_wp_error($upload))
-            return new WP_REST_Response(['message' => $upload->get_error_message()], 400);
+          if (is_wp_error($upload)) {
+            return new WP_REST_Response(['message' => 'Tiedoston lataus epäonnistui: ' . $upload->get_error_message()], 400);
+          }
           $inserted = $wpdb->insert($docs_table, [
             'applicant_id' => $applicant_id,
             'type' => $type,
@@ -985,16 +1197,12 @@ class JAF_Plugin
             'file_name' => $upload['file_name'],
           ]);
           if ($inserted === false) {
-            return new WP_REST_Response([
-              'message' => 'Failed to store document metadata',
-              'error' => $wpdb->last_error
-            ], 500);
+            error_log('JAF: Failed to store document metadata: ' . $wpdb->last_error);
           }
         }
       }
 
       // Get ATS settings
-      $job_title = get_option(self::OPTION_JOB_TITLE, 'Full Stack Developer');
       $required_skills_str = get_option(self::OPTION_REQUIRED_SKILLS, 'React, PHP, Laravel, SQL');
       $min_experience = (float) get_option(self::OPTION_MIN_EXPERIENCE, 5);
       $preferred_location = get_option(self::OPTION_PREFERRED_LOCATION, 'Finland');
@@ -1004,7 +1212,7 @@ class JAF_Plugin
       $required_skills = array_map('trim', explode(',', $required_skills_str));
       $required_skills_lower = array_map('strtolower', $required_skills);
 
-      // ATS-sääntöjä (esimerkki) ennen OpenAI:ta
+      // ATS-sääntöpisteytys
       $rule_score = 0;
       $reasons = [];
 
@@ -1015,7 +1223,7 @@ class JAF_Plugin
       foreach ($required_skills_lower as $skill) {
         if (stripos($skills_lower, $skill) !== false) {
           $found_skills++;
-          $rule_score += 20 / count($required_skills); // Distribute points equally
+          $rule_score += 20 / max(1, count($required_skills));
         } else {
           $missing_skills[] = ucfirst($skill);
         }
@@ -1024,12 +1232,10 @@ class JAF_Plugin
         $reasons[] = 'Missing skills: ' . implode(', ', $missing_skills);
       }
 
-      // Työkokemus tarkistetaan OpenAI:n kautta CV:stä, ei lomakkeesta
       if (!preg_match('/\b(' . (int) $min_experience . '|' . ((int) $min_experience + 1) . '|' . ((int) $min_experience + 2) . '|10)\+?\s*(years|v|vuotta)/i', $payload['workexp'])) {
         $reasons[] = 'Work experience in form may be insufficient (checked from CV)';
       }
 
-      // Check preferred location
       $location_match = false;
       $location_parts = array_map('trim', explode(',', $preferred_location));
       foreach ($location_parts as $loc) {
@@ -1049,139 +1255,105 @@ class JAF_Plugin
       if (!empty($payload['phone']))
         $rule_score += 5;
 
-      // OpenAI PDF-parsaus + pisteytys kaikille dokumenteille
+      // OpenAI PDF-parsaus + pisteytys kaikille dokumenteille (turvattu try-catchillä ja maltillisella timeoutilla)
       $openai_key = get_option(self::OPTION_API_KEY);
       $ai_score = 0;
       $ai_reason = '';
       if ($openai_key) {
-        // Hae kaikki dokumentit
-        $doc_rows = $wpdb->get_results($wpdb->prepare(
-          "SELECT type, file_path, attachment_id FROM $docs_table WHERE applicant_id=%d",
-          $applicant_id
-        ));
+        try {
+          $doc_rows = $wpdb->get_results($wpdb->prepare(
+            "SELECT type, file_path, attachment_id FROM $docs_table WHERE applicant_id=%d",
+            $applicant_id
+          ));
 
-        $documents_content = [];
-        foreach ($doc_rows as $doc) {
-          $file_path = $doc->file_path;
-          if (!$file_path && !empty($doc->attachment_id)) {
-            $file_path = get_attached_file((int) $doc->attachment_id);
-          }
+          $documents_content = [];
+          foreach ($doc_rows as $doc) {
+            $file_path = $doc->file_path;
+            if (!$file_path && !empty($doc->attachment_id)) {
+              $file_path = get_attached_file((int) $doc->attachment_id);
+            }
 
-          if ($file_path && file_exists($file_path)) {
-            $text = $this->extract_pdf_text($file_path);
-            if (!is_wp_error($text)) {
-              // Sanitize text: remove null bytes and ensure valid UTF-8
-              $text = str_replace("\0", '', $text);
-              $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
-              $documents_content[$doc->type] = substr($text, 0, 4000); // Limit per document
+            if ($file_path && file_exists($file_path)) {
+              $text = $this->extract_pdf_text($file_path);
+              if (!is_wp_error($text)) {
+                $text = str_replace("\0", '', $text);
+                $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+                $documents_content[$doc->type] = substr($text, 0, 4000);
+              }
             }
           }
-        }
 
-        if (!empty($documents_content)) {
-          // Rakenna prompt kaikilla dokumenteilla
-          $content_parts = [];
-          $content_parts[] = "Applicant form data:";
-          $content_parts[] = "Skills: {$payload['skills']}";
-          $content_parts[] = "Work experience: {$payload['workexp']}";
-          $content_parts[] = "Education: {$payload['education']}";
-          $content_parts[] = "Qualifications: {$payload['qualifications']}";
-          $content_parts[] = "Additional info: {$payload['additional']}";
-          $content_parts[] = "\n--- DOCUMENTS ---";
+          if (!empty($documents_content)) {
+            $content_parts = [];
+            $content_parts[] = "Applicant form data:";
+            $content_parts[] = "Applied Position: {$job_title}";
+            $content_parts[] = "Skills: {$payload['skills']}";
+            $content_parts[] = "Work experience: {$payload['workexp']}";
+            $content_parts[] = "Education: {$payload['education']}";
+            $content_parts[] = "Qualifications: {$payload['qualifications']}";
+            $content_parts[] = "Additional info: {$payload['additional']}";
+            $content_parts[] = "\n--- DOCUMENTS ---";
 
-          foreach ($documents_content as $type => $content) {
-            $label = strtoupper($type);
-            $content_parts[] = "\n=== $label ===\n" . $content;
-          }
+            foreach ($documents_content as $type => $content) {
+              $label = strtoupper($type);
+              $content_parts[] = "\n=== $label ===\n" . $content;
+            }
 
-          $full_content = implode("\n", $content_parts);
+            $full_content = implode("\n", $content_parts);
 
-          $prompt = [
-            'role' => 'user',
-            'content' => "You are an ATS (Applicant Tracking System) expert. Analyze the job application including CV, motivation letter, and application form.\n\nJob requirements: " . implode(', ', $required_skills) . ", {$min_experience}+ years experience, {$preferred_location}-based." . ($additional_criteria ? " Additional criteria: {$additional_criteria}." : "") . "\n\nIMPORTANT: Analyze work experience PRIMARILY from the CV PDF document, not from the form fields. The applicant may not have filled the form fields properly. Calculate total years of work experience from CV positions/dates.\n\nCompare CV content vs form fields and note if applicant provided insufficient information in form fields.\n\nReturn ONLY a valid JSON object (no markdown, no extra text) with these fields:\n{\n  \"skills\": [\"skill1\", \"skill2\"],\n  \"total_experience_years\": number (from CV),\n  \"cv_experience_summary\": \"brief summary of work experience from CV\",\n  \"form_vs_cv_quality\": \"excellent\" or \"good\" or \"poor\" (did applicant fill form properly compared to CV?),\n  \"seniority\": \"junior\" or \"mid\" or \"senior\",\n  \"score0to100\": number,\n  \"reasons\": [\"reason1\", \"reason2\"],\n  \"motivation_quality\": \"poor\" or \"average\" or \"good\" or \"excellent\",\n  \"overall_fit\": \"poor\" or \"moderate\" or \"good\" or \"excellent\"\n}\n\n" . $full_content
-          ];
+            $prompt = [
+              'role' => 'user',
+              'content' => "You are an ATS (Applicant Tracking System) expert. Analyze the job application for position '{$job_title}'. Requirements: " . implode(', ', $required_skills) . ", {$min_experience}+ years experience, {$preferred_location}-based." . ($additional_criteria ? " Additional criteria: {$additional_criteria}." : "") . "\n\nAnalyze work experience PRIMARILY from the CV PDF. Return ONLY valid JSON:\n{\n  \"skills\": [\"skill1\"],\n  \"total_experience_years\": number,\n  \"cv_experience_summary\": \"summary\",\n  \"form_vs_cv_quality\": \"good\",\n  \"seniority\": \"mid\",\n  \"score0to100\": number,\n  \"reasons\": [\"reason1\"],\n  \"motivation_quality\": \"good\",\n  \"overall_fit\": \"good\"\n}\n\n" . $full_content
+            ];
 
-          $body = json_encode([
-            'model' => 'gpt-4o-mini',
-            'messages' => [$prompt],
-            'temperature' => 0.2,
-            'max_tokens' => 1000
-          ], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
+            $body = json_encode([
+              'model' => 'gpt-4o-mini',
+              'messages' => [$prompt],
+              'temperature' => 0.2,
+              'max_tokens' => 1000
+            ], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE);
 
-          // Check if json_encode succeeded
-          if ($body === false) {
-            error_log('JAF: JSON encode failed: ' . json_last_error_msg());
-            // Skip OpenAI processing but continue with rule-based scoring
-          } else {
+            if ($body !== false) {
+              $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
+                'headers' => [
+                  'Authorization' => 'Bearer ' . $openai_key,
+                  'Content-Type' => 'application/json'
+                ],
+                'body' => $body,
+                'timeout' => 20
+              ]);
 
-            $response = wp_remote_post('https://api.openai.com/v1/chat/completions', [
-              'headers' => [
-                'Authorization' => 'Bearer ' . $openai_key,
-                'Content-Type' => 'application/json'
-              ],
-              'body' => $body,
-              'timeout' => 60
-            ]);
+              if (!is_wp_error($response)) {
+                $js = json_decode(wp_remote_retrieve_body($response), true);
+                $txt = $js['choices'][0]['message']['content'] ?? '';
+                $txt = preg_replace('/```json\s*/', '', $txt);
+                $txt = preg_replace('/```\s*$/', '', $txt);
+                $txt = trim($txt);
 
-            if (!is_wp_error($response)) {
-              $js = json_decode(wp_remote_retrieve_body($response), true);
-              $txt = $js['choices'][0]['message']['content'] ?? '';
-
-              // Yritä irrottaa JSON (poista mahdolliset markdown-merkit)
-              $txt = preg_replace('/```json\s*/', '', $txt);
-              $txt = preg_replace('/```\s*$/', '', $txt);
-              $txt = trim($txt);
-
-              if (preg_match('/\{[\s\S]*\}/', $txt, $m)) {
-                $parsed = json_decode($m[0], true);
-                if (is_array($parsed)) {
-                  $ai_score = (float) ($parsed['score0to100'] ?? 0);
-                  $ai_reasons = (array) ($parsed['reasons'] ?? []);
-
-                  // Lisää CV:stä laskettu työkokemus
-                  $cv_experience = $parsed['total_experience_years'] ?? null;
-                  $cv_summary = $parsed['cv_experience_summary'] ?? '';
-                  if ($cv_experience !== null) {
-                    $ai_reasons[] = "CV work experience: {$cv_experience} years";
-                    if ($cv_summary) {
-                      $ai_reasons[] = "CV summary: {$cv_summary}";
+                if (preg_match('/\{[\s\S]*\}/', $txt, $m)) {
+                  $parsed = json_decode($m[0], true);
+                  if (is_array($parsed)) {
+                    $ai_score = (float) ($parsed['score0to100'] ?? 0);
+                    $ai_reasons = (array) ($parsed['reasons'] ?? []);
+                    $cv_experience = $parsed['total_experience_years'] ?? null;
+                    if ($cv_experience !== null) {
+                      $ai_reasons[] = "CV work experience: {$cv_experience} years";
+                      if ($cv_experience >= $min_experience) {
+                        $rule_score += 20;
+                      }
                     }
-                    // Anna työkokemuspisteet CV:n perusteella
-                    if ($cv_experience >= $min_experience) {
-                      $rule_score += 20; // Lisää säännölliseen pisteeseen CV:n mukaan
-                    }
+                    $ai_reason = 'AI: ' . implode('; ', $ai_reasons);
                   }
-
-                  // Huomautus jos lomake täytetty huonosti
-                  $form_quality = $parsed['form_vs_cv_quality'] ?? '';
-                  if ($form_quality === 'poor') {
-                    $ai_reasons[] = "WARNING: Applicant did not fill form fields properly (form data incomplete vs CV)";
-                  } elseif ($form_quality === 'good' || $form_quality === 'excellent') {
-                    $ai_reasons[] = "Form filled properly";
-                  }
-
-                  // Lisää motivaation laatu ja yleinen soveltuvuus
-                  $motivation_quality = $parsed['motivation_quality'] ?? '';
-                  $overall_fit = $parsed['overall_fit'] ?? '';
-
-                  if ($motivation_quality) {
-                    $ai_reasons[] = "Motivation: $motivation_quality";
-                  }
-                  if ($overall_fit) {
-                    $ai_reasons[] = "Overall fit: $overall_fit";
-                  }
-
-                  $ai_reason = 'AI: ' . implode('; ', $ai_reasons);
                 }
               }
-            } else {
-              error_log('JAF: OpenAI API error: ' . $response->get_error_message());
             }
-          } // End of json_encode check
+          }
+        } catch (Throwable $oai_e) {
+          error_log('JAF: OpenAI evaluation exception: ' . $oai_e->getMessage());
         }
       }
 
-      $total = min(100, $rule_score + (int) round($ai_score * 0.5));
+      $total = min(100, (int) round($rule_score + ($ai_score * 0.5)));
       $status = $total >= 70 ? 'accepted' : ($total >= 50 ? 'maybe' : 'rejected');
       $reason = trim(implode('; ', $reasons) . ($ai_reason ? '; ' . $ai_reason : ''));
 
@@ -1195,23 +1367,32 @@ class JAF_Plugin
 
       $admin_email = get_option('admin_email');
       if ($admin_email) {
-        $subject = 'New job application received';
-        $message = "A new job application has been received.\n\n";
-        $message .= "Name: {$payload['firstname']} {$payload['lastname']}\n";
-        $message .= "Email: {$payload['email']}\n";
-        $message .= "Submitted at: " . gmdate('Y-m-d H:i:s') . " UTC\n\n";
-        $message .= "View in admin: " . admin_url('admin.php?page=jaf-applications&applicant_id=' . $applicant_id);
+        $subject = 'Uusi työhakemus vastaanotettu: ' . $job_title . ' (' . $payload['firstname'] . ' ' . $payload['lastname'] . ')';
+        $message = "Uusi työhakemus on vastaanotettu i4ware ATS -järjestelmään.\n\n";
+        $message .= "Haettu tehtävä: {$job_title}\n";
+        $message .= "Nimi: {$payload['firstname']} {$payload['lastname']}\n";
+        $message .= "Sähköposti: {$payload['email']}\n";
+        $message .= "Puhelin: {$payload['mobile']}\n";
+        $message .= "Pisteet: {$total}/100 (Tila: {$status})\n";
+        $message .= "Lähetysaika: " . gmdate('Y-m-d H:i:s') . " UTC\n\n";
+        $message .= "Tarkastele hakemusta hallinnassa: " . admin_url('admin.php?page=jaf-applications&applicant_id=' . $applicant_id);
         wp_mail($admin_email, $subject, $message);
       }
 
       return new WP_REST_Response([
-        'message' => 'Application stored',
+        'success' => true,
+        'message' => 'Hakemus vastaanotettu onnistuneesti!',
         'applicant_id' => $applicant_id,
+        'job_title' => $job_title,
         'status' => $status,
         'score' => $total
       ], 200);
     } catch (Throwable $e) {
-      return new WP_REST_Response(['message' => 'Server error', 'error' => $e->getMessage()], 500);
+      error_log('JAF handle_submit error: ' . $e->getMessage());
+      return new WP_REST_Response([
+        'success' => false,
+        'message' => 'Palvelinvirhe hakemuksen käsittelyssä: ' . $e->getMessage()
+      ], 500);
     }
   }
 }

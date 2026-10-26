@@ -22,28 +22,44 @@ let strings = new LocalizedStrings({
     error: "Failed to fetch transactions. Please try again.",
     loading: "Loading...",
     name: "Vendor Balance",
-    description: "These come from our real-time accounting system via a REST API interface from databases."
+    description: "These come from our real-time accounting system via a REST API interface from databases.",
+    tableYear: "Year",
+    tableSales: "Annual Sales",
+    tableShare: "Share (%)",
+    total: "Total"
   },
   fi: {
     title: "Vuotuiset myyntitapahtumat",
     error: "Tapahtumien hakeminen epäonnistui. Yritä uudelleen.",
     loading: "Ladataan...",
     name: "Toimittajan saldo",
-    description: "Nämä tulevat reaaliaikaisesta kirjanpidotamme REST API -rajapinnan kautta tietokannoista."
+    description: "Nämä tulevat reaaliaikaisesta kirjanpidostamme REST API -rajapinnan kautta tietokannoista.",
+    tableYear: "Vuosi",
+    tableSales: "Vuosimyynti",
+    tableShare: "Osuus (%)",
+    total: "Yhteensä"
   },
   sv: {
     title: "Årliga försäljningstransaktioner",
     error: "Misslyckades med att hämta transaktioner. Försök igen.",
     loading: "Laddar...",
     name: "Leverantörssaldo",
-    description: "Dessa kommer från vårt realtidsbokföringssystem via ett REST API-gränssnitt från databaser."
+    description: "Dessa kommer från vårt realtidsbokföringssystem via ett REST API-gränssnitt från databaser.",
+    tableYear: "År",
+    tableSales: "Årsförsäljning",
+    tableShare: "Andel (%)",
+    total: "Totalt"
   },
   ar: {
     title: "معاملات المبيعات السنوية",
     error: "فشل في جلب المعاملات. يرجى المحاولة مرة أخرى.",
     loading: "جاري التحميل...",
     name: "رصيد المورد",
-    description: "تأتي هذه البيانات من نظام المحاسبة الفوري الخاص بنا عبر واجهة REST API من قواعد البيانات."
+    description: "تأتي هذه البيانات من نظام المحاسبة الفوري الخاص بنا عبر واجهة REST API من قواعد البيانات.",
+    tableYear: "السنة",
+    tableSales: "المبيعات السنوية",
+    tableShare: "النسبة (%)",
+    total: "الإجمالي"
   }
 });
 
@@ -85,7 +101,6 @@ const TransactionsTable = ({ revenueSource }) => {
     const fetchData = async () => {
       setLoading(true); setError(null);
       try {
-        setLoading(true); setError(null);
         const response = await axios.get(
           `${API_BASE_URL}/api/reports/sales-report?source=${revenueSource}`
         );
@@ -94,7 +109,7 @@ const TransactionsTable = ({ revenueSource }) => {
         // Format data for Recharts
         const formattedData = data.map((item) => ({
           year: item.saleYear,
-          revenue: item.balanceVendor,
+          revenue: parseFloat(item.balanceVendor) || 0,
         }));
 
         setTransactions(data);
@@ -112,20 +127,69 @@ const TransactionsTable = ({ revenueSource }) => {
   if (loading) return <div className="loading-screen"><img src={LOADING} alt={strings.loading} /></div>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
+  const totalAnnualSales = chartData.reduce((acc, curr) => acc + curr.revenue, 0);
+
   return (
-    <div>
+    <div style={{ marginBottom: 35 }}>
       <h2 className="calculator-title">{strings.title}</h2>
-      <p>{strings.description}</p>
+      <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>{strings.description}</p>
+      
       {/* Bar Chart */}
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" angle={-90} textAnchor="end" dy={10} height={80} tickMargin={12} tickFormatter={(d) => d.slice(0, 7)} />
-          <YAxis />
+      <ResponsiveContainer width="100%" height={380}>
+        <BarChart data={chartData} margin={{ top: 10, right: 20, left: 10, bottom: 40 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+          <XAxis dataKey="year" stroke="#94a3b8" tickMargin={8} />
+          <YAxis stroke="#94a3b8" tickFormatter={(v) => `${v} €`} />
           <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="revenue" fill="#ff0066" name={strings.name} />
+          <Bar dataKey="revenue" fill="#ff0066" name={strings.name} radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
+
+      {/* HTML Table of Sales Statistics */}
+      {chartData.length > 0 && (
+        <div style={{ marginTop: 20 }}>
+          <Table striped bordered hover responsive variant="dark" className="modern-stats-table">
+            <thead>
+              <tr>
+                <th className="text-start">{strings.tableYear}</th>
+                <th className="text-end">{strings.tableSales}</th>
+                <th className="text-end">{strings.tableShare}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {chartData.map((row) => {
+                const share = totalAnnualSales > 0 ? ((row.revenue / totalAnnualSales) * 100).toFixed(1) : "0.0";
+                return (
+                  <tr key={row.year}>
+                    <td className="text-start font-weight-bold">
+                      <strong>{row.year}</strong>
+                    </td>
+                    <td className="text-end font-mono">
+                      {row.revenue.toFixed(2)} €
+                    </td>
+                    <td className="text-end font-mono">
+                      <span className="share-pill">{share} %</span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+            <tfoot>
+              <tr className="table-total-row">
+                <td className="text-start table-total-label">
+                  <strong>{strings.total}</strong>
+                </td>
+                <td className="text-end font-mono table-total-amount">
+                  <strong>{totalAnnualSales.toFixed(2)} €</strong>
+                </td>
+                <td className="text-end font-mono table-total-amount">
+                  <strong>100.0 %</strong>
+                </td>
+              </tr>
+            </tfoot>
+          </Table>
+        </div>
+      )}
     </div>
   );
 };

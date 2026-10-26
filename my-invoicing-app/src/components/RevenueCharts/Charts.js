@@ -12,6 +12,7 @@ let strings = new LocalizedStrings({
   en: {
     all: "All Sources",
     atlassian: "Atlassian Pty Ltd",
+    paypal: "PayPal Subscriptions",
     kk: "Monthly income",
     kela: "KELA/VARMA/Insurance",
     tyomarkkinatuki: "KELA/Employment support",
@@ -21,12 +22,15 @@ let strings = new LocalizedStrings({
     grandparents: "Grandparents' Inheritance",
     woocommerce: "WooCommerce",
     capital: "Capital Income",
+    copyright: "Recording Copyright Royalty (Radio/TV)",
+    ads: "Ad Revenue (YouTube/Google)",
     tax: "Tax Return",
     year: "Year",
   },
   fi: {
     all: "Kaikki lähteet",
     atlassian: "Atlassian Pty Ltd",
+    paypal: "PayPal-tilaukset",
     kk: "Kuukausittainen tulo",
     kela: "KELA/VARMA/Vakuutus",
     tyomarkkinatuki: "KELA/Työmarkkinatuki",
@@ -36,12 +40,15 @@ let strings = new LocalizedStrings({
     grandparents: "Isovanhempien perintö",
     woocommerce: "WooCommerce",
     capital: "Pääomatulot",
+    copyright: "Tallenteen tekijänoikeuskorvaus (Radio/TV)",
+    ads: "Mainostulo (YouTube/Google)",
     tax: "Veronpalautus",
     year: "Vuosi",
   },
   sv: {
     all: "Alla källor",
     atlassian: "Atlassian Pty Ltd",
+    paypal: "PayPal-prenumerationer",
     kk: "Månatlig inkomst",
     kela: "KELA/VARMA/Försäkring",
     tyomarkkinatuki: "KELA/Arbetsmarknadsstöd",
@@ -51,12 +58,15 @@ let strings = new LocalizedStrings({
     grandparents: "Mor- och farföräldrars arv",
     woocommerce: "WooCommerce",
     capital: "Kapitalinkomster",
+    copyright: "Inspelningsupphovsrättsersättning (Radio/TV)",
+    ads: "Annonsintäkter (YouTube/Google)",
     tax: "Skatter",
     year: "År",
   },
   ar: {
     all: "جميع المصادر",
     atlassian: "Atlassian Pty Ltd",
+    paypal: "اشتراكات PayPal",
     kk: "الدخل الشهري",
     kela: "KELA/VARMA/التأمين",
     tyomarkkinatuki: "KELA/دعم التوظيف",
@@ -66,6 +76,8 @@ let strings = new LocalizedStrings({
     grandparents: "ميراث الأجداد",
     woocommerce: "WooCommerce",
     capital: "دخل رأس المال",
+    copyright: "حقوق نشر التسجيل (راديو/تلفزيون)",
+    ads: "عائدات الإعلانات (YouTube/Google)",
     tax: "الإقرار الضريبي",
     year: "السنة",
   },
@@ -130,9 +142,12 @@ const Charts = () => {
         >
           <option value="all">{strings.all}</option>
           <option value="atlassian">{strings.atlassian}</option>
+          <option value="paypal">{strings.paypal}</option>
           <option value="hourly">{strings.hourly}</option>
           <option value="kk">{strings.kk}</option>
           <option value="capital">{strings.capital}</option>
+          <option value="copyright">{strings.copyright}</option>
+          <option value="ads">{strings.ads}</option>
         </select>
       </div>
 
