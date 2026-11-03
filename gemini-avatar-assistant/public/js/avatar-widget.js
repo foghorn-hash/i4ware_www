@@ -55,53 +55,103 @@
 	 * Initialize DOM elements and event listeners
 	 */
 	function init() {
-		widgetEl       = document.getElementById('gemini-avatar-widget');
-		launcherEl     = document.getElementById('gemini-avatar-launcher');
-		drawerEl       = document.getElementById('gemini-avatar-drawer');
-		messagesEl     = document.getElementById('gemini-messages-list');
-		inputEl        = document.getElementById('gemini-chat-input');
-		sendBtnEl      = document.getElementById('gemini-btn-send');
-		soundBtnEl     = document.getElementById('gemini-btn-sound');
-		resetBtnEl     = document.getElementById('gemini-btn-reset');
-		closeBtnEl     = document.getElementById('gemini-btn-close');
-		micBtnEl       = document.getElementById('gemini-btn-mic');
-		micStatusEl    = document.getElementById('gemini-mic-status');
-		micCancelEl    = document.getElementById('gemini-mic-cancel');
-		starterChipsEl = document.getElementById('gemini-starter-chips');
-		charCountEl    = document.getElementById('gemini-char-count');
+	widgetEl       = document.getElementById('gemini-avatar-widget');
+	launcherEl     = document.getElementById('gemini-avatar-launcher');
+	drawerEl       = document.getElementById('gemini-avatar-drawer');
+	messagesEl     = document.getElementById('gemini-messages-list');
+	inputEl        = document.getElementById('gemini-chat-input');
+	sendBtnEl      = document.getElementById('gemini-btn-send');
+	soundBtnEl     = document.getElementById('gemini-btn-sound');
+	resetBtnEl     = document.getElementById('gemini-btn-reset');
+	closeBtnEl     = document.getElementById('gemini-btn-close');
+	micBtnEl       = document.getElementById('gemini-btn-mic');
+	micStatusEl    = document.getElementById('gemini-mic-status');
+	micCancelEl    = document.getElementById('gemini-mic-cancel');
+	starterChipsEl = document.getElementById('gemini-starter-chips');
+	charCountEl    = document.getElementById('gemini-char-count');
 
-		headerStatusDot   = document.getElementById('gemini-header-status-dot');
-		headerStateText   = document.getElementById('gemini-header-state-text');
-		launcherStatus    = document.getElementById('gemini-launcher-status');
-		portalOuterRing   = document.getElementById('gemini-portal-ring-outer');
-		mouthOverlay      = document.getElementById('gemini-mouth-overlay');
-		vectorMouth       = document.getElementById('gemini-vector-mouth');
-		audioWavesEl      = document.getElementById('gemini-audio-waves');
-		stopSpeechStageBtn= document.getElementById('gemini-stage-stop-btn');
+	headerStatusDot   = document.getElementById('gemini-header-status-dot');
+	headerStateText   = document.getElementById('gemini-header-state-text');
+	launcherStatus    = document.getElementById('gemini-launcher-status');
+	portalOuterRing   = document.getElementById('gemini-portal-ring-outer');
+	mouthOverlay      = document.getElementById('gemini-mouth-overlay');
+	vectorMouth       = document.getElementById('gemini-vector-mouth');
+	audioWavesEl      = document.getElementById('gemini-audio-waves');
+	stopSpeechStageBtn= document.getElementById('gemini-stage-stop-btn');
 
-		if (!widgetEl || !launcherEl || !drawerEl) {
-			return;
+	if (!widgetEl || !launcherEl || !drawerEl) {
+		return;
+	}
+
+	// Ensure soundEnabled defaults to true if config flag missing
+	if (typeof config.enableSpeech !== 'undefined') {
+		soundEnabled = config.enableSpeech;
+	} else {
+		soundEnabled = true;
+	}
+
+	// Update sound toggle UI
+	updateSoundUI();
+
+	// Bind events
+	launcherEl.addEventListener('click', openDrawer);
+	closeBtnEl.addEventListener('click', closeDrawer);
+	if (soundBtnEl) soundBtnEl.addEventListener('click', toggleSound);
+	if (resetBtnEl) resetBtnEl.addEventListener('click', resetConversation);
+	if (stopSpeechStageBtn) {
+		stopSpeechStageBtn.addEventListener('click', stopAudio);
+	}
+
+	// Chat form submit
+	const form = document.getElementById('gemini-chat-form');
+	if (form) {
+		form.addEventListener('submit', onFormSubmit);
+	}
+
+	// Input keypress (Enter to send, Shift+Enter for newline)
+	if (inputEl) {
+		inputEl.addEventListener('keydown', function (e) {
+			if (e.key === 'Enter' && !e.shiftKey) {
+				e.preventDefault();
+				onFormSubmit(e);
+			}
+		});
+		inputEl.addEventListener('input', onInputChange);
+	}
+
+	// Voice input
+	if (micBtnEl) {
+		micBtnEl.addEventListener('click', toggleVoiceInput);
+	}
+	if (micCancelEl) {
+		micCancelEl.addEventListener('click', stopVoiceInput);
+	}
+
+	// Keyboard navigation (ESC to close)
+	document.addEventListener('keydown', function (e) {
+		if (e.key === 'Escape' && isOpen) {
+			closeDrawer();
 		}
+	});
 
-		// Update sound toggle UI
-		updateSoundUI();
+	// Language switcher buttons
+	const langPills = document.querySelectorAll('.gemini-lang-pill');
+	langPills.forEach(function (pill) {
+		pill.addEventListener('click', function (e) {
+			e.preventDefault();
+			const selected = pill.getAttribute('data-lang');
+			if (selected && selected !== currentLang) {
+				setLanguage(selected);
+			}
+		});
+	});
 
-		// Bind events
-		launcherEl.addEventListener('click', openDrawer);
-		closeBtnEl.addEventListener('click', closeDrawer);
-		soundBtnEl.addEventListener('click', toggleSound);
-		resetBtnEl.addEventListener('click', resetConversation);
-		if (stopSpeechStageBtn) {
-			stopSpeechStageBtn.addEventListener('click', stopAudio);
-		}
+	// Render initial UI
+	renderInitialState();
+	setStatus('ready');
+}
 
-		// Chat form submit
-		const form = document.getElementById('gemini-chat-form');
-		if (form) {
-			form.addEventListener('submit', onFormSubmit);
-		}
 
-		// Input keypress (Enter to send, Shift+Enter for newline)
 		if (inputEl) {
 			inputEl.addEventListener('keydown', function (e) {
 				if (e.key === 'Enter' && !e.shiftKey) {
