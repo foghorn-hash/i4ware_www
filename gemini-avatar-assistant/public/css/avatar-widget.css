@@ -40,7 +40,7 @@
    ========================================================================== */
 .gemini-launcher-btn {
 	position: fixed;
-	bottom: 24px;
+	bottom: 90px;
 	right: 24px;
 	width: 66px;
 	height: 66px;
@@ -1278,7 +1278,7 @@
    ========================================================================== */
 @media (max-width: 480px) {
 	.gemini-launcher-btn {
-		bottom: 16px;
+		bottom: 80px;
 		right: 16px;
 		width: 58px;
 		height: 58px;

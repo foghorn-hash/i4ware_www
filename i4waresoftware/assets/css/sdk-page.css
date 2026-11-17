@@ -92,6 +92,42 @@
     gap: 8px;
   }
 
+  .ok-cta .ok-btn-paypal {
+    order: 1;
+    width: 100%;
+    max-width: none;
+    padding: 12px 0;
+    font-size: 1rem;
+    text-align: center;
+    background: var(--ok-primary);
+    color: #fff;
+    border: none;
+  }
+
+  .ok-cta .ok-btn-primary {
+    order: 2;
+    width: 100%;
+    max-width: none;
+    padding: 12px 0;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .ok-cta .ok-btn-ghost {
+    order: 3;
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .ok-cta {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 8px;
+  }
+
   .ok-cta .ok-btn-primary {
     order: 2; /* ensure primary button appears after any preceding elements */
     width: 100%;

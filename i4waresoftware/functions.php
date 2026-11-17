@@ -3367,6 +3367,7 @@ add_shortcode('i4ware_sdk_page', function () {
             <h1><?php echo esc_html($s['hero_title']); ?></h1>
             <p><?php echo esc_html($s['hero_desc']); ?></p>
             <div class="ok-cta">
+                <a class="ok-btn ok-btn-paypal" href="https://www.paypal.com/donate?hosted_button_id=YOUR_ID" target="_blank" rel="noopener">PayPal Donate</a>
                 <a class="ok-btn ok-btn-primary" href="#tarjous"><?php echo esc_html($s['request_quote']); ?></a>
                 <a class="ok-btn ok-btn-ghost" href="https://github.com/foghorn-hash/i4ware_SDK" target="_blank"
                     rel="noopener">
