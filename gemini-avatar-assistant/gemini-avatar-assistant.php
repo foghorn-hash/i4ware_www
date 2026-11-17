@@ -3,7 +3,7 @@
  * Plugin Name: Gemini AI Avatar Assistant
  * Plugin URI: https://mattikiviharju.i4ware.fi/
  * Description: Google Gemini -pohjainen puhuva AI-avatar ja avustaja Matti Kiviharjun verkkosivustolle.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Matti Kiviharju / i4ware Software
  * Author URI: https://www.i4ware.fi/
  * Text Domain: gemini-avatar-assistant
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'GEMINI_AVATAR_VERSION', '1.0.0' );
+define( 'GEMINI_AVATAR_VERSION', '1.0.1' );
 define( 'GEMINI_AVATAR_PLUGIN_FILE', __FILE__ );
 define( 'GEMINI_AVATAR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GEMINI_AVATAR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

@@ -59,27 +59,41 @@ if ('ar' === $current_lang) {
 		dir="<?php echo ('ar' === $current_lang) ? 'rtl' : 'ltr'; ?>" hidden>
 
 		<!-- DRAWER HEADER -->
-		<header class="gemini-drawer-header">
-			<div class="gemini-header-profile">
-				<div class="gemini-header-avatar-wrap">
-					<?php if (!empty($avatar_url)): ?>
-						<img src="<?php echo esc_url($avatar_url); ?>" alt="Avatar" class="gemini-header-avatar" />
-					<?php else: ?>
-						<span class="gemini-avatar-fallback-icon">🤖</span>
-					<?php endif; ?>
-					<span class="gemini-status-dot status-ready" id="gemini-header-status-dot"></span>
-				</div>
-				<div class="gemini-header-info">
-					<h2 id="gemini-drawer-title" class="gemini-header-name">
-						<?php echo esc_html($settings['assistant_name']); ?>
-					</h2>
-					<div class="gemini-header-state" id="gemini-header-state-text">
-						<?php echo esc_html($state_text); ?>
+		<div class="gemini-drawer-header" role="region" aria-label="Keskusteluikkunan otsikko">
+			<!-- Row 1: Profile info on left, Close button on right -->
+			<div class="gemini-header-top-row">
+				<div class="gemini-header-profile">
+					<div class="gemini-header-avatar-wrap">
+						<?php if (!empty($avatar_url)): ?>
+							<img src="<?php echo esc_url($avatar_url); ?>" alt="<?php echo esc_attr($settings['assistant_name']); ?>" class="gemini-header-avatar" />
+						<?php else: ?>
+							<span class="gemini-avatar-fallback-icon">🤖</span>
+						<?php endif; ?>
+						<span class="gemini-status-dot status-ready" id="gemini-header-status-dot"></span>
+					</div>
+					<div class="gemini-header-info">
+						<h2 id="gemini-drawer-title" class="gemini-header-name">
+							<?php echo esc_html($settings['assistant_name']); ?>
+						</h2>
+						<div class="gemini-header-state" id="gemini-header-state-text">
+							<?php echo esc_html($state_text); ?>
+						</div>
 					</div>
 				</div>
+
+				<!-- Close Button -->
+				<button type="button" id="gemini-btn-close" class="gemini-header-btn gemini-btn-close" title="Sulje ja pienennä"
+					aria-label="Sulje avustaja">
+					<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+						stroke-linecap="round" stroke-linejoin="round">
+						<line x1="18" y1="6" x2="6" y2="18"></line>
+						<line x1="6" y1="6" x2="18" y2="18"></line>
+					</svg>
+				</button>
 			</div>
 
-			<div class="gemini-header-actions">
+			<!-- Row 2: Secondary Toolbar with Language Pills, Sound toggle, and Reset button -->
+			<div class="gemini-header-toolbar">
 				<!-- Language Switcher Pill Group -->
 				<div class="gemini-lang-selector" id="gemini-lang-selector" role="group"
 					aria-label="Valitse kieli / Select language">
@@ -115,24 +129,15 @@ if ('ar' === $current_lang) {
 					aria-label="Aloita alusta">
 					<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
 						stroke-linecap="round" stroke-linejoin="round">
-						<path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"></path>
-					</svg>
-				</button>
-
-				<!-- Minimize / Close Button -->
-				<button type="button" id="gemini-btn-close" class="gemini-header-btn" title="Sulje ja pienennä"
-					aria-label="Sulje avustaja">
-					<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
-						stroke-linecap="round" stroke-linejoin="round">
-						<line x1="18" y1="6" x2="6" y2="18"></line>
-						<line x1="6" y1="6" x2="18" y2="18"></line>
+						<polyline points="23 4 23 10 17 10"></polyline>
+						<path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
 					</svg>
 				</button>
 			</div>
-		</header>
+		</div>
 
 		<!-- INTERACTIVE AVATAR STAGE (Audio-reactive visualizer) -->
-		<section class="gemini-avatar-stage" aria-label="Avatar-animaatio">
+		<div class="gemini-avatar-stage" aria-label="Avatar-animaatio">
 			<div class="gemini-stage-visualizer" id="gemini-stage-visualizer">
 
 				<?php if ('svg' === $avatar_type): ?>
@@ -202,7 +207,7 @@ if ('ar' === $current_lang) {
 					</button>
 				</div>
 			</div>
-		</section>
+		</div>
 
 		<!-- PRIVACY NOTICE BANNER -->
 		<div class="gemini-privacy-banner" id="gemini-privacy-banner">
@@ -231,7 +236,7 @@ if ('ar' === $current_lang) {
 		</div>
 
 		<!-- DRAWER FOOTER / INPUT -->
-		<footer class="gemini-drawer-footer">
+		<div class="gemini-drawer-footer" role="region" aria-label="Keskusteluikkunan syöte">
 			<form id="gemini-chat-form" class="gemini-chat-form">
 				<!-- Microphone Status Indicator -->
 				<div class="gemini-mic-status" id="gemini-mic-status" style="display:none;">
@@ -276,7 +281,7 @@ if ('ar' === $current_lang) {
 					</button>
 				</div>
 			</form>
-		</footer>
+		</div>
 
 	</div>
 </div>

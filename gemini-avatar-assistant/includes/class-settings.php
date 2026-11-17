@@ -53,7 +53,7 @@ class Gemini_Avatar_Settings {
 			'tts_voice'               => 'Puck',
 
 			// Assistant Identity & Appearance
-			'assistant_name'          => 'i4ware Software AI-avustaja',
+			'assistant_name'          => 'i4ware AI -avustaja',
 			'greeting_fi'             => 'Hei! Olen i4ware Softwaren tekoälyavustaja. Autan sinua tutustumaan tuotteisiimme, palveluihimme, hintoihimme ja tilausvaihtoehtoihimme, kuten mainospaikkoihin, kuukausitilauksiin ja Atlassian Marketplace -sovelluksiin. Kuinka voin auttaa?',
 			'greeting_en'             => 'Hello! I am i4ware Software’s AI assistant. I can help you understand our products, services, pricing, and ordering options, such as advertising spaces, monthly subscriptions, and Atlassian Marketplace apps. How can I help you?',
 			'greeting_ar'             => 'مرحباً! أنا المساعد الذكي لموقع i4ware Software. يسعدني مساعدتك في استكشاف منتجاتنا، وخدماتنا، وأسعارنا، وخيارات الطلب مثل المساحات الإعلانية والاشتراكات الشهرية وتطبيقات Atlassian Marketplace. كيف يمكنني مساعدتك اليوم؟',

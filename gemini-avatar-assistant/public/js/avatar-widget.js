@@ -51,6 +51,17 @@
         // Ignore storage errors
     }
 
+    // Load language preference from session
+    try {
+        const storedLang = sessionStorage.getItem('gemini_avatar_lang');
+        if (storedLang && config.languages && config.languages[storedLang]) {
+            currentLang = storedLang;
+            i18n = config.languages[currentLang];
+        }
+    } catch (e) {
+        // Ignore storage errors
+    }
+
     /**
      * Initialize DOM elements and event listeners
      */
@@ -141,6 +152,27 @@
             });
         });
 
+        // Sync initial language state with DOM
+        if (drawerEl) {
+            if (currentLang === 'ar') {
+                drawerEl.setAttribute('dir', 'rtl');
+                drawerEl.classList.add('is-rtl');
+            } else {
+                drawerEl.setAttribute('dir', 'ltr');
+                drawerEl.classList.remove('is-rtl');
+            }
+        }
+        document.querySelectorAll('.gemini-lang-pill').forEach(function (pill) {
+            pill.classList.toggle('active', pill.getAttribute('data-lang') === currentLang);
+        });
+        const drawerTitle = document.getElementById('gemini-drawer-title');
+        if (drawerTitle && i18n && i18n.assistantName) {
+            drawerTitle.textContent = i18n.assistantName;
+        }
+        if (inputEl && i18n && i18n.inputPlaceholder) {
+            inputEl.placeholder = i18n.inputPlaceholder;
+        }
+
         // Render initial UI
         renderInitialState();
         setStatus('ready');
@@ -192,16 +224,20 @@
 
     function updateSoundUI() {
         if (!soundBtnEl) return;
+        const sOn = (i18n && i18n.soundOn) ? i18n.soundOn : 'Puhe päällä';
+        const sOff = (i18n && i18n.soundOff) ? i18n.soundOff : 'Puhe pois';
         if (soundEnabled) {
             soundBtnEl.classList.add('sound-on');
             soundBtnEl.classList.remove('sound-off');
-            soundBtnEl.title = i18n.soundOn + ' (klikkaa mykistääksesi)';
-            soundBtnEl.setAttribute('aria-label', i18n.soundOn);
+            const hint = (currentLang === 'fi') ? ' (klikkaa mykistääksesi)' : ((currentLang === 'ar') ? ' (انقر لكتم الصوت)' : ' (click to mute)');
+            soundBtnEl.title = sOn + hint;
+            soundBtnEl.setAttribute('aria-label', sOn);
         } else {
             soundBtnEl.classList.add('sound-off');
             soundBtnEl.classList.remove('sound-on');
-            soundBtnEl.title = i18n.soundOff + ' (klikkaa kytkeäksesi puhe päälle)';
-            soundBtnEl.setAttribute('aria-label', i18n.soundOff);
+            const hint = (currentLang === 'fi') ? ' (klikkaa kytkeäksesi puhe päälle)' : ((currentLang === 'ar') ? ' (انقر للتشغيل)' : ' (click to unmute)');
+            soundBtnEl.title = sOff + hint;
+            soundBtnEl.setAttribute('aria-label', sOff);
         }
     }
 
@@ -212,13 +248,21 @@
         stopAudio();
         stopVoiceInput();
         conversationHistory = [];
-        messagesEl.innerHTML = '';
+        if (messagesEl) {
+            messagesEl.innerHTML = '';
+        }
         renderInitialState();
         setStatus('ready');
         if (inputEl) {
             inputEl.value = '';
             onInputChange();
             inputEl.focus();
+        }
+        if (resetBtnEl) {
+            resetBtnEl.classList.add('is-spinning');
+            setTimeout(function () {
+                resetBtnEl.classList.remove('is-spinning');
+            }, 500);
         }
     }
 
@@ -290,6 +334,11 @@
                 drawerEl.classList.remove('is-rtl');
             }
         }
+        // Update assistant title
+        const drawerTitle = document.getElementById('gemini-drawer-title');
+        if (drawerTitle && i18n.assistantName) {
+            drawerTitle.textContent = i18n.assistantName;
+        }
         // Update tooltip
         const launcherTooltip = document.getElementById('gemini-launcher-tooltip-text');
         if (launcherTooltip) {
@@ -322,6 +371,19 @@
         }
         updateSoundUI();
         setStatus('ready');
+
+        // Update greeting and starter questions in the new language if chat has not started yet
+        if (conversationHistory.length === 0) {
+            if (messagesEl) {
+                messagesEl.innerHTML = '';
+            }
+            renderInitialState();
+        } else {
+            if (starterChipsEl && starterChipsEl.style.display !== 'none') {
+                renderStarterChips();
+            }
+        }
+
         // Save language preference
         try {
             sessionStorage.setItem('gemini_avatar_lang', currentLang);

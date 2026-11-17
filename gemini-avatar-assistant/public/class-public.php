@@ -84,6 +84,10 @@ class Gemini_Avatar_Public {
 		// Detect current language (Polylang post, global, URI, or default)
 		$current_lang = self::get_current_language();
 
+		$base_name = ! empty( $settings['assistant_name'] ) ? $settings['assistant_name'] : 'i4ware AI -avustaja';
+		$en_name   = in_array( $base_name, array( 'i4ware AI -avustaja', 'i4ware Software AI-avustaja' ), true ) ? 'i4ware AI Assistant' : $base_name;
+		$ar_name   = in_array( $base_name, array( 'i4ware AI -avustaja', 'i4ware Software AI-avustaja' ), true ) ? 'مساعد i4ware الذكي' : $base_name;
+
 		$greeting_ar = ! empty( $settings['greeting_ar'] ) ? $settings['greeting_ar'] : 'مرحباً! أنا المساعد الذكي لموقع i4ware Software. يسعدني مساعدتك في استكشاف منتجاتنا، وخدماتنا، وأسعارنا، وخيارات الطلب مثل المساحات الإعلانية والاشتراكات الشهرية وتطبيقات Atlassian Marketplace. كيف يمكنني مساعدتك اليوم؟';
 		if ( 'ar' === $current_lang ) {
 			$greeting = $greeting_ar;
@@ -95,7 +99,7 @@ class Gemini_Avatar_Public {
 
 		$i18n_languages = array(
 			'fi' => array(
-				'assistantName'   => $settings['assistant_name'],
+				'assistantName'   => $base_name,
 				'greeting'        => $settings['greeting_fi'],
 				'ready'           => 'Valmiina',
 				'thinking'        => 'Muodostaa vastausta...',
@@ -123,7 +127,7 @@ class Gemini_Avatar_Public {
 				),
 			),
 			'en' => array(
-				'assistantName'   => $settings['assistant_name'],
+				'assistantName'   => $en_name,
 				'greeting'        => $settings['greeting_en'],
 				'ready'           => 'Ready',
 				'thinking'        => 'Formulating answer...',
@@ -151,7 +155,7 @@ class Gemini_Avatar_Public {
 				),
 			),
 			'ar' => array(
-				'assistantName'   => $settings['assistant_name'],
+				'assistantName'   => $ar_name,
 				'greeting'        => $greeting_ar,
 				'ready'           => 'جاهز',
 				'thinking'        => 'جاري صياغة الإجابة...',
